@@ -30,7 +30,6 @@ let package = Package(
         .package(url: "https://github.com/vmanot/CorePersistence.git", branch: "main"),
         .package(url: "https://github.com/vmanot/Merge.git", branch: "master"),
         .package(url: "https://github.com/vmanot/NetworkKit.git", branch: "master"),
-        .package(url: "https://github.com/vmanot/Expansions.git", branch: "main"),
         .package(url: "https://github.com/vmanot/Swallow.git", branch: "master")
     ],
     targets: [
@@ -38,7 +37,6 @@ let package = Package(
             name: "CoreGML",
             dependencies: [
                 "CorePersistence",
-                "Expansions",
                 "Merge",
                 "Swallow"
             ],
@@ -83,7 +81,6 @@ let package = Package(
             name: "ElevenLabs",
             dependencies: [
                 "CorePersistence",
-                "Expansions",
                 "CoreGML",
                 "Merge",
                 "NetworkKit",
@@ -108,7 +105,6 @@ let package = Package(
             name: "Ollama",
             dependencies: [
                 "CorePersistence",
-                "Expansions",
                 "CoreGML",
                 "LargeLanguageModels",
                 "Merge",
