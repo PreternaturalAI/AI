@@ -25,7 +25,7 @@ extension TaskDependencyValues {
             self[_OptionalTaskDependencyKey.self] = newValue
         }
     }
-
+    
     public var textEmbeddingsProvider: (any TextEmbeddingsRequestHandling)? {
         get {
             self[_OptionalTaskDependencyKey.self]
