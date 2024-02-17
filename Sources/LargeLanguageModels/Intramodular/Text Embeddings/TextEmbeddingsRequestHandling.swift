@@ -2,14 +2,14 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import CorePersistence
 import Merge
 import Swallow
 
 /// A type that provides text embeddings for text.
 public protocol TextEmbeddingsRequestHandling {
-    var _availableModels: [_GMLModelIdentifier]? { get }
+    var _availableModels: [_MLModelIdentifier]? { get }
     
     func fulfill(
         _ request: TextEmbeddingsRequest
@@ -19,7 +19,7 @@ public protocol TextEmbeddingsRequestHandling {
 // MARK: - Extensions
 
 extension TextEmbeddingsRequestHandling {
-    public var _availableModels: [_GMLModelIdentifier]? {
+    public var _availableModels: [_MLModelIdentifier]? {
         nil
     }
     
@@ -36,7 +36,7 @@ extension TextEmbeddingsRequestHandling {
     
     public func textEmbeddings(
         for strings: [String],
-        model: some _GMLModelIdentifierConvertible
+        model: some _MLModelIdentifierConvertible
     ) async throws -> TextEmbeddings {
         try await self.fulfill(
             TextEmbeddingsRequest(
@@ -60,7 +60,7 @@ extension TextEmbeddingsRequestHandling {
     
     public func textEmbedding(
         for string: String,
-        model: some _GMLModelIdentifierConvertible
+        model: some _MLModelIdentifierConvertible
     ) async throws -> _RawTextEmbedding {
         try await self.fulfill(
             TextEmbeddingsRequest(model: model.__conversion(), strings: [string])
@@ -83,11 +83,11 @@ public enum TextEmbeddingsRequestHandlingError: Error {
 /// A request to generate text embeddings.
 public struct TextEmbeddingsRequest {
     public let input: [String]
-    public let model: _GMLModelIdentifier?
+    public let model: _MLModelIdentifier?
     
     public init(
         input: [String],
-        model: _GMLModelIdentifier?
+        model: _MLModelIdentifier?
     ) {
         self.input = input
         self.model = model
@@ -115,7 +115,7 @@ extension TextEmbeddingsRequest {
     }
     
     public init(
-        model: _GMLModelIdentifier?,
+        model: _MLModelIdentifier?,
         strings: [String]
     ) {
         self.input = strings

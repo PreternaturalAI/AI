@@ -3,16 +3,16 @@
 //
 
 import Compute
-import CoreGML
+import CoreMI
 import Merge
 import Swallow
 
-/// A unified interface to an LLM.
-public protocol LLMRequestHandling {
+/// A unified interface to a large language model.
+public protocol LLMRequestHandling: _MIRequestHandling {
     /// The list of available LLMs.
     ///
     /// `nil` if unknown.
-    var _availableModels: [_GMLModelIdentifier]? { get }
+    var _availableModels: [_MLModelIdentifier]? { get }
     
     /// Complete a given prompt.
     func complete<Prompt: AbstractLLM.Prompt>(
@@ -30,7 +30,7 @@ public protocol LLMRequestHandling {
 // MARK: - Implementation
 
 extension LLMRequestHandling {
-    public var _availableModels: [_GMLModelIdentifier]? {
+    public var _availableModels: [_MLModelIdentifier]? {
         return nil
     }
     
@@ -99,5 +99,5 @@ extension LLMRequestHandling {
 
 // MARK: - Deprecated
 
-@available(*, deprecated, renamed: "TextEmbeddingsRequestHandling")
+@available(*, deprecated, renamed: "LLMRequestHandling")
 public typealias LargeLanguageModelServices = LLMRequestHandling

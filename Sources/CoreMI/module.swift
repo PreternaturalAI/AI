@@ -3,3 +3,7 @@
 //
 
 @_exported import Diagnostics
+
+public enum _module {
+    
+}

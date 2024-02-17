@@ -12,8 +12,8 @@ import Swallow
 /// It's intended for use with both local and API-only models.
 @HadeanIdentifier("ludab-gulor-porin-zuvok")
 @RuntimeDiscoverable
-public struct _GMLModelIdentifier: Hashable, Sendable {
-    public let provider: _GMLModelIdentifier.Provider
+public struct _MLModelIdentifier: Hashable, Sendable {
+    public let provider: _MLModelIdentifier.Provider
     public let name: String
     public let revision: String?
     
@@ -22,7 +22,7 @@ public struct _GMLModelIdentifier: Hashable, Sendable {
     }
     
     public init(
-        provider: _GMLModelIdentifier.Provider,
+        provider: _MLModelIdentifier.Provider,
         name: String,
         revision: String?
     ) {
@@ -69,7 +69,7 @@ public struct _GMLModelIdentifier: Hashable, Sendable {
     
     private static func _guessPrimaryProvider(
         forRawIdentifier identifier: String
-    ) -> _GMLModelIdentifier.Provider? {
+    ) -> _MLModelIdentifier.Provider? {
         if _Anthropic_Model(rawValue: identifier) != nil {
             return ._Anthropic
         } else if _Mistral_Model(rawValue: identifier) != nil {
@@ -84,7 +84,7 @@ public struct _GMLModelIdentifier: Hashable, Sendable {
 
 // MARK: - Conformances
 
-extension _GMLModelIdentifier: Codable {
+extension _MLModelIdentifier: Codable {
     public enum CodingKeys {
         case provider
         case name
@@ -92,7 +92,7 @@ extension _GMLModelIdentifier: Codable {
     }
     
     private struct _WithRevisionRepresentaton: Codable, Hashable {
-        let provider: _GMLModelIdentifier.Provider
+        let provider: _MLModelIdentifier.Provider
         let name: String
         let revision: String
     }
@@ -141,25 +141,25 @@ extension _GMLModelIdentifier: Codable {
     }
 }
 
-extension _GMLModelIdentifier: ExpressibleByStringLiteral {
+extension _MLModelIdentifier: ExpressibleByStringLiteral {
     public init(stringLiteral value: StringLiteralType) {
         self = Self(description: value)!
     }
 }
 
-extension _GMLModelIdentifier: _GMLModelIdentifierRepresentable {
-    public init(from identifier: _GMLModelIdentifier) throws {
+extension _MLModelIdentifier: _MLModelIdentifierRepresentable {
+    public init(from identifier: _MLModelIdentifier) throws {
         self = identifier
     }
     
-    public func __conversion() throws -> _GMLModelIdentifier {
+    public func __conversion() throws -> _MLModelIdentifier {
         self
     }
 }
 
 // MARK: - Auxiliary
 
-extension _GMLModelIdentifier {
+extension _MLModelIdentifier {
     private enum _Anthropic_Model: String, CaseIterable {
         case claude_v1 = "claude-v1"
         case claude_v2 = "claude-2"

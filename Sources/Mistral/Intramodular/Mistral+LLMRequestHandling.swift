@@ -18,7 +18,7 @@ extension Mistral: _TaskDependenciesExporting {
 }
 
 extension Mistral: LLMRequestHandling {
-    public var _availableLLMs: [_GMLModelIdentifier]? {
+    public var _availableLLMs: [_MLModelIdentifier]? {
         Mistral.Model.allCases.map({ $0.__conversion() })
     }
 

@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-@_exported import CoreGML
+@_exported import CoreMI
 @_exported import Diagnostics
 @_exported import Merge
 @_exported import Swallow

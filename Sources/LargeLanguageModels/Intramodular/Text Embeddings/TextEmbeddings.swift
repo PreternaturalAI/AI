@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import CorePersistence
 import Swallow
 
@@ -17,10 +17,10 @@ public struct TextEmbeddings: Codable, HadeanIdentifiable, Hashable, Sendable {
     }
     
     public let data: [Element]
-    public let model: _GMLModelIdentifier
+    public let model: _MLModelIdentifier
 
     public init(
-        model: _GMLModelIdentifier,
+        model: _MLModelIdentifier,
         data: [Element]
     ) {
         self.model = model

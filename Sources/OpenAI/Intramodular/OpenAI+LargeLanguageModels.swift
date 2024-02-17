@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import CorePersistence
 import Diagnostics
 @_spi(Internal) import LargeLanguageModels
@@ -21,7 +21,7 @@ extension OpenAI.APIClient: _TaskDependenciesExporting {
 }
 
 extension OpenAI.APIClient: LLMRequestHandling {
-    public var _availableModels: [_GMLModelIdentifier]? {
+    public var _availableModels: [_MLModelIdentifier]? {
         OpenAI.Model.allCases.map({ $0.__conversion() })
     }
     
@@ -308,7 +308,7 @@ extension OpenAI.APIClient: TextEmbeddingsRequestHandling {
             )
         }
         
-        let model = request.model ?? _GMLModelIdentifier(from: OpenAI.Model.Embedding.ada)
+        let model = request.model ?? _MLModelIdentifier(from: OpenAI.Model.Embedding.ada)
         let embeddingModel = try OpenAI.Model.Embedding(rawValue: model.name).unwrap()
         
         let embeddings = try await createEmbeddings(
@@ -332,7 +332,7 @@ extension OpenAI.APIClient: TextEmbeddingsRequestHandling {
 
 // MARK: - Auxiliary
 
-extension _GMLModelIdentifier {
+extension _MLModelIdentifier {
     public init(
         from model: OpenAI.Model.InstructGPT
     ) {

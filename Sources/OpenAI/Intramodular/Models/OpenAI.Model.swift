@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import LargeLanguageModels
 import NetworkKit
 import Swift
@@ -284,12 +284,12 @@ extension OpenAI.Model: Codable {
     }
 }
 
-extension OpenAI.Model: _GMLModelIdentifierRepresentable {
+extension OpenAI.Model: _MLModelIdentifierRepresentable {
     private enum _DecodingError: Error {
         case invalidModelProvider
     }
     
-    public init(from model: _GMLModelIdentifier) throws {
+    public init(from model: _MLModelIdentifier) throws {
         guard model.provider == .openAI else {
             throw _DecodingError.invalidModelProvider
         }
@@ -297,8 +297,8 @@ extension OpenAI.Model: _GMLModelIdentifierRepresentable {
         self = try Self(rawValue: model.name).unwrap()
     }
     
-    public func __conversion() -> _GMLModelIdentifier {
-        _GMLModelIdentifier(
+    public func __conversion() -> _MLModelIdentifier {
+        _MLModelIdentifier(
             provider: .openAI,
             name: rawValue,
             revision: nil

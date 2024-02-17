@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import LargeLanguageModels
 import Merge
 import NetworkKit
@@ -42,9 +42,9 @@ extension Ollama.Model: CustomStringConvertible {
     }
 }
 
-extension Ollama.Model: _GMLModelIdentifierConvertible {
-    public func __conversion() throws -> _GMLModelIdentifier {
-        _GMLModelIdentifier(
+extension Ollama.Model: _MLModelIdentifierConvertible {
+    public func __conversion() throws -> _MLModelIdentifier {
+        _MLModelIdentifier(
             provider: ._Ollama,
             name: self.name,
             revision: nil

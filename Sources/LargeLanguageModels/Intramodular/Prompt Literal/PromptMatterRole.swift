@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import CorePersistence
 import Swallow
 
@@ -142,12 +142,12 @@ extension PromptLiteralContext {
 extension PromptLiteralContext {
     @HadeanIdentifier("rajil-pagik-tibah-jibod")
     struct ModelIdentifierKey: PromptLiteralContextKey {
-        typealias Value = _GMLModelIdentifierScope?
+        typealias Value = _MLModelIdentifierScope?
         
-        static var defaultValue: _GMLModelIdentifierScope? = nil
+        static var defaultValue: _MLModelIdentifierScope? = nil
     }
     
-    public var modelIdentifier: _GMLModelIdentifierScope? {
+    public var modelIdentifier: _MLModelIdentifierScope? {
         get {
             self[ModelIdentifierKey.self]
         } set {

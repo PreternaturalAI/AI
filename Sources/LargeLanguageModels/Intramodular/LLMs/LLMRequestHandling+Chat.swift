@@ -2,13 +2,13 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import Swallow
 
 extension LLMRequestHandling {
     public func completion(
         for messages: [AbstractLLM.ChatMessage],
-        model: some _GMLModelIdentifierConvertible
+        model: some _MLModelIdentifierConvertible
     ) async throws -> AbstractLLM.ChatCompletionStream {
         let prompt = AbstractLLM.ChatPrompt(
             messages: messages,

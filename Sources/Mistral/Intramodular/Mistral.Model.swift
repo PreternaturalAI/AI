@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import CorePersistence
 import LargeLanguageModels
 import Swallow
@@ -34,8 +34,8 @@ extension Mistral.Model: CustomStringConvertible {
     }
 }
 
-extension Mistral.Model: _GMLModelIdentifierRepresentable {
-    public init(from identifier: _GMLModelIdentifier) throws {
+extension Mistral.Model: _MLModelIdentifierRepresentable {
+    public init(from identifier: _MLModelIdentifier) throws {
         guard identifier.provider == ._Mistral, identifier.revision == nil else {
             throw Never.Reason.illegal
         }
@@ -47,8 +47,8 @@ extension Mistral.Model: _GMLModelIdentifierRepresentable {
         self = model
     }
     
-    public func __conversion() -> _GMLModelIdentifier {
-        _GMLModelIdentifier(
+    public func __conversion() -> _MLModelIdentifier {
+        _MLModelIdentifier(
             provider: ._Mistral,
             name: rawValue,
             revision: nil

@@ -17,7 +17,7 @@ extension Anthropic: _TaskDependenciesExporting {
 }
 
 extension Anthropic: LLMRequestHandling {
-    public var _availableModels: [_GMLModelIdentifier]? {
+    public var _availableModels: [_MLModelIdentifier]? {
         Anthropic.Model.allCases.map({ $0.__conversion() })
     }
 

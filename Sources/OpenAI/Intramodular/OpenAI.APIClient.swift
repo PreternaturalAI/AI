@@ -10,7 +10,7 @@ import Swift
 extension OpenAI {
     public final class APIClient: HTTPClient, PersistentlyRepresentableType {
         public static var persistentTypeRepresentation: some IdentityRepresentation {
-            _GMLModelServiceTypeIdentifier._OpenAI
+            _MIServiceTypeIdentifier._OpenAI
         }
 
         public let interface: APISpecification

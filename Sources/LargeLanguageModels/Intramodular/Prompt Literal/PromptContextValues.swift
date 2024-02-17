@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import CorePersistence
 import Swallow
 
@@ -101,12 +101,12 @@ extension PromptContextValues {
     @HadeanIdentifier("vipan-nutar-gutah-limin")
     @RuntimeDiscoverable
     struct ModelIdentifierKey: PromptContextKey {
-        typealias Value = _GMLModelIdentifierScope?
+        typealias Value = _MLModelIdentifierScope?
         
-        static var defaultValue: _GMLModelIdentifierScope? = nil
+        static var defaultValue: _MLModelIdentifierScope? = nil
     }
     
-    public var modelIdentifier: _GMLModelIdentifierScope? {
+    public var modelIdentifier: _MLModelIdentifierScope? {
         get {
             self[ModelIdentifierKey.self]
         } set {
@@ -114,7 +114,7 @@ extension PromptContextValues {
         }
     }
     
-    public mutating func assign<T: _GMLModelIdentifierConvertible>(modelIdentifier: T) {
+    public mutating func assign<T: _MLModelIdentifierConvertible>(modelIdentifier: T) {
         self.modelIdentifier = .one(try! modelIdentifier.__conversion())
     }
 }

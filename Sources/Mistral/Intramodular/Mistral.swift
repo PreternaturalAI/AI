@@ -10,7 +10,7 @@ import Swallow
 
 public final class Mistral: HTTPClient, _StaticNamespaceType {
     public static var persistentTypeRepresentation: some IdentityRepresentation {
-        _GMLModelServiceTypeIdentifier._Mistral
+        _MIServiceTypeIdentifier._Mistral
     }
     
     public let interface: APISpecification
@@ -29,18 +29,18 @@ public final class Mistral: HTTPClient, _StaticNamespaceType {
     }
 }
 
-extension Mistral: _GMLModelService {
+extension Mistral: _MIService {
     public convenience init(
-        account: (any _GMLModelServiceAccount)?
+        account: (any _MIServiceAccount)?
     ) async throws {
         let account = try account.unwrap()
         
-        guard account.serviceIdentifier == _GMLModelServiceTypeIdentifier._Mistral else {
-            throw _GMLModelServiceError.incompatibleServiceType(account.serviceIdentifier)
+        guard account.serviceIdentifier == _MIServiceTypeIdentifier._Mistral else {
+            throw _MIServiceError.serviceTypeIncompatible(account.serviceIdentifier)
         }
         
-        guard let credential = account.credential as? _GMLModelServiceAPIKeyCredential else {
-            throw _GMLModelServiceError.invalidCredential(account.credential)
+        guard let credential = account.credential as? _MIServiceAPIKeyCredential else {
+            throw _MIServiceError.invalidCredentials(account.credential)
         }
         
         self.init(apiKey: credential.apiKey)

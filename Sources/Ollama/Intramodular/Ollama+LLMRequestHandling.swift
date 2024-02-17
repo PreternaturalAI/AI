@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import Diagnostics
 import LargeLanguageModels
 import NetworkKit
@@ -19,7 +19,7 @@ extension Ollama: _TaskDependenciesExporting {
 }
 
 extension Ollama: LLMRequestHandling {
-    public var _availableLLMs: [_GMLModelIdentifier]? {
+    public var _availableLLMs: [_MLModelIdentifier]? {
         self._allKnownModels?.compactMap({ try? $0.__conversion() })
     }
 
@@ -155,7 +155,7 @@ extension Ollama: LLMRequestHandling {
     func _model(
         for prompt: AbstractLLM.ChatPrompt
     ) async throws -> Ollama.Model {
-        let identifier: _GMLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue.unwrap()
+        let identifier: _MLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue.unwrap()
         
         return try await models.unwrap().firstAndOnly(where: { try $0.__conversion() == identifier }).unwrap()
     }
@@ -163,7 +163,7 @@ extension Ollama: LLMRequestHandling {
     func _model(
         for prompt: AbstractLLM.TextPrompt
     ) async throws -> Ollama.Model {
-        let identifier: _GMLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue.unwrap()
+        let identifier: _MLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue.unwrap()
         
         return try await models.unwrap().firstAndOnly(where: { try $0.__conversion() == identifier }).unwrap()
     }

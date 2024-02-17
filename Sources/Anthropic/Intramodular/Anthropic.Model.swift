@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import LargeLanguageModels
 import Swallow
 
@@ -44,8 +44,8 @@ extension Anthropic {
     }
 }
 
-extension Anthropic.Model: _GMLModelIdentifierRepresentable {
-    public init(from model: _GMLModelIdentifier) throws {
+extension Anthropic.Model: _MLModelIdentifierRepresentable {
+    public init(from model: _MLModelIdentifier) throws {
         guard model.provider == .openAI else {
             throw _PlaceholderError()
         }
@@ -53,8 +53,8 @@ extension Anthropic.Model: _GMLModelIdentifierRepresentable {
         self = try Self(rawValue: model.name).unwrap()
     }
     
-    public func __conversion() -> _GMLModelIdentifier {
-        _GMLModelIdentifier(
+    public func __conversion() -> _MLModelIdentifier {
+        _MLModelIdentifier(
             provider: .anthropic,
             name: rawValue,
             revision: nil

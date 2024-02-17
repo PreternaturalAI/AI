@@ -2,21 +2,21 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreGML
+import CoreMI
 import CorePersistence
 
-extension OpenAI.APIClient: _GMLModelService {
+extension OpenAI.APIClient: _MIService {
     public convenience init(
-        account: (any _GMLModelServiceAccount)?
+        account: (any _MIServiceAccount)?
     ) async throws {
         let account = try account.unwrap()
         
-        guard account.serviceIdentifier == _GMLModelServiceTypeIdentifier._OpenAI else {
-            throw _GMLModelServiceError.incompatibleServiceType(account.serviceIdentifier)
+        guard account.serviceIdentifier == _MIServiceTypeIdentifier._OpenAI else {
+            throw _MIServiceError.serviceTypeIncompatible(account.serviceIdentifier)
         }
         
-        guard let credential = account.credential as? _GMLModelServiceAPIKeyCredential else {
-            throw _GMLModelServiceError.invalidCredential(account.credential)
+        guard let credential = account.credential as? _MIServiceAPIKeyCredential else {
+            throw _MIServiceError.invalidCredentials(account.credential)
         }
         
         self.init(apiKey: credential.apiKey)

@@ -14,7 +14,7 @@ let package = Package(
         .library(
             name: "AI",
             targets: [
-                "CoreGML",
+                "CoreMI",
                 "LargeLanguageModels",
                 "AI",
                 "Anthropic",
@@ -34,19 +34,19 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "CoreGML",
+            name: "CoreMI",
             dependencies: [
                 "CorePersistence",
                 "Merge",
                 "Swallow"
             ],
-            path: "Sources/CoreGML"
+            path: "Sources/CoreMI"
         ),
         .target(
             name: "LargeLanguageModels",
             dependencies: [
                 "CorePersistence",
-                "CoreGML",
+                "CoreMI",
                 "Merge",
                 "NetworkKit",
                 "Swallow"
@@ -60,7 +60,7 @@ let package = Package(
         .target(
             name: "AI",
             dependencies: [
-                "CoreGML",
+                "CoreMI",
                 "LargeLanguageModels",
             ],
             path: "Sources/AI",
@@ -81,7 +81,7 @@ let package = Package(
             name: "ElevenLabs",
             dependencies: [
                 "CorePersistence",
-                "CoreGML",
+                "CoreMI",
                 "Merge",
                 "NetworkKit",
                 "Swallow"
@@ -93,7 +93,7 @@ let package = Package(
             name: "Mistral",
             dependencies: [
                 "CorePersistence",
-                "CoreGML",
+                "CoreMI",
                 "LargeLanguageModels",
                 "Merge",
                 "NetworkKit",
@@ -105,7 +105,7 @@ let package = Package(
             name: "Ollama",
             dependencies: [
                 "CorePersistence",
-                "CoreGML",
+                "CoreMI",
                 "LargeLanguageModels",
                 "Merge",
                 "NetworkKit",
@@ -117,7 +117,7 @@ let package = Package(
             name: "Perplexity",
             dependencies: [
                 "CorePersistence",
-                "CoreGML",
+                "CoreMI",
                 "LargeLanguageModels",
                 "Merge",
                 "NetworkKit",

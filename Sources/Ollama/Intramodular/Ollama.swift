@@ -77,22 +77,22 @@ extension Ollama {
 
 extension Ollama: PersistentlyRepresentableType {
     public static var persistentTypeRepresentation: some IdentityRepresentation {
-        _GMLModelServiceTypeIdentifier._Ollama
+        _MIServiceTypeIdentifier._Ollama
     }
 }
 
-extension Ollama: _GMLModelService {
+extension Ollama: _MIService {
     
 }
 
-extension _GMLModelService where Self == Ollama {
+extension _MIService where Self == Ollama {
     public init(
-        account: (any _GMLModelServiceAccount)?
+        account: (any _MIServiceAccount)?
     ) async throws {
         let account = try account.unwrap()
         
-        guard account.serviceIdentifier == _GMLModelServiceTypeIdentifier._Ollama else {
-            throw _GMLModelServiceError.incompatibleServiceType(account.serviceIdentifier)
+        guard account.serviceIdentifier == _MIServiceTypeIdentifier._Ollama else {
+            throw _MIServiceError.serviceTypeIncompatible(account.serviceIdentifier)
         }
         
         self = .shared
