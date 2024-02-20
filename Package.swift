@@ -16,13 +16,13 @@ let package = Package(
             targets: [
                 "CoreMI",
                 "LargeLanguageModels",
-                "AI",
                 "Anthropic",
                 "ElevenLabs",
                 "Mistral",
                 "Ollama",
                 "OpenAI",
-                "Perplexity"
+                "Perplexity",
+                "AI",
             ]
         ),
     ],
@@ -55,15 +55,6 @@ let package = Package(
             resources: [
                 .process("Resources")
             ],
-            swiftSettings: []
-        ),
-        .target(
-            name: "AI",
-            dependencies: [
-                "CoreMI",
-                "LargeLanguageModels",
-            ],
-            path: "Sources/AI",
             swiftSettings: []
         ),
         .target(
@@ -137,6 +128,16 @@ let package = Package(
             resources: [
                 .process("Resources")
             ],
+            swiftSettings: []
+        ),
+        .target(
+            name: "AI",
+            dependencies: [
+                "CoreMI",
+                "LargeLanguageModels",
+                "OpenAI"
+            ],
+            path: "Sources/AI",
             swiftSettings: []
         ),
         .testTarget(

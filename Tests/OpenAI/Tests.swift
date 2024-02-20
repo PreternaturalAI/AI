@@ -9,6 +9,9 @@ import XCTest
 final class OpenAITests: XCTestCase {    
     private let client = OpenAI.APIClient(apiKey: "xxx")
     
+    func tokenize() async throws {
+        
+    }
     func testCreateEmbeddings() async throws {
         let result = try await client.createEmbeddings(
             model: .ada,
