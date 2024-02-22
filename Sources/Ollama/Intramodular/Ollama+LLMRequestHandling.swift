@@ -19,7 +19,7 @@ extension Ollama: _TaskDependenciesExporting {
 }
 
 extension Ollama: LLMRequestHandling {
-    public var _availableLLMs: [_MLModelIdentifier]? {
+    public var _availableModels: [_MLModelIdentifier]? {
         self._allKnownModels?.compactMap({ try? $0.__conversion() })
     }
 

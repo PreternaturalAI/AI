@@ -83,9 +83,7 @@ extension Mistral.APISpecification {
                     if let error = try? response.decode(
                         _ErrorWrapper.self,
                         keyDecodingStrategy: .convertFromSnakeCase
-                    ).error {
-                        print(error.message)
-                        
+                    ).error {                        
                         if error.message.contains("You didn't provide an API key") {
                             throw Error.apiKeyMissing
                         } else if error.message.contains("Incorrect API key provided") {
@@ -150,7 +148,6 @@ extension Mistral.APISpecification.RequestBodies {
         public var topP: Double?
         public var maxTokens: Int?
         public var stream: Bool?
-        public var safeMode: Bool?
         public var randomSeed: Int?
     }
 }

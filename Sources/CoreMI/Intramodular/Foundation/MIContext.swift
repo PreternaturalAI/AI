@@ -3,7 +3,7 @@
 //
 
 import Combine
-import Swift
+import SwiftDI
 
 /// A context for machine intelligence.
 public final class MIContext: ObservableObject {

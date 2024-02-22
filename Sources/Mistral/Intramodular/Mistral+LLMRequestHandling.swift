@@ -18,7 +18,7 @@ extension Mistral: _TaskDependenciesExporting {
 }
 
 extension Mistral: LLMRequestHandling {
-    public var _availableLLMs: [_MLModelIdentifier]? {
+    public var _availableModels: [_MLModelIdentifier]? {
         Mistral.Model.allCases.map({ $0.__conversion() })
     }
 
@@ -74,7 +74,6 @@ extension Mistral: LLMRequestHandling {
                 topP: parameters.temperatureOrTopP?.topProbabilityMass,
                 maxTokens: parameters.tokenLimit?.fixedValue,
                 stream: false,
-                safeMode: false,
                 randomSeed: nil
              )
         )
