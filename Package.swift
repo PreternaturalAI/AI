@@ -53,7 +53,7 @@ let package = Package(
             ],
             path: "Sources/LargeLanguageModels",
             resources: [
-                .process("Resources")
+                .copy("Resources")
             ],
             swiftSettings: []
         ),
@@ -125,9 +125,7 @@ let package = Package(
                 "Swallow"
             ],
             path: "Sources/OpenAI",
-            resources: [
-                .process("Resources")
-            ],
+            resources: [],
             swiftSettings: []
         ),
         .target(
