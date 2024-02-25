@@ -8,6 +8,8 @@ import Foundation
 import NetworkKit
 
 public final class ElevenLabs: ObservableObject {
+    public typealias APIClient = ElevenLabs
+    
     public struct Configuration {
         public var apiKey: String?
     }

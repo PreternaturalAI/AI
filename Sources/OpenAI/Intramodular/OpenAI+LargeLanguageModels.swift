@@ -21,6 +21,10 @@ extension OpenAI.APIClient: _TaskDependenciesExporting {
 }
 
 extension OpenAI.APIClient: LLMRequestHandling {
+    private var _debugPrintCompletions: Bool {
+        false
+    }
+    
     public var _availableModels: [_MLModelIdentifier]? {
         OpenAI.Model.allCases.map({ $0.__conversion() })
     }
@@ -180,6 +184,10 @@ extension OpenAI.APIClient: LLMRequestHandling {
     }
     
     private func _debugPrint(prompt: String, completion: String) {
+        guard _debugPrintCompletions else {
+            return
+        }
+        
         guard _isDebugAssertConfiguration else {
             return
         }

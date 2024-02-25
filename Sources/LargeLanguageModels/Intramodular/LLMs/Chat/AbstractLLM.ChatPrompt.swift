@@ -6,6 +6,7 @@ import Foundation
 import Swallow
 
 extension AbstractLLM {
+    /// A chat prompt that can be sent to an LLM service to generate a completion.
     public struct ChatPrompt: AbstractLLM.Prompt, Hashable, Sendable {
         public typealias CompletionParameters = AbstractLLM.ChatCompletionParameters
         public typealias Completion = AbstractLLM.ChatCompletion

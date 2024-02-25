@@ -199,6 +199,8 @@ extension OpenAI.Model {
         case gpt_4_32k_0314 = "gpt-4-32k-0314"
         case gpt_4_32k_0613 = "gpt-4-32k-0613"
         
+        case gpt_4_turbo_preview = "gpt_4_turbo_preview"
+        
         public var name: String {
             switch self {
                 case .gpt_3_5_turbo:
@@ -231,6 +233,8 @@ extension OpenAI.Model {
                     return "GPT-4"
                 case .gpt_4_32k_0613:
                     return "GPT-4"
+                case .gpt_4_turbo_preview:
+                    return "GPT-4 Turbo (Preview)"
             }
         }
         
@@ -266,6 +270,8 @@ extension OpenAI.Model {
                 case .gpt_4_1106_preview, .gpt_4_0125_preview:
                     return 4096 // FIXME!!!
                 case .gpt_4_vision_preview:
+                    return 4096 // FIXME!!!
+                case .gpt_4_turbo_preview:
                     return 4096 // FIXME!!!
             }
         }

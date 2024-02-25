@@ -4,12 +4,13 @@
 
 import Swift
 
+/// An account used to authenticate access to a service.
 public protocol _MIServiceAccount {
     var serviceIdentifier: _MIServiceTypeIdentifier { get }
     var credential: (any _MIServiceCredential)? { get }
 }
 
-public struct _AnyMIModelServiceAccount: _MIServiceAccount {
+public struct _AnyMIServiceAccount: _MIServiceAccount {
     public let serviceIdentifier: _MIServiceTypeIdentifier
     public let credential: (any _MIServiceCredential)?
     
