@@ -7,27 +7,55 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Swift
+name: Build and test all  platforms
 
 on:
   push:
-    branches: [ main ] # Trigger workflow on push events to the main branch
+    branches: [ master ]
   pull_request:
-    branches: [ main ] # Also trigger workflow on pull requests to the main branch
+    branches: [ master ]
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * *
+    
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  SwiftLint:
-    runs-on: macos-latest
+  build_and_test:
+    name: ${{ matrix.command }} on  ${{ matrix.platform }} (xcode ${{ matrix.xcode }}, ${{ matrix.macos }})
+    runs-on: ${{ matrix.macos }} 
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: ['14.2']
+        macos: ['macos-12']
+        scheme: ['AI']
+        command: ['test']
+        platform: ['macOS', 'iOS', 'tvOS', 'watchOS']
     steps:
-      - uses: actions/checkout@v3
-      - name: SwiftLint
-        uses: norio-nomura/action-swiftlint@3.2.1
-  Test:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cache Swift build
-        uses: actions/cache@v3
-        with:
-          path: .build
-          key: ${{ runner.os }}-build
+    - name: Switch xcode to ${{ matrix.xcode }}
+      uses: maxim-lobanov/setup-xcode@v1.5.1
+      with:
+        xcode-version: ${{ matrix.xcode }}
+    - name: Double-check macOS version (${{ matrix.macos }})
+      run: sw_vers
+    - name: Code Checkout
+      uses: actions/checkout@v2
+    - name: Check xcodebuild version
+      run: xcodebuild -version
+    - name: Check xcode embedded SDKs
+      run: xcodebuild -showsdks
+    - name: Show buildable schemes
+      run: xcodebuild -list
+    - name: Show eligible build destinations for ${{ matrix.scheme }}
+      run: xcodebuild -showdestinations -scheme ${{ matrix.scheme }}
+    - uses: mxcl/xcodebuild@v2.0.0
+      with:
+        platform: ${{ matrix.platform }}
+        scheme: ${{ matrix.scheme }}
+        action: ${{ matrix.command }} 
+        code-coverage: true
+        verbosity: xcpretty
+        upload-logs: always
