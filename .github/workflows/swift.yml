@@ -29,8 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode: ['14.2']
-        macos: ['macos-12']
+        xcode: ['15.2']
+        macos: ['macos-13']
         scheme: ['AI']
         command: ['test']
         platform: ['macOS', 'iOS', 'tvOS', 'watchOS']
