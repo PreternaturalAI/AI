@@ -11,23 +11,7 @@ on:
 
 jobs:
   build:
-    name: Build and Test On Mac 💻
-    runs-on: macos-latest
-
-    steps:
-    - name: Checkout Repository 🔄
-      uses: actions/checkout@v3
-
-    - name: Set up Swift 🛠️
-      uses: swift-actions/setup-swift@v1
-      with:
-        swift-version: '5.9'
-
-    - name: Build and Test on macOS 💻
-      run: swift test --enable-test-discovery
-
-  build_ios:
-    name: Build and Test on iOS 📱
+    name: Build and Test 🚀
     runs-on: macos-latest
 
     steps:
@@ -37,8 +21,11 @@ jobs:
     - name: Set up Xcode 🛠️
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.2'
+        xcode-version: latest
 
     - name: Build and Test on iOS 📱
       run: swift test --enable-test-discovery --destination 'platform=iOS Simulator,OS=latest,name=iPhone 15'
+
+    - name: Build and Test on macOS 💻
+      run: swift test --enable-test-discovery --destination 'platform=macOS,OS=latest,name=macOS'
 
