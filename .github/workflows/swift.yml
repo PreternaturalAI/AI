@@ -17,8 +17,15 @@ on:
 
 jobs:
   test:
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        os: [macos-latest]
+        swift: ["5.9"]
+    runs-on: ${{ matrix.os }}
     steps:
+      - uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: ${{ matrix.swift }}
       - name: Get Sources
         uses: actions/checkout@v2
       - name: Build Package
