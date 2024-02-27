@@ -22,8 +22,8 @@ jobs:
     strategy:
       fail-fast: false #if 'true' then one failed job cancels all jobs remaining
       matrix:
-        xcode: ['15.2']
-        macos: ['macos-latest']
+        xcode: ['15.0']
+        macos: ['14.2']
         scheme: ['Earendil']
         command: ['build']
         platform: ['macOS']
