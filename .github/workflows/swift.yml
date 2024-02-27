@@ -7,33 +7,52 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Test Package
+name: Test Swift Package
 
+# Housekeeping of the `brew` command on Github's virtual runner.
+env:
+   HOMEBREW_NO_INSTALL_CLEANUP: 1
+   
 on:
-  push:
-    branches: [main]
+  # Any PR event (opened, reopened, updated, assigned) targeted to `main` will trigger the workflow.
   pull_request:
     branches: [main]
+  # Enables button in the github.com so that workflow can be dispatched manually using the button in the browser.
+  workflow_dispatch:
+
+# Stale / pending workflow runs will be aborted upon branch updates.
+# https://stackoverflow.com/a/72408109/6942800
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-test:
-    name: ${{ matrix.command }} on  ${{ matrix.platform }} (xcode ${{ matrix.xcode }}, ${{ matrix.macos }})
-    runs-on: ${{ matrix.macos }} #os switching
+  test_swift_package:
+    name: Swift Package testing
+    runs-on: ${{ matrix.macos }}
     strategy:
-      fail-fast: false #if 'true' then one failed job cancels all jobs remaining
+      fail-fast: false
+      # https://github.com/actions/runner-images/blob/main/images/macos/macos-11-Readme.md
+      # https://github.com/actions/runner-images/blob/main/images/macos/macos-12-Readme.md
+      # https://github.com/actions/runner-images/blob/main/images/macos/macos-13-Readme.md
       matrix:
-        xcode: ['15.0']
-        macos: ['14.2']
+        xcode: ['14.3.1', '15.0']
+        macos: ['macos-13']
         command: ['build']
-        platform: ['macOS']
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1.2.3
+    - name: Checkout the code
+      uses: actions/checkout@v2
+    - name: Setup ruby and bundler
+      uses: ruby/setup-ruby@v1
       with:
-        xcode-version: ${{ matrix.xcode }}
-    - uses: mxcl/xcodebuild@v1.9.2
+        ruby-version: '3.0'
+    - name: Setup non-ruby dependencies (xcodes)
+      run: which xcodes || brew install xcodes
+    - name: Install Bundler dependencies
+      run: bundle install
+    - name: Run 'test_swift_package' lane
+      uses: maierj/fastlane-action@v3.0.0
       with:
-        platform: ${{ matrix.platform }}
-        action: ${{ matrix.command }} 
-        code-coverage: true
-        verbosity: xcpretty
-        upload-logs: always
+        lane: 'test_swift_package'
+        options: '{ "xcode": "${{ matrix.xcode }}", "command": "${{ matrix.command }}" }'
+        verbose: true
