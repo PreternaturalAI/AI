@@ -11,9 +11,9 @@ name: Build and test all  platforms
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
   schedule:
     - cron: 0 0 * * *
