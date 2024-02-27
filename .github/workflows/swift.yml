@@ -13,19 +13,14 @@ jobs:
   build:
     name: Build and Test 🚀
     runs-on: macos-latest
-
     steps:
-    - name: Checkout Repository 🔄
-      uses: actions/checkout@v3
+      - uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: ${{ matrix.swift }}
+      - uses: actions/checkout@v4
+      - name: Build
+        run: swift build
+      - name: Run tests
+        run: swift test
 
-    - name: Set up Xcode 🛠️
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest
-
-    - name: Build and Test on iOS 📱
-      run: swift test --enable-test-discovery --destination 'platform=iOS Simulator,OS=latest,name=iPhone 15'
-
-    - name: Build and Test on macOS 💻
-      run: swift test --enable-test-discovery --destination 'platform=macOS,OS=latest,name=macOS'
 
