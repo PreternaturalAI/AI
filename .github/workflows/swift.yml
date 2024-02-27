@@ -24,7 +24,6 @@ jobs:
       matrix:
         xcode: ['15.0']
         macos: ['14.2']
-        scheme: ['Earendil']
         command: ['build']
         platform: ['macOS']
     steps:
@@ -34,7 +33,6 @@ jobs:
     - uses: mxcl/xcodebuild@v1.9.2
       with:
         platform: ${{ matrix.platform }}
-        scheme: ${{ matrix.scheme }}
         action: ${{ matrix.command }} 
         code-coverage: true
         verbosity: xcpretty
