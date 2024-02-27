@@ -51,6 +51,8 @@ jobs:
       run: xcodebuild -list
     - name: Show eligible build destinations for ${{ matrix.scheme }}
       run: xcodebuild -showdestinations -scheme ${{ matrix.scheme }}
+    - name: Skip Macro Validation
+      run: xcodebuild -skipMacroValidation
     - uses: mxcl/xcodebuild@v2.0.0
       with:
         platform: ${{ matrix.platform }}
