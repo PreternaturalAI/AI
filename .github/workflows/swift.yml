@@ -5,22 +5,18 @@ name: Swift
 
 on:
   push:
-    branches: [ main ] # Trigger workflow on push events to the main branch
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ] # Also trigger workflow on pull requests to the main branch
+    branches: [ "main" ]
 
 jobs:
   build:
-    name: Build and Test 🚀
+
     runs-on: macos-latest
+
     steps:
-      - uses: swift-actions/setup-swift@v1
-        with:
-          swift-version: ${{ matrix.swift }}
-      - uses: actions/checkout@v4
-      - name: Build
-        run: swift build
-      - name: Run tests
-        run: swift test
-
-
+    - uses: actions/checkout@v3
+    - name: Build
+      run: swift build -v
+    - name: Run tests
+      run: swift test -v
