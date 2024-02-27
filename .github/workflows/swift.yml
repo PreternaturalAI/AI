@@ -24,7 +24,7 @@ jobs:
         swift-version: '5.9'
 
     - name: Build and Test on macOS 💻
-      run: swift test --enable-test-discovery --destination
+      run: swift test --enable-test-discovery
 
     - name: Build and Test on iOS 📱
       run: swift test --enable-test-discovery --destination 'platform=iOS Simulator,OS=latest,name=iPhone 14'
