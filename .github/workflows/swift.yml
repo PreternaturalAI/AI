@@ -18,7 +18,7 @@ on:
 jobs:
   build:
     name: Build and Test 🚀
-    runs-on: [macos-latest, ubuntu-latest] # You can include both macOS and Ubuntu if needed
+    runs-on: [macos-latest] # You can include both macOS and Ubuntu if needed
 
     steps:
     - name: Checkout Repository 🔄
