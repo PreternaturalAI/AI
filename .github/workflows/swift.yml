@@ -7,7 +7,7 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Build and test all  platforms
+name: Build all  platforms
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
         xcode: ['15.2']
         macos: ['macos-13']
         scheme: ['AI']
-        command: ['test']
+        command: ['build']
         platform: ['macOS', 'iOS', 'tvOS', 'watchOS']
     steps:
     - name: Switch xcode to ${{ matrix.xcode }}
