@@ -5,18 +5,26 @@ name: Swift
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ] # Trigger workflow on push events to the main branch
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ] # Also trigger workflow on pull requests to the main branch
 
 jobs:
   build:
-
+    name: Build and Test 🚀
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: swift build -v
-    - name: Run tests
-      run: swift test -v
+    - name: Checkout Repository 🔄
+      uses: actions/checkout@v4
+
+    - name: Set up Swift 🛠️
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: '5.9'
+
+    - name: Build and Test on macOS 💻
+      run: swift test --enable-test-discovery --destination 'platform=macOS,OS=latest,name=macOS'
+
+    - name: Build and Test on iOS 📱
+      run: swift test --enable-test-discovery --destination 'platform=iOS Simulator,OS=latest,name=iPhone 14'
