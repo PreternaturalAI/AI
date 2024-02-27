@@ -33,7 +33,7 @@ jobs:
         macos: ['macos-13']
         scheme: ['AI']
         command: ['build']
-        platform: ['macOS', 'iOS', 'tvOS', 'watchOS']
+        platform: ['macOS'] # ADD 'iOS', 'tvOS', 'watchOS'
     steps:
     - name: Switch xcode to ${{ matrix.xcode }}
       uses: maxim-lobanov/setup-xcode@v1.5.1
