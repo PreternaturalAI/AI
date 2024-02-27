@@ -153,6 +153,7 @@ let package = Package(
         .testTarget(
             name: "AnthropicTests",
             dependencies: [
+                "Anthropic",
                 "LargeLanguageModels"
             ],
             path: "Tests/Anthropic"
