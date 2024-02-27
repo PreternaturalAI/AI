@@ -16,17 +16,26 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  build-and-test:
+    name: ${{ matrix.command }} on  ${{ matrix.platform }} (xcode ${{ matrix.xcode }}, ${{ matrix.macos }})
+    runs-on: ${{ matrix.macos }} #os switching
     strategy:
+      fail-fast: false #if 'true' then one failed job cancels all jobs remaining
       matrix:
-        os: [macos-latest]
-        swift: ["5.9"]
-    runs-on: ${{ matrix.os }}
+        xcode: ['15.2']
+        macos: ['macos-latest']
+        scheme: ['Earendil']
+        command: ['build']
+        platform: ['macOS']
     steps:
-      - uses: swift-actions/setup-swift@v1
-        with:
-          swift-version: ${{ matrix.swift }}
-      - name: Get Sources
-        uses: actions/checkout@v2
-      - name: Build Package
-        run: swift build -v
+    - uses: maxim-lobanov/setup-xcode@v1.2.3
+      with:
+        xcode-version: ${{ matrix.xcode }}
+    - uses: mxcl/xcodebuild@v1.9.2
+      with:
+        platform: ${{ matrix.platform }}
+        scheme: ${{ matrix.scheme }}
+        action: ${{ matrix.command }} 
+        code-coverage: true
+        verbosity: xcpretty
+        upload-logs: always
