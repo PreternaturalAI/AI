@@ -27,7 +27,7 @@ jobs:
     - name: Set up Xcode 🛠️
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: latest
+        xcode-version: "15.0"
 
     - name: Build
       run: swift build
