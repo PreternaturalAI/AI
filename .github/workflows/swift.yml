@@ -10,8 +10,9 @@ on:
     branches: [ main ] # Also trigger workflow on pull requests to the main branch
 
 jobs:
-  build:
-    name: Build and Test 🚀
+  build_mac:
+    if: success() || failure()
+    name: Build and Test on macOS 💻
     runs-on: macos-latest
 
     steps:
@@ -25,6 +26,19 @@ jobs:
 
     - name: Build and Test on macOS 💻
       run: swift test --enable-test-discovery
+  build_ios:
+    if: success() || failure()
+    name: Build and Test on iOS 📱
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Repository 🔄
+      uses: actions/checkout@v4
+
+    - name: Set up Swift 🛠️
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: '5.9'
 
     - name: Build and Test on iOS 📱
       run: swift test --enable-test-discovery --destination 'platform=iOS Simulator,OS=latest,name=iPhone 14'
