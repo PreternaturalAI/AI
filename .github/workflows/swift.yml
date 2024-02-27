@@ -1,44 +1,28 @@
-# This workflow will build a Swift project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# GitHub recommends pinning actions to a commit SHA.
+# To get a newer version, you will need to update the SHA.
+# You can also reference a tag or branch, but the action may change without warning.
 
 name: Swift
 
-on:
-  push:
-    branches: [ main ] # Trigger workflow on push events to the main branch
-  pull_request:
-    branches: [ main ] # Also trigger workflow on pull requests to the main branch
+on: [push]
 
 jobs:
-  build_mac:
-    if: success() || failure()
-    name: Build and Test on macOS 💻
-    runs-on: macos-latest
-
+  build:
+    name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        swift: ["5.5"]
+    runs-on: ${{ matrix.os }}
     steps:
-    - name: Checkout Repository 🔄
-      uses: actions/checkout@v4
-
-    - name: Set up Swift 🛠️
-      uses: swift-actions/setup-swift@v1
-      with:
-        swift-version: '5.9'
-
-    - name: Build and Test on macOS 💻
-      run: swift build
-  build_ios:
-    if: success() || failure()
-    name: Build and Test on iOS 📱
-    runs-on: macos-latest
-
-    steps:
-    - name: Checkout Repository 🔄
-      uses: actions/checkout@v4
-
-    - name: Set up Swift 🛠️
-      uses: swift-actions/setup-swift@v1
-      with:
-        swift-version: '5.9'
-
-    - name: Build and Test on iOS 📱
-      run: swift build --destination 'platform=iOS,OS=latest,name=iPhone 15'
+      - uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: ${{ matrix.swift }}
+      - uses: actions/checkout@v4
+      - name: Build
+        run: swift build
