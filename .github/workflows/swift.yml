@@ -12,12 +12,12 @@ name: Swift
 on: [push]
 
 jobs:
- macOS:
+  build:
     name: Test macOS 
-    runs-on: macOS-latest
+    runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Select Xcode 15.2
-        run: sudo xcode-select -s /Applications/Xcode_15.2.app
-      - name: macOS
-        run: xcodebuild -destination "platform=macOS" clean build
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+    - name: macOS
+      run: xcodebuild -destination "platform=macOS" clean build
