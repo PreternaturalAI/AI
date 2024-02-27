@@ -53,7 +53,7 @@ let package = Package(
             ],
             path: "Sources/LargeLanguageModels",
             resources: [
-                .copy("Resources")
+                .process("Resources")
             ],
             swiftSettings: []
         ),
@@ -105,18 +105,6 @@ let package = Package(
             path: "Sources/Ollama"
         ),
         .target(
-            name: "Perplexity",
-            dependencies: [
-                "CorePersistence",
-                "CoreMI",
-                "LargeLanguageModels",
-                "Merge",
-                "NetworkKit",
-                "Swallow"
-            ],
-            path: "Sources/Perplexity"
-        ),
-        .target(
             name: "OpenAI",
             dependencies: [
                 "LargeLanguageModels",
@@ -129,11 +117,28 @@ let package = Package(
             swiftSettings: []
         ),
         .target(
+            name: "Perplexity",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/Perplexity"
+        ),
+        .target(
             name: "AI",
             dependencies: [
                 "CoreMI",
                 "LargeLanguageModels",
-                "OpenAI"
+                "Anthropic",
+                "ElevenLabs",
+                "Mistral",
+                "Ollama",
+                "OpenAI",
+                "Perplexity",
             ],
             path: "Sources/AI",
             swiftSettings: []
