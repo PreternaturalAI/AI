@@ -12,19 +12,12 @@ name: Swift
 on: [push]
 
 jobs:
-  build:
-    name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest]
-        xcode: ['15.1']
-    runs-on: ${{ matrix.os }}
+ macOS:
+    name: Test macOS 
+    runs-on: macOS-latest
     env:
-      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_15.0.app/Contents/Developer
     steps:
-      - uses: swift-actions/setup-swift@v1
-      - name: Get swift version
-        run: swift --version
       - uses: actions/checkout@v4
-      - name: Build 🚀
-        run: swift build
+      - name: macOS
+        run: xcodebuild -destination "platform=macOS" clean build
