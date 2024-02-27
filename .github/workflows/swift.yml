@@ -7,17 +7,19 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Swift
+name: Test Package
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build:
-    name: Test macOS 
+  test:
     runs-on: macos-latest
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
-    - name: macOS
-      run: xcodebuild -destination "platform=macOS" clean build
+      - name: Get Sources
+        uses: actions/checkout@v2
+      - name: Build Package
+        run: swift build -v
