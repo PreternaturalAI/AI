@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Checkout Repository 🔄
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Swift 🛠️
       uses: swift-actions/setup-swift@v2
@@ -32,7 +32,7 @@ jobs:
 
     steps:
     - name: Checkout Repository 🔄
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Xcode 🛠️
       uses: actions/setup-xcode@v2
