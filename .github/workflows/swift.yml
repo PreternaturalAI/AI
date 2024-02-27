@@ -16,19 +16,18 @@ on:
     branches: [ main ] # Also trigger workflow on pull requests to the main branch
 
 jobs:
-  build:
-    name: Build and Test 🚀
-    runs-on: [macos-latest] # You can include both macOS and Ubuntu if needed
-
+  SwiftLint:
+    runs-on: macos-latest
     steps:
-    - name: Checkout Repository 🔄
-      uses: actions/checkout@v3
-
-    - name: Set up Xcode 🛠️
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: "14.2"
-
-    - name: Build
-      run: swift build
-
+      - uses: actions/checkout@v3
+      - name: SwiftLint
+        uses: norio-nomura/action-swiftlint@3.2.1
+  Test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache Swift build
+        uses: actions/cache@v3
+        with:
+          path: .build
+          key: ${{ runner.os }}-build
