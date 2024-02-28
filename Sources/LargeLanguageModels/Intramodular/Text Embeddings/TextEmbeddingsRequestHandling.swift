@@ -16,6 +16,17 @@ public protocol TextEmbeddingsRequestHandling {
     ) async throws -> TextEmbeddings
 }
 
+extension MIContext {
+    /// Complete a given prompt.
+    public func fulfill(
+        _ request: TextEmbeddingsRequest
+    ) async throws -> TextEmbeddings {
+        let textEmbedder = try await _firstHandler(ofType: TextEmbeddingsRequestHandling.self)
+        
+        return try await textEmbedder.fulfill(request)
+    }
+}
+
 // MARK: - Extensions
 
 extension TextEmbeddingsRequestHandling {

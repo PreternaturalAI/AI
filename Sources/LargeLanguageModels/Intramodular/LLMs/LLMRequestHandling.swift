@@ -27,6 +27,32 @@ public protocol LLMRequestHandling: _MIRequestHandling {
     ) async throws -> AbstractLLM.ChatCompletionStream
 }
 
+extension MIContext {
+    /// Complete a given prompt.
+    public func complete<Prompt: AbstractLLM.Prompt>(
+        prompt: Prompt,
+        parameters: Prompt.CompletionParameters,
+        heuristics: AbstractLLM.CompletionHeuristics
+    ) async throws -> Prompt.Completion {
+        let llm = try await _firstHandler(ofType: (any LLMRequestHandling).self)
+        
+        return try await llm.complete(
+            prompt: prompt,
+            parameters: parameters,
+            heuristics: heuristics
+        )
+    }
+    
+    /// Stream a completion for a given chat prompt.
+    public func completion(
+        for prompt: AbstractLLM.ChatPrompt
+    ) async throws -> AbstractLLM.ChatCompletionStream {
+        let llm = try await _firstHandler(ofType: (any LLMRequestHandling).self)
+
+        return try await llm.completion(for: prompt)
+    }
+}
+
 // MARK: - Implementation
 
 extension LLMRequestHandling {

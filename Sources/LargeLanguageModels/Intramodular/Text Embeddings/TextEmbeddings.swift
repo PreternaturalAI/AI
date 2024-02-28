@@ -6,7 +6,7 @@ import CoreMI
 import CorePersistence
 import Swallow
 
-/// A type that represents an array of text embeddings.
+/// A type that represents an array of text+embedding pairs.
 ///
 /// Text embeddings are vector representations of text.
 ///
@@ -18,7 +18,7 @@ public struct TextEmbeddings: Codable, HadeanIdentifiable, Hashable, Sendable {
     
     public let data: [Element]
     public let model: _MLModelIdentifier
-
+    
     public init(
         model: _MLModelIdentifier,
         data: [Element]
@@ -26,8 +26,12 @@ public struct TextEmbeddings: Codable, HadeanIdentifiable, Hashable, Sendable {
         self.model = model
         self.data = data
     }
-    
-    public func appending(contentsOf other: TextEmbeddings) -> Self {
+}
+
+extension TextEmbeddings {
+    public func appending(
+        contentsOf other: TextEmbeddings
+    ) -> Self {
         assert(model == other.model)
         
         return .init(model: model, data: data.appending(contentsOf: other.data))
@@ -43,12 +47,18 @@ extension TextEmbeddings {
         public let text: String
         public let embedding: _RawTextEmbedding
         
-        public init(text: String, embedding: _RawTextEmbedding) {
+        public init(
+            text: String,
+            embedding: _RawTextEmbedding
+        ) {
             self.text = text
             self.embedding = embedding
         }
         
-        public init(text: String, embedding: _RawTextEmbedding.RawValue) {
+        public init(
+            text: String,
+            embedding: _RawTextEmbedding.RawValue
+        ) {
             self.init(text: text, embedding: .init(rawValue: embedding))
         }
     }
