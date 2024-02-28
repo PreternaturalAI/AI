@@ -1,6 +1,8 @@
 > [!IMPORTANT]
 > This package is presently in its alpha stage of development
 
+[![Swift](https://github.com/PreternaturalAI/AI/actions/workflows/swift.yml/badge.svg)](https://github.com/PreternaturalAI/AI/actions/workflows/swift.yml)
+
 # AI
 
 The definitive, open-source Swift framework for interfacing with generative AI.
