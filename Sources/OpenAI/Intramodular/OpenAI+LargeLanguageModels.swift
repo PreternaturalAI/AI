@@ -22,7 +22,7 @@ extension OpenAI.APIClient: _TaskDependenciesExporting {
 
 extension OpenAI.APIClient: LLMRequestHandling {
     private var _debugPrintCompletions: Bool {
-        false
+        true
     }
     
     public var _availableModels: [_MLModelIdentifier]? {

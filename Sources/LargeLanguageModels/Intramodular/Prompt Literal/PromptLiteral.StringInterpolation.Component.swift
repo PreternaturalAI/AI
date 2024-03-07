@@ -87,6 +87,8 @@ extension PromptLiteral.StringInterpolation.Component: Codable {
             self.payload = try container.decode(Payload.self, forKey: .payload)
             self.context = try container.decodeIfPresent(PromptLiteralContext.self, forKey: .context) ?? .init()
         } catch {
+            runtimeIssue(error)
+            
             if let payload = try? Payload(from: decoder) {
                 self.payload = payload
                 self.context = .init()

@@ -122,12 +122,12 @@ public enum _PromptMatterRoleConstraints: Codable, Hashable, Sendable, ThrowingM
 }
 
 extension PromptLiteralContext {
-    @RuntimeDiscoverable
     @HadeanIdentifier("bijoz-nipoh-rakuh-fudum")
-    struct PromptMatterRoleKey: PromptLiteralContextKey {
-        typealias Value = _PromptMatterRoleConstraints?
+    @RuntimeDiscoverable
+    public struct PromptMatterRoleKey: PromptLiteralContextKey {
+        public typealias Value = _PromptMatterRoleConstraints?
         
-        static let defaultValue: Value = nil
+        public static let defaultValue: Value = nil
     }
     
     public var role: _PromptMatterRoleConstraints? {
@@ -140,7 +140,8 @@ extension PromptLiteralContext {
 }
 
 extension PromptLiteralContext {
-    @HadeanIdentifier("rajil-pagik-tibah-jibod")
+    @HadeanIdentifier("sugam-bokij-kutur-narim")
+    @RuntimeDiscoverable
     struct ModelIdentifierKey: PromptLiteralContextKey {
         typealias Value = _MLModelIdentifierScope?
         

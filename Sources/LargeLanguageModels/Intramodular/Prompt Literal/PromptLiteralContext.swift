@@ -9,6 +9,7 @@ public protocol PromptLiteralContextKey<Value>: HadeanIdentifiable, Heterogeneou
     static var defaultValue: Value { get }
 }
 
+@RuntimeDiscoverable
 public struct PromptLiteralContext: Codable, HashEquatable, @unchecked Sendable {
     public enum _Error: Error {
         case badMerge
