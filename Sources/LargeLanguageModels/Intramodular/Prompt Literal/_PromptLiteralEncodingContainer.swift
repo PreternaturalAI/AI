@@ -27,6 +27,14 @@ extension PromptLiteral {
     }
 }
 
+extension String {
+    public init(_ promptLiteral: PromptLiteral) throws {
+        self = try promptLiteral._stripToText()
+    }
+}
+
+// MARK: - Supplementary
+
 extension AbstractLLM.ChatMessage {
     /// FIXME!!!
     public func _stripToText() throws -> String {

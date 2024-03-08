@@ -6,6 +6,7 @@ import CoreMI
 import Swallow
 
 extension LLMRequestHandling {
+    /// Stream a completion for a given chat prompt.
     public func completion(
         for messages: [AbstractLLM.ChatMessage],
         model: some _MLModelIdentifierConvertible
@@ -19,5 +20,20 @@ extension LLMRequestHandling {
         )
         
         return try await completion(for: prompt)
+    }
+    
+    /// Stream a completion for a given chat prompt.
+    public func stream(
+        _ prompt: AbstractLLM.ChatPrompt
+    ) async throws -> AbstractLLM.ChatCompletionStream {
+        try await completion(for: prompt)
+    }
+    
+    /// Stream a completion for a given chat prompt and a desired model.
+    public func stream(
+        _ messages: [AbstractLLM.ChatMessage],
+        model: some _MLModelIdentifierConvertible
+    ) async throws -> AbstractLLM.ChatCompletionStream {
+        try await completion(for: messages, model: model)
     }
 }

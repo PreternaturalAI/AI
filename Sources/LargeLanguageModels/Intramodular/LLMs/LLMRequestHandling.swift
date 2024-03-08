@@ -51,6 +51,13 @@ extension MIContext {
 
         return try await llm.completion(for: prompt)
     }
+    
+    /// Stream a completion for a given chat prompt.
+    public func stream(
+        _ prompt: AbstractLLM.ChatPrompt
+    ) async throws -> AbstractLLM.ChatCompletionStream {
+        try await completion(for: prompt)
+    }
 }
 
 // MARK: - Implementation
@@ -82,6 +89,16 @@ extension LLMRequestHandling {
         try await complete(
             prompt: prompt,
             parameters: parameters,
+            heuristics: nil
+        )
+    }
+    
+    public func complete<Prompt: AbstractLLM.Prompt>(
+        prompt: Prompt
+    ) async throws -> Prompt.Completion where Prompt.CompletionParameters: ExpressibleByNilLiteral {
+        try await complete(
+            prompt: prompt,
+            parameters: nil,
             heuristics: nil
         )
     }
