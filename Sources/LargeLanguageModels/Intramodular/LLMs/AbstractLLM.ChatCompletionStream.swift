@@ -10,7 +10,7 @@ public protocol __AbstractLLM_ChatCompletionStreamProtocol: ObservableObject, Pu
     typealias Event = AbstractLLM.ChatCompletionStream.Event
     typealias State = AbstractLLM.ChatCompletionStream.State
     
-    var message: AbstractLLM.ChatMessage? { get }
+    var fullyStreamedMessage: AbstractLLM.ChatMessage? { get }
     var messagePublisher: AnyPublisher<AbstractLLM.ChatMessage, Error> { get }
     var state: State { get }
 }
@@ -18,49 +18,17 @@ public protocol __AbstractLLM_ChatCompletionStreamProtocol: ObservableObject, Pu
 extension AbstractLLM {
     public typealias ChatCompletionStreamProtocol = __AbstractLLM_ChatCompletionStreamProtocol
     
+    /// An object that represents a live chat-completion stream from an LLM.
     public final class ChatCompletionStream: __AbstractLLM_ChatCompletionStreamProtocol, ObservableObject {
-        public enum Event: Codable, Hashable, Sendable {
-            public enum _Comparison {
-                case completion
-                case stop
-                
-                public static func == (lhs: Event, rhs: _Comparison) -> Bool {
-                    switch (lhs, rhs) {
-                        case (.completion, .completion):
-                            return true
-                        case (.stop, .stop):
-                            return true
-                        default:
-                            return false
-                    }
-                }
-                
-                public static func == (lhs: _Comparison, rhs: Event) -> Bool {
-                    rhs == lhs
-                }
-            }
-            
-            case completion(AbstractLLM.ChatCompletion.Partial)
-            case stop
-        }
-        
-        public enum State: Hashable, Sendable {
-            case waiting
-            case streaming
-            case canceled
-            case completed
-            case failed(AnyError)
-        }
-        
         private var objectWillChangeRelay: ObjectWillChangePublisherRelay<any ChatCompletionStreamProtocol, ChatCompletionStream>!
         private let base: any ChatCompletionStreamProtocol
         
-        public var message: AbstractLLM.ChatMessage? {
-            base.message
-        }
-        
         public var messagePublisher: AnyPublisher<AbstractLLM.ChatMessage, Error> {
             base.messagePublisher
+        }
+        
+        public var fullyStreamedMessage: AbstractLLM.ChatMessage? {
+            base.fullyStreamedMessage
         }
         
         public var state: State {
@@ -72,44 +40,112 @@ extension AbstractLLM {
             
             self.objectWillChangeRelay = .init(source: base, destination: self)
         }
-        
-        public convenience init(
-            _ stream: @escaping () async throws -> AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error>
-        ) {
-            self.init(base: _AsyncStreamToChatCompletionStreamAdaptor(base: stream))
-        }
-        
-        public convenience init(
-            _ publisher: @escaping () async throws -> some Publisher<AbstractLLM.ChatCompletionStream.Event, Error>
-        ) {
-            self.init(base: _PublisherChatCompletionStreamAdaptor(base: {
-                try await publisher().eraseToAnyPublisher()
-            }))
-        }
-        
-        public convenience init(
-            completion: @escaping () async throws -> AbstractLLM.ChatCompletion
-        ) {
-            self.init {
-                AsyncThrowingStream.just { () -> Event in
-                    var completion = AbstractLLM.ChatCompletion.Partial(whole: try await completion())
-                    
-                    if completion.stopReason == nil {
-                        completion.stopReason = .init()
-                    }
-                    
-                    return Event.completion(completion)
+    }
+}
+
+// MARK: - Initializers
+
+extension AbstractLLM.ChatCompletionStream {
+    public convenience init(
+        _ stream: @escaping () async throws -> AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error>
+    ) {
+        self.init(base: AbstractLLM._AsyncStreamToChatCompletionStreamAdaptor(base: stream))
+    }
+    
+    public convenience init(
+        _ publisher: @escaping () async throws -> some Publisher<AbstractLLM.ChatCompletionStream.Event, Error>
+    ) {
+        self.init(base: AbstractLLM._PublisherChatCompletionStreamAdaptor(base: {
+            try await publisher().eraseToAnyPublisher()
+        }))
+    }
+    
+    public convenience init(
+        completion: @escaping () async throws -> AbstractLLM.ChatCompletion
+    ) {
+        self.init {
+            AsyncThrowingStream.just { () -> Event in
+                var completion = AbstractLLM.ChatCompletion.Partial(whole: try await completion())
+                
+                if completion.stopReason == nil {
+                    completion.stopReason = .init()
                 }
+                
+                return Event.completion(completion)
             }
-        }
-        
-        public func receive<S: Subscriber<Event, Error>>(
-            subscriber: S
-        ) {
-            base.receive(subscriber: subscriber)
         }
     }
 }
+
+// MARK: - Conformances
+
+extension AbstractLLM.ChatCompletionStream: Publisher {
+    public func receive<S: Subscriber<Event, Error>>(
+        subscriber: S
+    ) {
+        base.receive(subscriber: subscriber)
+    }
+}
+
+// MARK: - Auxiliary
+
+extension AbstractLLM.ChatCompletionStream {
+    public enum State: Hashable, Sendable {
+        case waiting
+        case streaming
+        case canceled
+        case completed
+        case failed(AnyError)
+        
+        public enum _Comparison {
+            case finished
+            
+            public static func == (lhs: State, rhs: _Comparison) -> Bool {
+                switch (lhs, rhs) {
+                    case (.canceled, .finished):
+                        return false
+                    case (.completed, .finished):
+                        return true
+                    case (.failed, .finished):
+                        return false
+                    default:
+                        return false
+                }
+            }
+            
+            public static func == (lhs: _Comparison, rhs: State) -> Bool {
+                rhs == lhs
+            }
+        }
+    }
+    
+    public enum Event: Codable, Hashable, Sendable {
+        public enum _Comparison {
+            case completion
+            case stop
+            
+            public static func == (lhs: Event, rhs: _Comparison) -> Bool {
+                switch (lhs, rhs) {
+                    case (.completion, .completion):
+                        return true
+                    case (.stop, .stop):
+                        return true
+                    default:
+                        return false
+                }
+            }
+            
+            public static func == (lhs: _Comparison, rhs: Event) -> Bool {
+                rhs == lhs
+            }
+        }
+        
+        case completion(AbstractLLM.ChatCompletion.Partial)
+        case stop
+    }
+}
+
+// MARK: - Internal
 
 extension AbstractLLM {
     public final class _AsyncStreamToChatCompletionStreamAdaptor: __AbstractLLM_ChatCompletionStreamProtocol {
@@ -126,8 +162,12 @@ extension AbstractLLM {
         var currentMessage: AbstractLLM.ChatMessage.Partial?
         var stopReason: AbstractLLM.ChatCompletion.StopReason?
         
-        public var message: AbstractLLM.ChatMessage? {
-            _message
+        public var fullyStreamedMessage: AbstractLLM.ChatMessage? {
+            guard _state == .finished else {
+                return nil
+            }
+            
+            return _message
         }
         
         public var messagePublisher: AnyPublisher<AbstractLLM.ChatMessage, Error> {
@@ -263,7 +303,7 @@ extension AbstractLLM {
         var currentMessage: AbstractLLM.ChatMessage.Partial?
         var stopReason: AbstractLLM.ChatCompletion.StopReason?
         
-        public var message: AbstractLLM.ChatMessage? {
+        public var fullyStreamedMessage: AbstractLLM.ChatMessage? {
             _message
         }
         
