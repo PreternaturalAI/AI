@@ -33,49 +33,70 @@ extension OpenAI {
         case functionCall(FunctionCall)
         case functionInvocation(FunctionInvocation)
         
-        public var isEmpty: Bool {
+        func _coerceToContentArray() throws -> [_Content] {
             switch self {
                 case .text(let text):
-                    return text.isEmpty
+                    return [.text(text)]
                 case .content(let content):
-                    return content.isEmpty
-                case .functionCall:
-                    return false
-                case .functionInvocation:
-                    return false
+                    return content
+                case .functionCall, .functionInvocation:
+                    throw Never.Reason.unsupported
             }
-        }
-        
-        var _textValue: String? {
-            guard case .text(let string) = self else {
-                return nil
-            }
-
-            return string
-        }
-        
-        public static func content(_ text: String) -> Self {
-            .text(text)
-        }
-        
-        public mutating func append(_ newText: String) throws {
-            switch self {
-                case .text(let text):
-                    self = .text(text.appending(contentsOf: newText))
-                case .content(let content):
-                    self = .content(content.appending(.text(newText)))
-                case .functionCall:
-                    throw Never.Reason.illegal
-                case .functionInvocation:
-                    throw Never.Reason.illegal
-            }
-        }
-        
-        public static func += (lhs: inout Self, rhs: String) throws {
-            try lhs.append(rhs)
         }
     }
 }
+
+// MARK: - Initializers
+
+extension OpenAI.ChatMessageBody {
+    public static func content(_ text: String) -> Self {
+        .text(text)
+    }
+}
+
+// MARK: - Extensions
+
+extension OpenAI.ChatMessageBody {
+    public var isEmpty: Bool {
+        switch self {
+            case .text(let text):
+                return text.isEmpty
+            case .content(let content):
+                return content.isEmpty
+            case .functionCall:
+                return false
+            case .functionInvocation:
+                return false
+        }
+    }
+    
+    var _textValue: String? {
+        guard case .text(let string) = self else {
+            return nil
+        }
+        
+        return string
+    }
+
+    public mutating func append(_ newText: String) throws {
+        switch self {
+            case .text(let text):
+                self = .text(text.appending(contentsOf: newText))
+            case .content(let content):
+                self = .content(content.appending(.text(newText)))
+            case .functionCall:
+                throw Never.Reason.illegal
+            case .functionInvocation:
+                throw Never.Reason.illegal
+        }
+    }
+    
+    public static func += (lhs: inout Self, rhs: String) throws {
+        try lhs.append(rhs)
+    }
+}
+
+// MARK: - Auxiliary
 
 extension OpenAI.ChatMessageBody {
     enum _ContentType: String, Codable, Hashable, Sendable {
@@ -109,6 +130,8 @@ extension OpenAI.ChatMessageBody {
         }
     }
 }
+
+// MARK: - Conformances
 
 extension OpenAI.ChatMessageBody._Content: Codable {
     fileprivate enum CodingKeys: String, CodingKey {

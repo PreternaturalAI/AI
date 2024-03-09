@@ -8,10 +8,8 @@ import CorePersistence
 extension OpenAI.ChatMessage: _PromptLiteralEncodingContainer {
     public mutating func encode(
         _ component: PromptLiteral._Degenerate.Component
-    ) throws {
-        assert(body.isEmpty)
-        
-        var content: [OpenAI.ChatMessageBody._Content] = []
+    ) throws {        
+        var content: [OpenAI.ChatMessageBody._Content] = try self.body._coerceToContentArray()
         
         switch self.body {
             case .text(let _content):
