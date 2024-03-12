@@ -132,7 +132,7 @@ extension Anthropic: LLMRequestHandling {
             model: model,
             messages: messages,
             system: system,
-            maxTokens: parameters?.tokenLimit?.fixedValue ?? 1024, // FIXME: Hardcoded,
+            maxTokens: parameters?.tokenLimit?.fixedValue ?? 4000, // FIXME: Hardcoded,
             temperature: parameters?.temperatureOrTopP?.temperature,
             topP: parameters?.temperatureOrTopP?.topProbabilityMass,
             topK: nil,
