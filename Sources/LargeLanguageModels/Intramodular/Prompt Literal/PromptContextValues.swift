@@ -68,10 +68,10 @@ extension PromptContextValues: ThrowingMergeOperatable {
 extension PromptContextValues {
     @HadeanIdentifier("rakik-kafun-laluj-bakih")
     @RuntimeDiscoverable
-    struct CompletionTypeKey: PromptContextKey {
-        typealias Value = AbstractLLM.CompletionType?
+    package struct CompletionTypeKey: PromptContextKey {
+        package typealias Value = AbstractLLM.CompletionType?
         
-        static var defaultValue: AbstractLLM.CompletionType? = nil
+        package static var defaultValue: AbstractLLM.CompletionType? = nil
     }
     
     public var completionType: AbstractLLM.CompletionType? {
@@ -84,10 +84,10 @@ extension PromptContextValues {
     
     @HadeanIdentifier("povom-dimiz-fuzuz-hataf")
     @RuntimeDiscoverable
-    struct CompletionParametersKey: PromptContextKey {
-        typealias Value = (any AbstractLLM.CompletionParameters)?
+    package struct CompletionParametersKey: PromptContextKey {
+        package typealias Value = (any AbstractLLM.CompletionParameters)?
         
-        static var defaultValue: (any AbstractLLM.CompletionParameters)? = nil
+        package static var defaultValue: (any AbstractLLM.CompletionParameters)? = nil
     }
     
     public var completionParameters: (any AbstractLLM.CompletionParameters)? {
@@ -100,10 +100,10 @@ extension PromptContextValues {
     
     @HadeanIdentifier("vipan-nutar-gutah-limin")
     @RuntimeDiscoverable
-    struct ModelIdentifierKey: PromptContextKey {
-        typealias Value = _MLModelIdentifierScope?
+    package struct ModelIdentifierKey: PromptContextKey {
+        package typealias Value = _MLModelIdentifierScope?
         
-        static var defaultValue: _MLModelIdentifierScope? = nil
+        package static var defaultValue: _MLModelIdentifierScope? = nil
     }
     
     public var modelIdentifier: _MLModelIdentifierScope? {

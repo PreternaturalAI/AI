@@ -29,49 +29,6 @@ extension OpenAI.APIClient: LLMRequestHandling {
         OpenAI.Model.allCases.map({ $0.__conversion() })
     }
     
-    public func completion(
-        for prompt: AbstractLLM.ChatPrompt
-    ) throws -> AbstractLLM.ChatCompletionStream {
-        AbstractLLM.ChatCompletionStream {
-            try await self._completion(for: prompt)
-        }
-    }
-    
-    private func _completion(
-        for prompt: AbstractLLM.ChatPrompt
-    ) async throws -> AnyPublisher<AbstractLLM.ChatCompletionStream.Event, Error> {
-        var session: OpenAI.ChatCompletionSession! = OpenAI.ChatCompletionSession(client: self)
-        
-        let messages: [OpenAI.ChatMessage] = try prompt.messages.map {
-            try OpenAI.ChatMessage(from: $0)
-        }
-        let model: OpenAI.Model = try self._model(for: prompt, parameters: nil, heuristics: nil)
-        let parameters: OpenAI.APIClient.ChatCompletionParameters = try await self._chatCompletionParameters(
-            from: prompt.context.completionParameters,
-            for: prompt,
-            completionHeuristics: nil
-        )
-        
-        return try await session
-            .complete(
-                messages: messages,
-                model: model,
-                parameters: parameters
-            )
-            .tryMap { (message: OpenAI.ChatMessage) -> AbstractLLM.ChatCompletionStream.Event in
-                AbstractLLM.ChatCompletionStream.Event.completion(
-                    AbstractLLM.ChatCompletion.Partial(
-                        message: .init(whole: try AbstractLLM.ChatMessage(from: message)),
-                        stopReason: nil
-                    )
-                )
-            }
-            .handleCancelOrCompletion { _ in
-                session = nil
-            }
-            .eraseToAnyPublisher()
-    }
-    
     public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
         parameters: Prompt.CompletionParameters,
@@ -183,6 +140,51 @@ extension OpenAI.APIClient: LLMRequestHandling {
         return .init(message: try .init(from: message))
     }
     
+    public func completion(
+        for prompt: AbstractLLM.ChatPrompt
+    ) throws -> AbstractLLM.ChatCompletionStream {
+        AbstractLLM.ChatCompletionStream {
+            try await self._completion(for: prompt)
+        }
+    }
+    
+    private func _completion(
+        for prompt: AbstractLLM.ChatPrompt
+    ) async throws -> AnyPublisher<AbstractLLM.ChatCompletionStream.Event, Error> {
+        var session: OpenAI.ChatCompletionSession! = OpenAI.ChatCompletionSession(client: self)
+        
+        let messages: [OpenAI.ChatMessage] = try prompt.messages.map {
+            try OpenAI.ChatMessage(from: $0)
+        }
+        let model: OpenAI.Model = try self._model(for: prompt, parameters: nil, heuristics: nil)
+        let parameters: OpenAI.APIClient.ChatCompletionParameters = try await self._chatCompletionParameters(
+            from: prompt.context.completionParameters,
+            for: prompt,
+            completionHeuristics: nil
+        )
+        
+        return try await session
+            .complete(
+                messages: messages,
+                model: model,
+                parameters: parameters
+            )
+            .tryMap { (message: OpenAI.ChatMessage) -> AbstractLLM.ChatCompletionStream.Event in
+                AbstractLLM.ChatCompletionStream.Event.completion(
+                    AbstractLLM.ChatCompletion.Partial(
+                        message: .init(whole: try AbstractLLM.ChatMessage(from: message)),
+                        stopReason: nil
+                    )
+                )
+            }
+            .handleCancelOrCompletion { _ in
+                session = nil
+            }
+            .eraseToAnyPublisher()
+    }
+}
+
+extension OpenAI.APIClient {
     private func _debugPrint(prompt: String, completion: String) {
         guard _debugPrintCompletions else {
             return

@@ -3,15 +3,13 @@
 //
 
 import LargeLanguageModels
-import Merge
-import NetworkKit
+import Swallow
 
-extension Ollama {
+extension Anthropic {
     public struct ChatMessage: Codable, Hashable, Sendable {
-        public enum Role: String, Codable, Hashable, Sendable {
-            case system
-            case user
+        public enum Role: String, Codable, Sendable {
             case assistant
+            case user
         }
         
         public var role: Role
@@ -24,9 +22,16 @@ extension Ollama {
     }
 }
 
-// MARK: - Conformances
-
-extension Ollama.ChatMessage: AbstractLLM.ChatMessageConvertible {
+extension Anthropic.ChatMessage {
+    public init(
+        from message: AbstractLLM.ChatMessage
+    ) throws {
+        self.init(
+            role: try .init(from: message.role),
+            content: try message.content._stripToText()
+        )
+    }
+    
     public func __conversion() throws -> AbstractLLM.ChatMessage {
         AbstractLLM.ChatMessage(
             id: nil,
@@ -40,11 +45,9 @@ extension Ollama.ChatMessage: AbstractLLM.ChatMessageConvertible {
 
 extension AbstractLLM.ChatRole {
     public init(
-        from role: Ollama.ChatMessage.Role
+        from role: Anthropic.ChatMessage.Role
     ) throws {
         switch role {
-            case .system:
-                self = .system
             case .user:
                 self = .user
             case .assistant:
@@ -53,26 +56,13 @@ extension AbstractLLM.ChatRole {
     }
 }
 
-extension Ollama.ChatMessage {
-    public init(
-        from message: AbstractLLM.ChatMessage
-    ) throws {
-        self.init(
-            role: try Ollama.ChatMessage.Role(
-                from: message.role
-            ),
-            content: try message.content._stripToText()
-        )
-    }
-}
-
-extension Ollama.ChatMessage.Role {
+extension Anthropic.ChatMessage.Role {
     public init(
         from role: AbstractLLM.ChatRole
     ) throws {
         switch role {
             case .system:
-                self = .system
+                throw Never.Reason.unsupported
             case .user:
                 self = .user
             case .assistant:

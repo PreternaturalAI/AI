@@ -20,7 +20,7 @@ extension Anthropic: LLMRequestHandling {
     public var _availableModels: [_MLModelIdentifier]? {
         Anthropic.Model.allCases.map({ $0.__conversion() })
     }
-
+    
     public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
         parameters: Prompt.CompletionParameters,
@@ -56,11 +56,12 @@ extension Anthropic: LLMRequestHandling {
     ) async throws -> AbstractLLM.TextCompletion {
         let response = try await run(
             \.complete,
-             with: .init(
+             with: Anthropic.API.RequestBodies.Complete(
                 prompt: prompt.prefix.promptLiteral._stripToText(),
                 model: .claude_v2,
                 maxTokensToSample: parameters.tokenLimit.fixedValue ?? 256,
                 stopSequences: parameters.stops,
+                stream: false,
                 temperature: parameters.temperatureOrTopP?.temperature,
                 topK: nil,
                 topP: parameters.temperatureOrTopP?.topProbabilityMass
@@ -80,7 +81,7 @@ extension Anthropic: LLMRequestHandling {
     ) async throws -> AbstractLLM.ChatCompletion {
         let completion = try await _complete(
             prompt: AbstractLLM.TextPrompt(
-                prefix: PromptLiteral(stringLiteral: prompt.messages.promptString)
+                prefix: PromptLiteral(stringLiteral: prompt.messages.anthropicPromptString)
             ),
             parameters: .init(
                 tokenLimit: parameters.tokenLimit ?? .max,
@@ -102,12 +103,127 @@ extension Anthropic: LLMRequestHandling {
             stopReason: .init() // FIXME!!!
         )
     }
+    
+    public func completion(
+        for prompt: AbstractLLM.ChatPrompt
+    ) throws -> AbstractLLM.ChatCompletionStream {
+        AbstractLLM.ChatCompletionStream.init {
+            try await self._completion(for: prompt)
+        }
+    }
+    
+    private func _completion(
+        for prompt: AbstractLLM.ChatPrompt
+    ) async throws -> AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error> {
+        var prompt = prompt
+        let parameters: AbstractLLM.ChatCompletionParameters? = try cast(prompt.context.completionParameters)
+        let model: Anthropic.Model = try await _model(for: prompt)
+        
+        /// Anthropic doesn't support a `system` role.
+        let system: String? = try prompt.messages
+            .removeFirst(byUnwrapping: { $0.role == .system ? $0.content : nil })
+            .map({ try $0._stripToText() })
+        
+        let messages = try prompt.messages.map { (message: AbstractLLM.ChatMessage) in
+            try Anthropic.ChatMessage(from: message)
+        }
+        
+        let requestBody = Anthropic.API.RequestBodies.CreateMessage(
+            model: model,
+            messages: messages,
+            system: system,
+            maxTokens: parameters?.tokenLimit?.fixedValue ?? 1024, // FIXME: Hardcoded,
+            temperature: parameters?.temperatureOrTopP?.temperature,
+            topP: parameters?.temperatureOrTopP?.topProbabilityMass,
+            topK: nil,
+            stopSequences: parameters?.stops,
+            stream: true,
+            metadata: nil
+        )
+        
+        let request = try HTTPRequest(url: "https://api.anthropic.com/v1/messages")
+            .jsonBody(requestBody, keyEncodingStrategy: .convertToSnakeCase)
+            .method(.post)
+            .header(.contentType(.json))
+            .header("X-API-Key", interface.configuration.apiKey.unwrap())
+            .header("anthropic-version", "2023-06-01")
+        
+        let sessionConfiguration = URLSessionConfiguration.default
+        
+        sessionConfiguration.timeoutIntervalForRequest = TimeInterval(INT_MAX)
+        sessionConfiguration.timeoutIntervalForResource = TimeInterval(INT_MAX)
+        sessionConfiguration.httpAdditionalHeaders ??= [:]
+        sessionConfiguration.httpAdditionalHeaders!["Accept"] = "text/event-stream"
+        sessionConfiguration.httpAdditionalHeaders!["Cache-Control"] = "no-cache"
+        
+        let session = URLSession(configuration: sessionConfiguration)
+                
+        let result = AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error> { (continuation: AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error>.Continuation) in
+            let task = Task<Void, Swift.Error> {
+                let (bytes, _) = try await session.bytes(for: URLRequest(request))
+                
+                for try await line in bytes.lines {
+                    if line == "event: message_start" {
+                        continue
+                    } else if line.starts(with: "data: ") {
+                        let rest = line.index(line.startIndex, offsetBy: 6)
+                        let data: Data = line[rest...].data(using: .utf8)!
+                        
+                        let response = try JSONDecoder().decode(Anthropic.API.ResponseBodies.CreateMessageStream.self, from: data)
+                        
+                        if
+                            let content: Anthropic.API.ResponseBodies.CreateMessageStream.Delta = response.delta,
+                            let text: String = content.text
+                        {
+                            let message = AbstractLLM.ChatMessage(
+                                role: .assistant,
+                                content: PromptLiteral(stringLiteral: text)
+                            )
+                            
+                            continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
+                            
+                            await Task.yield()
+                        } else {
+                            print("")
+                        }
+                    }
+                }
+                
+                continuation.yield(.stop)
+                continuation.finish()
+            }
+            
+            continuation.onTermination = { _ in
+                task.cancel()
+            }
+        }
+        
+        return result
+    }
+    
+    func _model(
+        for prompt: any AbstractLLM.Prompt
+    ) async throws -> Anthropic.Model {
+        do {
+            guard let modelIdentifierScope: _MLModelIdentifierScope = prompt.context.get(\.modelIdentifier) else {
+                return Anthropic.Model.claude_3_opus_20240229
+            }
+            
+            let modelIdentifier: _MLModelIdentifier = try modelIdentifierScope._oneValue.unwrap()
+            
+            return try Anthropic.Model(from: modelIdentifier)
+        } catch {
+            runtimeIssue("Failed to resolve model identifier.")
+            
+            throw error
+        }
+    }
 }
 
 // MARK: - Auxiliary
 
 extension Sequence where Element == AbstractLLM.ChatMessage {
-    fileprivate var promptString: String {
+    fileprivate var anthropicPromptString: String {
         get throws {
             var lines = try self.map {
                 try "\($0.role.roleString): \($0.content)"

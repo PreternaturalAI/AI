@@ -10,7 +10,12 @@ public protocol __AbstractLLM_ChatCompletionStreamProtocol: ObservableObject, Pu
     typealias Event = AbstractLLM.ChatCompletionStream.Event
     typealias State = AbstractLLM.ChatCompletionStream.State
     
+    /// The partially constructed message.
+    var partialMessage: AbstractLLM.ChatMessage? { get }
+    
+    /// The full message if the stream completed succesfully.
     var fullyStreamedMessage: AbstractLLM.ChatMessage? { get }
+    
     var messagePublisher: AnyPublisher<AbstractLLM.ChatMessage, Error> { get }
     var state: State { get }
 }
@@ -27,6 +32,10 @@ extension AbstractLLM {
             base.messagePublisher
         }
         
+        public var partialMessage: AbstractLLM.ChatMessage? {
+            base.partialMessage
+        }
+
         public var fullyStreamedMessage: AbstractLLM.ChatMessage? {
             base.fullyStreamedMessage
         }
@@ -162,6 +171,10 @@ extension AbstractLLM {
         var currentMessage: AbstractLLM.ChatMessage.Partial?
         var stopReason: AbstractLLM.ChatCompletion.StopReason?
         
+        public var partialMessage: AbstractLLM.ChatMessage? {
+            return _message
+        }
+
         public var fullyStreamedMessage: AbstractLLM.ChatMessage? {
             guard _state == .finished else {
                 return nil
@@ -189,12 +202,12 @@ extension AbstractLLM {
         }
         
         private func _start() {
-            Task {
+            Task.detached(priority: .high) {
                 guard self.base == nil else {
                     return
                 }
                 
-                let stream = try await makeBase()
+                let stream = try await self.makeBase()
                 
                 self.base = stream
                 
@@ -303,10 +316,18 @@ extension AbstractLLM {
         var currentMessage: AbstractLLM.ChatMessage.Partial?
         var stopReason: AbstractLLM.ChatCompletion.StopReason?
         
-        public var fullyStreamedMessage: AbstractLLM.ChatMessage? {
+        public var partialMessage: AbstractLLM.ChatMessage? {
             _message
         }
-        
+
+        public var fullyStreamedMessage: AbstractLLM.ChatMessage? {
+            guard _state == .finished else {
+                return nil
+            }
+            
+            return _message
+        }
+                
         public var messagePublisher: AnyPublisher<AbstractLLM.ChatMessage, Error> {
             _messageSubject
                 .onSubscribe { [weak self] in

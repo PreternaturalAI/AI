@@ -254,10 +254,10 @@ extension PromptLiteral {
         stringInterpolation.appendInterpolation(other)
     }
     
-    consuming func appending(contentsOf other: PromptLiteral) -> Self {
-        self.append(contentsOf: other)
-        
-        return self
+    public func appending(contentsOf other: PromptLiteral) -> Self {
+        withMutableScope(self) {
+            $0.append(contentsOf: other)
+        }
     }
 }
 

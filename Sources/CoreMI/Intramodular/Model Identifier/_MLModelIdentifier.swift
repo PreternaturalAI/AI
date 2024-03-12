@@ -78,6 +78,14 @@ public struct _MLModelIdentifier: Hashable, Sendable {
             return ._OpenAI
         }
         
+        if identifier.hasPrefix("claude") {
+            return ._Anthropic
+        }
+        
+        if identifier.hasPrefix("mistral") {
+            return ._Mistral
+        }
+        
         return nil
     }
 }
@@ -161,16 +169,17 @@ extension _MLModelIdentifier: _MLModelIdentifierRepresentable {
 
 extension _MLModelIdentifier {
     private enum _Anthropic_Model: String, CaseIterable {
+        case claude_instant_v1 = "claude-instant-v1"
         case claude_v1 = "claude-v1"
         case claude_v2 = "claude-2"
-        case claude_instant_v1 = "claude-instant-v1"
-        
+
+        case claude_instant_v1_0 = "claude-instant-v1.0"
+        case claude_instant_v1_2 = "claude-instant-v1.2"
         case claude_v1_0 = "claude-v1.0"
         case claude_v1_2 = "claude-v1.2"
         case claude_v1_3 = "claude-v1.3"
-        case claud_instant_v1_0 = "claude-instant-v1.0"
-        case claud_instant_v1_2 = "claude-instant-v1.2"
-        case claud_instant_1 = "claude-instant-1"
+        case claude_3_sonnet_20240229 = "claude-3-sonnet-20240229"
+        case claude_3_opus_20240229 = "claude-3-opus-20240229"
     }
     
     private enum _Mistral_Model: String, CaseIterable {
