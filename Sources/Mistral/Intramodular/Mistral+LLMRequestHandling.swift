@@ -24,8 +24,7 @@ extension Mistral: LLMRequestHandling {
 
     public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
-        parameters: Prompt.CompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: Prompt.CompletionParameters
     ) async throws -> Prompt.Completion {
         let _completion: Any
         
@@ -33,15 +32,13 @@ extension Mistral: LLMRequestHandling {
             case let prompt as AbstractLLM.TextPrompt:
                 _completion = try await _complete(
                     prompt: prompt,
-                    parameters: try cast(parameters),
-                    heuristics: heuristics
+                    parameters: try cast(parameters)
                 )
                 
             case let prompt as AbstractLLM.ChatPrompt:
                 _completion = try await _complete(
                     prompt: prompt,
-                    parameters: try cast(parameters),
-                    heuristics: heuristics
+                    parameters: try cast(parameters)
                 )
             default:
                 throw LLMRequestHandlingError.unsupportedPromptType(Prompt.self)
@@ -52,21 +49,19 @@ extension Mistral: LLMRequestHandling {
     
     private func _complete(
         prompt: AbstractLLM.TextPrompt,
-        parameters: AbstractLLM.TextCompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: AbstractLLM.TextCompletionParameters
     ) async throws -> AbstractLLM.TextCompletion {
         throw LLMRequestHandlingError.unsupportedPromptType(.init(Swift.type(of: prompt)))
     }
     
     private func _complete(
         prompt: AbstractLLM.ChatPrompt,
-        parameters: AbstractLLM.ChatCompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: AbstractLLM.ChatCompletionParameters
     ) async throws -> AbstractLLM.ChatCompletion {
         let response: Mistral.APISpecification.ResponseBodies.ChatCompletion = try await run(
             \.chatCompletions,
              with: .init(
-                model: _model(for: prompt, parameters: parameters, heuristics: heuristics),
+                model: _model(for: prompt, parameters: parameters),
                 messages: try prompt.messages.map {
                     try Mistral.ChatMessage(from: $0)
                 },
@@ -83,15 +78,15 @@ extension Mistral: LLMRequestHandling {
         let message = try AbstractLLM.ChatMessage(from: response, choiceIndex: 0)
         
         return AbstractLLM.ChatCompletion(
+            prompt: prompt.messages,
             message: message,
-            stopReason: .init() // FIXME!!!
+            stopReason: .init() // FIXME: !!!
         )
     }
     
     private func _model(
         for prompt: AbstractLLM.ChatPrompt,
-        parameters: AbstractLLM.ChatCompletionParameters?,
-        heuristics: AbstractLLM.CompletionHeuristics?
+        parameters: AbstractLLM.ChatCompletionParameters?
     ) throws -> Mistral.Model {
         try prompt.context.get(\.modelIdentifier)?.as(Mistral.Model.self) ?? .mistral_medium
     }

@@ -31,7 +31,7 @@ extension OpenAI {
                     assert(role == .function)
             }
             
-            self.id = id ?? UUID().stringValue // FIXME!!!
+            self.id = id ?? UUID().stringValue // FIXME: !!!
             self.role = role
             self.body = body
         }

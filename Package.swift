@@ -6,9 +6,7 @@ let package = Package(
     name: "AI",
     platforms: [
         .iOS(.v16),
-        .macOS(.v13),
-        .tvOS(.v16),
-        .watchOS(.v9)
+        .macOS(.v13)
     ],
     products: [
         .library(

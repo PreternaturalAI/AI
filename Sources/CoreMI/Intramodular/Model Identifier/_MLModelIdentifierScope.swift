@@ -11,16 +11,18 @@ public enum _MLModelIdentifierScope: Codable, Hashable, Sendable {
     case one(_MLModelIdentifier)
     case choiceOf(Set<_MLModelIdentifier>)
     
-    public var _oneValue: _MLModelIdentifier? {
-        guard case .one(let value) = self else {
-            if case .choiceOf(let set) = self, let value = try? set.toCollectionOfOne().first {
-                return value
+    public var _oneValue: _MLModelIdentifier {
+        get throws {
+            guard case .one(let value) = self else {
+                if case .choiceOf(let set) = self, let value = try set.toCollectionOfOne().first {
+                    return value
+                }
+                
+                throw Never.Reason.illegal
             }
             
-            return nil
+            return value
         }
-        
-        return value
     }
     
     public init(_ identifier: _MLModelIdentifier) {

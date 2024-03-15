@@ -45,7 +45,7 @@ extension OpenAI.ChatMessage: _PromptLiteralEncodingContainer {
         }
         
         self = .init(
-            id: nil, // FIXME!!!
+            id: nil, // FIXME: !!!
             role: role,
             body: .content(content)
         )
@@ -75,13 +75,13 @@ extension OpenAI.ChatMessage {
             switch try _content.components.toCollectionOfOne().value.payload {
                 case .functionCall(let call):
                     self.init(
-                        id: nil, // FIXME!!!
+                        id: nil, // FIXME: !!!
                         role: role,
                         body: .functionCall(.init(name: call.name, arguments: call.arguments))
                     )
                 case .functionInvocation(let invocation):
                     self.init(
-                        id: nil, // FIXME!!!
+                        id: nil, // FIXME: !!!
                         role: role,
                         body: .functionInvocation(.init(name: invocation.name, response: invocation.result.rawValue))
                     )
@@ -92,7 +92,7 @@ extension OpenAI.ChatMessage {
             }
         } else {
             var _temp = Self(
-                id: nil, // FIXME!!!
+                id: nil, // FIXME: !!!
                 role: role,
                 body: .content([])
             )

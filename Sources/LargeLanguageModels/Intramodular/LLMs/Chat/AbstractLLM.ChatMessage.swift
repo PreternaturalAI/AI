@@ -73,9 +73,13 @@ extension AbstractLLM.ChatMessage: AbstractLLM.ChatMessageConvertible {
     }
 }
 
-extension AbstractLLM.ChatMessage: CustomDebugStringConvertible {
+extension AbstractLLM.ChatMessage: CustomStringConvertible, CustomDebugStringConvertible {
     public var debugDescription: String {
         "[\(role)]: \(content.delimited(by: .quotationMark))"
+    }
+    
+    public var description: String {
+        "\(content)"
     }
 }
 

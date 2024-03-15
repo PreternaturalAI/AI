@@ -268,11 +268,11 @@ extension OpenAI.Model {
                 case .gpt_4_32k_0613:
                     return _32k
                 case .gpt_4_1106_preview, .gpt_4_0125_preview:
-                    return 4096 // FIXME!!!
+                    return 4096 // FIXME: !!!
                 case .gpt_4_vision_preview:
-                    return 4096 // FIXME!!!
+                    return 4096 // FIXME: !!!
                 case .gpt_4_turbo_preview:
-                    return 4096 // FIXME!!!
+                    return 4096 // FIXME: !!!
             }
         }
     }

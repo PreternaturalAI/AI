@@ -25,14 +25,12 @@ extension Ollama: LLMRequestHandling {
 
     public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
-        parameters: Prompt.CompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: Prompt.CompletionParameters
     ) async throws -> Prompt.Completion {
         if let prompt = prompt as? AbstractLLM.TextPrompt {
             let completion = try await _complete(
                 prompt: prompt,
-                parameters: try cast(parameters),
-                heuristics: heuristics
+                parameters: try cast(parameters)
             )
             
             return completion as! Prompt.Completion
@@ -43,8 +41,7 @@ extension Ollama: LLMRequestHandling {
     
     private func _complete(
         prompt: AbstractLLM.TextPrompt,
-        parameters: AbstractLLM.TextCompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: AbstractLLM.TextCompletionParameters
     ) async throws -> AbstractLLM.TextCompletion {
         var maxTokens: Int?
         
@@ -155,7 +152,7 @@ extension Ollama: LLMRequestHandling {
     func _model(
         for prompt: AbstractLLM.ChatPrompt
     ) async throws -> Ollama.Model {
-        let identifier: _MLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue.unwrap()
+        let identifier: _MLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue
         
         return try await models.unwrap().firstAndOnly(where: { try $0.__conversion() == identifier }).unwrap()
     }
@@ -163,7 +160,7 @@ extension Ollama: LLMRequestHandling {
     func _model(
         for prompt: AbstractLLM.TextPrompt
     ) async throws -> Ollama.Model {
-        let identifier: _MLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue.unwrap()
+        let identifier: _MLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue
         
         return try await models.unwrap().firstAndOnly(where: { try $0.__conversion() == identifier }).unwrap()
     }

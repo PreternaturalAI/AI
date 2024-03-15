@@ -23,8 +23,7 @@ extension Anthropic: LLMRequestHandling {
     
     public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
-        parameters: Prompt.CompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: Prompt.CompletionParameters
     ) async throws -> Prompt.Completion {
         let _completion: Any
         
@@ -32,15 +31,13 @@ extension Anthropic: LLMRequestHandling {
             case let prompt as AbstractLLM.TextPrompt:
                 _completion = try await _complete(
                     prompt: prompt,
-                    parameters: try cast(parameters),
-                    heuristics: heuristics
+                    parameters: try cast(parameters)
                 )
                 
             case let prompt as AbstractLLM.ChatPrompt:
                 _completion = try await _complete(
                     prompt: prompt,
-                    parameters: try cast(parameters),
-                    heuristics: heuristics
+                    parameters: try cast(parameters)
                 )
             default:
                 throw LLMRequestHandlingError.unsupportedPromptType(Prompt.self)
@@ -51,8 +48,7 @@ extension Anthropic: LLMRequestHandling {
     
     private func _complete(
         prompt: AbstractLLM.TextPrompt,
-        parameters: AbstractLLM.TextCompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: AbstractLLM.TextCompletionParameters
     ) async throws -> AbstractLLM.TextCompletion {
         let response = try await run(
             \.complete,
@@ -74,10 +70,9 @@ extension Anthropic: LLMRequestHandling {
         )
     }
     
-    private func _complete(
+    private func _completeUsingTextPrompt(
         prompt: AbstractLLM.ChatPrompt,
-        parameters: AbstractLLM.ChatCompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: AbstractLLM.ChatCompletionParameters
     ) async throws -> AbstractLLM.ChatCompletion {
         let completion = try await _complete(
             prompt: AbstractLLM.TextPrompt(
@@ -86,8 +81,7 @@ extension Anthropic: LLMRequestHandling {
             parameters: .init(
                 tokenLimit: parameters.tokenLimit ?? .max,
                 stops: parameters.stops
-            ),
-            heuristics: heuristics
+            )
         )
         
         let isAssistantReply = (prompt.messages.last?.role ?? .user) == .user
@@ -99,11 +93,33 @@ extension Anthropic: LLMRequestHandling {
         )
         
         return AbstractLLM.ChatCompletion(
+            prompt: prompt.messages,
             message: message,
-            stopReason: .init() // FIXME!!!
+            stopReason: .init() // FIXME: !!!
         )
     }
     
+    private func _complete(
+        prompt: AbstractLLM.ChatPrompt,
+        parameters: AbstractLLM.ChatCompletionParameters
+    ) async throws -> AbstractLLM.ChatCompletion {
+        let response = try await run(
+            \.createMessage,
+             with: createMessageRequestBody(from: prompt, parameters: parameters, stream: false)
+        )
+        
+        let message = try Anthropic.ChatMessage(
+            role: response.role,
+            content: response.content
+        )
+        
+        return try AbstractLLM.ChatCompletion(
+            prompt: prompt.messages,
+            message: message.__conversion(),
+            stopReason: response.stopReason?.__conversion() 
+        )
+    }
+
     public func completion(
         for prompt: AbstractLLM.ChatPrompt
     ) throws -> AbstractLLM.ChatCompletionStream {
@@ -115,31 +131,7 @@ extension Anthropic: LLMRequestHandling {
     private func _completion(
         for prompt: AbstractLLM.ChatPrompt
     ) async throws -> AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error> {
-        var prompt = prompt
-        let parameters: AbstractLLM.ChatCompletionParameters? = try cast(prompt.context.completionParameters)
-        let model: Anthropic.Model = try await _model(for: prompt)
-        
-        /// Anthropic doesn't support a `system` role.
-        let system: String? = try prompt.messages
-            .removeFirst(byUnwrapping: { $0.role == .system ? $0.content : nil })
-            .map({ try $0._stripToText() })
-        
-        let messages = try prompt.messages.map { (message: AbstractLLM.ChatMessage) in
-            try Anthropic.ChatMessage(from: message)
-        }
-        
-        let requestBody = Anthropic.API.RequestBodies.CreateMessage(
-            model: model,
-            messages: messages,
-            system: system,
-            maxTokens: parameters?.tokenLimit?.fixedValue ?? 4000, // FIXME: Hardcoded,
-            temperature: parameters?.temperatureOrTopP?.temperature,
-            topP: parameters?.temperatureOrTopP?.topProbabilityMass,
-            topK: nil,
-            stopSequences: parameters?.stops,
-            stream: true,
-            metadata: nil
-        )
+        let requestBody = try await createMessageRequestBody(from: prompt, stream: true)
         
         let request = try HTTPRequest(url: "https://api.anthropic.com/v1/messages")
             .jsonBody(requestBody, keyEncodingStrategy: .convertToSnakeCase)
@@ -169,7 +161,8 @@ extension Anthropic: LLMRequestHandling {
                         let rest = line.index(line.startIndex, offsetBy: 6)
                         let data: Data = line[rest...].data(using: .utf8)!
                         
-                        let response = try JSONDecoder().decode(Anthropic.API.ResponseBodies.CreateMessageStream.self, from: data)
+                        let decoder = JSONDecoder(keyDecodingStrategy: .convertFromSnakeCase)
+                        let response = try decoder.decode(Anthropic.API.ResponseBodies.CreateMessageStream.self, from: data)
                         
                         if
                             let content: Anthropic.API.ResponseBodies.CreateMessageStream.Delta = response.delta,
@@ -201,7 +194,41 @@ extension Anthropic: LLMRequestHandling {
         return result
     }
     
-    func _model(
+    private func createMessageRequestBody(
+        from prompt: AbstractLLM.ChatPrompt,
+        parameters: AbstractLLM.ChatCompletionParameters? = nil,
+        stream: Bool
+    ) async throws -> Anthropic.API.RequestBodies.CreateMessage {
+        var prompt = prompt
+        let parameters: AbstractLLM.ChatCompletionParameters? = try parameters ?? cast(prompt.context.completionParameters)
+        let model: Anthropic.Model = try await _model(for: prompt)
+        
+        /// Anthropic doesn't support a `system` role.
+        let system: String? = try prompt.messages
+            .removeFirst(byUnwrapping: { $0.role == .system ? $0.content : nil })
+            .map({ try $0._stripToText() })
+        
+        let messages = try prompt.messages.map { (message: AbstractLLM.ChatMessage) in
+            try Anthropic.ChatMessage(from: message)
+        }
+        
+        let requestBody = Anthropic.API.RequestBodies.CreateMessage(
+            model: model,
+            messages: messages,
+            system: system,
+            maxTokens: parameters?.tokenLimit?.fixedValue ?? 4000, // FIXME: Hardcoded,
+            temperature: parameters?.temperatureOrTopP?.temperature,
+            topP: parameters?.temperatureOrTopP?.topProbabilityMass,
+            topK: nil,
+            stopSequences: parameters?.stops,
+            stream: stream,
+            metadata: nil
+        )
+        
+        return requestBody
+    }
+    
+    private func _model(
         for prompt: any AbstractLLM.Prompt
     ) async throws -> Anthropic.Model {
         do {
@@ -209,7 +236,7 @@ extension Anthropic: LLMRequestHandling {
                 return Anthropic.Model.claude_3_opus_20240229
             }
             
-            let modelIdentifier: _MLModelIdentifier = try modelIdentifierScope._oneValue.unwrap()
+            let modelIdentifier: _MLModelIdentifier = try modelIdentifierScope._oneValue
             
             return try Anthropic.Model(from: modelIdentifier)
         } catch {

@@ -13,13 +13,31 @@ extension AbstractLLM {
             .chat
         }
         
+        public let prompt: [AbstractLLM.ChatMessage]
         public let message: AbstractLLM.ChatMessage
-        public let stopReason: StopReason
+        public let stopReason: StopReason?
         
         public init(
+            prompt: [AbstractLLM.ChatMessage],
             message: AbstractLLM.ChatMessage,
-            stopReason: StopReason = .init()
+            stopReason: StopReason? = nil
         ) {
+            var prompt = prompt
+            var message = message
+
+            if prompt.last?.role == .assistant {
+                if message.role == .assistant {
+                    var last = prompt.removeLast()
+                    
+                    last._appendUnsafely(other: message)
+                    
+                    message = last
+                } else {
+                    runtimeIssue("This is unexpected.")
+                }
+            }
+            
+            self.prompt = prompt
             self.message = message
             self.stopReason = stopReason
         }
@@ -111,8 +129,28 @@ extension AbstractLLM.ChatCompletion: Partializable {
 extension AbstractLLM.ChatCompletion {
     @frozen
     public struct StopReason: Codable, Hashable, Sendable {
-        public init() {
-            
+        public enum StopReasonType: Codable, Hashable, Sendable {
+            case endTurn
+            case maxTokens
+            case stopSequence
+        }
+        
+        public let type: StopReasonType?
+        
+        public init(type: StopReasonType? = nil) {
+            self.type = type
+        }
+        
+        public static var endTurn: Self {
+            Self(type: .endTurn)
+        }
+        
+        public static var maxTokens: Self {
+            Self(type: .maxTokens)
+        }
+
+        public static var stopSequence: Self {
+            Self(type: .stopSequence)
         }
     }
 }

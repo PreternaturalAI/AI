@@ -20,6 +20,16 @@ extension AbstractLLM {
             self.temperatureOrTopP = temperatureOrTopP
             self.stops = stops
         }
+        
+        public init(
+            tokenLimit: AbstractLLM.TokenLimit,
+            temperature: Double?,
+            stops: [String]?
+        ) {
+            self.tokenLimit = tokenLimit
+            self.temperatureOrTopP = temperature.map({ .temperature($0) })
+            self.stops = stops
+        }
     }
 }
 

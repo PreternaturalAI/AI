@@ -38,14 +38,14 @@ extension String {
 // MARK: - Supplementary
 
 extension AbstractLLM.ChatMessage {
-    /// FIXME!!!
+    /// FIXME: !!!
     public func _stripToText() throws -> String {
         try content._stripToText()
     }
 }
 
 extension AbstractLLM.ChatPrompt {
-    /// FIXME!!!
+    /// FIXME: !!!
     public func _stripToText() throws -> String {
         try messages.map({ try $0._stripToText() }).joined()
     }

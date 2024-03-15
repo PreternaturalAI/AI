@@ -12,7 +12,7 @@ public protocol __AbstractLLM_Prompt: Hashable, Sendable {
     
     static var completionType: AbstractLLM.CompletionType? { get }
     
-    var context: PromptContextValues { get }
+    var context: PromptContextValues { get set }
 }
 
 extension AbstractLLM {
@@ -33,17 +33,30 @@ extension AbstractLLM {
             nil
         }
 
-        case text(TextPrompt)
-        case chat(ChatPrompt)
-                
         public var context: PromptContextValues {
-            switch self {
-                case .text(let prompt):
-                    return prompt.context
-                case .chat(let prompt):
-                    return prompt.context
+            get {
+                switch self {
+                    case .text(let prompt):
+                        return prompt.context
+                    case .chat(let prompt):
+                        return prompt.context
+                }
+            } set {
+                switch self {
+                    case .text(var prompt):
+                        prompt.context = newValue
+                        
+                        self = .text(prompt)
+                    case .chat(var prompt):
+                        prompt.context = newValue
+                        
+                        self = .chat(prompt)
+                }
             }
         }
+
+        case text(TextPrompt)
+        case chat(ChatPrompt)
     }
 }
 

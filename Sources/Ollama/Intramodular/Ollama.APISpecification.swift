@@ -97,7 +97,7 @@ extension Ollama {
             }
         }
         
-        static var _apiSpecification = Ollama.APISpecification() // FIXME!!!
+        static var _apiSpecification = Ollama.APISpecification() // FIXME: !!!
         
         func asURLRequest() throws -> HTTPRequest {
             return try HTTPRequest(url: Self._apiSpecification.host.appendingPathComponent(path))

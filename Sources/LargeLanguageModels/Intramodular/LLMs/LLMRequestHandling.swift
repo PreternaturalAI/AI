@@ -17,8 +17,7 @@ public protocol LLMRequestHandling: _MIRequestHandling {
     /// Complete a given prompt.
     func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
-        parameters: Prompt.CompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: Prompt.CompletionParameters
     ) async throws -> Prompt.Completion
     
     /// Stream a completion for a given chat prompt.
@@ -31,15 +30,13 @@ extension MIContext {
     /// Complete a given prompt.
     public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
-        parameters: Prompt.CompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: Prompt.CompletionParameters
     ) async throws -> Prompt.Completion {
         let llm = try await _firstHandler(ofType: (any LLMRequestHandling).self)
         
         return try await llm.complete(
             prompt: prompt,
-            parameters: parameters,
-            heuristics: heuristics
+            parameters: parameters
         )
     }
     
@@ -83,60 +80,34 @@ extension LLMRequestHandling {
 
 extension LLMRequestHandling {
     public func complete<Prompt: AbstractLLM.Prompt>(
-        prompt: Prompt,
-        parameters: Prompt.CompletionParameters
-    ) async throws -> Prompt.Completion {
-        try await complete(
-            prompt: prompt,
-            parameters: parameters,
-            heuristics: nil
-        )
-    }
-    
-    public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt
     ) async throws -> Prompt.Completion where Prompt.CompletionParameters: ExpressibleByNilLiteral {
         try await complete(
             prompt: prompt,
-            parameters: nil,
-            heuristics: nil
+            parameters: nil
         )
-    }
-    
-    public func complete(
-        prompt: AbstractLLM.ChatOrTextPrompt,
-        parameters: any AbstractLLM.CompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
-    ) async throws -> AbstractLLM.ChatOrTextCompletion {
-        switch prompt {
-            case .text(let prompt):
-                let completion = try await complete(
-                    prompt: prompt,
-                    parameters: cast(parameters),
-                    heuristics: heuristics
-                )
-                
-                return .text(completion)
-            case .chat(let prompt):
-                let completion = try await complete(
-                    prompt: prompt,
-                    parameters: cast(parameters),
-                    heuristics: heuristics
-                )
-                
-                return .chat(completion)
-        }
     }
     
     public func complete(
         prompt: AbstractLLM.ChatOrTextPrompt,
         parameters: any AbstractLLM.CompletionParameters
     ) async throws -> AbstractLLM.ChatOrTextCompletion {
-        try await self.complete(
-            prompt: prompt,
-            parameters: parameters,
-            heuristics: nil
-        )
+        switch prompt {
+            case .text(let prompt):
+                let completion = try await complete(
+                    prompt: prompt,
+                    parameters: cast(parameters)
+                )
+                
+                return .text(completion)
+            case .chat(let prompt):
+                let completion = try await complete(
+                    prompt: prompt,
+                    parameters: cast(parameters)
+                )
+                
+                return .chat(completion)
+        }
     }
 }
 

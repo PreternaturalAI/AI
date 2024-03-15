@@ -31,8 +31,7 @@ extension OpenAI.APIClient: LLMRequestHandling {
     
     public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
-        parameters: Prompt.CompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: Prompt.CompletionParameters
     ) async throws -> Prompt.Completion {
         let _completion: Any
         
@@ -40,15 +39,13 @@ extension OpenAI.APIClient: LLMRequestHandling {
             case let prompt as AbstractLLM.TextPrompt:
                 _completion = try await _complete(
                     prompt: prompt,
-                    parameters: try cast(parameters),
-                    heuristics: heuristics
+                    parameters: try cast(parameters)
                 )
                 
             case let prompt as AbstractLLM.ChatPrompt:
                 _completion = try await _complete(
                     prompt: prompt,
-                    parameters: try cast(parameters),
-                    heuristics: heuristics
+                    parameters: try cast(parameters)
                 )
             default:
                 throw LLMRequestHandlingError.unsupportedPromptType(Prompt.self)
@@ -59,8 +56,7 @@ extension OpenAI.APIClient: LLMRequestHandling {
     
     private func _complete(
         prompt: AbstractLLM.TextPrompt,
-        parameters: AbstractLLM.TextCompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: AbstractLLM.TextCompletionParameters
     ) async throws -> AbstractLLM.TextCompletion {
         let parameters = try cast(parameters, to: AbstractLLM.TextCompletionParameters.self)
         
@@ -95,10 +91,9 @@ extension OpenAI.APIClient: LLMRequestHandling {
     
     private func _complete(
         prompt: AbstractLLM.ChatPrompt,
-        parameters: AbstractLLM.ChatCompletionParameters,
-        heuristics: AbstractLLM.CompletionHeuristics
+        parameters: AbstractLLM.ChatCompletionParameters
     ) async throws -> AbstractLLM.ChatCompletion {
-        let model = try self._model(for: prompt, parameters: parameters, heuristics: heuristics)
+        let model = try self._model(for: prompt, parameters: parameters)
         let parameters = try cast(parameters, to: AbstractLLM.ChatCompletionParameters.self)
         let maxTokens: Int?
         
@@ -137,7 +132,10 @@ extension OpenAI.APIClient: LLMRequestHandling {
                 .delimited(by: "\n")
         )
         
-        return .init(message: try .init(from: message))
+        return AbstractLLM.ChatCompletion(
+            prompt: prompt.messages,
+            message: try .init(from: message)
+        )
     }
     
     public func completion(
@@ -156,11 +154,10 @@ extension OpenAI.APIClient: LLMRequestHandling {
         let messages: [OpenAI.ChatMessage] = try prompt.messages.map {
             try OpenAI.ChatMessage(from: $0)
         }
-        let model: OpenAI.Model = try self._model(for: prompt, parameters: nil, heuristics: nil)
+        let model: OpenAI.Model = try self._model(for: prompt, parameters: nil)
         let parameters: OpenAI.APIClient.ChatCompletionParameters = try await self._chatCompletionParameters(
             from: prompt.context.completionParameters,
-            for: prompt,
-            completionHeuristics: nil
+            for: prompt
         )
         
         return try await session
@@ -211,14 +208,12 @@ extension OpenAI.APIClient {
     
     private func _chatCompletionParameters(
         from parameters: (any AbstractLLM.CompletionParameters)?,
-        for prompt: AbstractLLM.ChatPrompt,
-        completionHeuristics: AbstractLLM.CompletionHeuristics
+        for prompt: AbstractLLM.ChatPrompt
     ) async throws -> OpenAI.APIClient.ChatCompletionParameters {
         let parameters: AbstractLLM.ChatCompletionParameters = try cast(parameters ?? AbstractLLM.ChatCompletionParameters())
         let model: OpenAI.Model = try self._model(
             for: prompt,
-            parameters: parameters,
-            heuristics: completionHeuristics
+            parameters: parameters
         )
         let maxTokens: Int?
         
@@ -241,17 +236,12 @@ extension OpenAI.APIClient {
     
     private func _model(
         for prompt: AbstractLLM.ChatPrompt,
-        parameters: AbstractLLM.ChatCompletionParameters?,
-        heuristics: AbstractLLM.CompletionHeuristics?
+        parameters: AbstractLLM.ChatCompletionParameters?
     ) throws -> OpenAI.Model {
         var prompt = prompt
         
         if let modelIdentifierScope = prompt.context.get(\.modelIdentifier) {
-            if let modelIdentifier = modelIdentifierScope._oneValue {
-                return try OpenAI.Model(from: modelIdentifier)
-            } else {
-                fatalError(.unimplemented)
-            }
+            return try OpenAI.Model(from: try! modelIdentifierScope._oneValue)
         }
         
         let result: OpenAI.Model
@@ -260,10 +250,8 @@ extension OpenAI.APIClient {
         
         if containsImage {
             result = .chat(.gpt_4_vision_preview)
-        } else if (heuristics?.wantsMaximumReasoning ?? false) {
-            result = .chat(.gpt_4_1106_preview)
         } else {
-            result = .chat(.gpt_3_5_turbo)
+            result = .chat(.gpt_4_turbo_preview)
         }
         
         if result == .chat(.gpt_3_5_turbo) {

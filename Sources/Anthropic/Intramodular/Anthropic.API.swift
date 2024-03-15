@@ -223,8 +223,8 @@ extension Anthropic.API.RequestBodies {
 extension Anthropic.API.ResponseBodies {
     public struct Complete: Codable, Hashable, Sendable {
         public enum StopReason: String, Codable, Hashable, Sendable {
-            case stopSequence = "stop_sequence"
             case maxTokens = "max_tokens"
+            case stopSequence = "stop_sequence"
         }
         
         public var completion: String
@@ -239,9 +239,26 @@ extension Anthropic.API.ResponseBodies {
             case type
             case role
             case content
-            case stopReason = "stop_reason"
-            case stopSequence = "stop_sequence"
+            case stopReason
+            case stopSequence
             case usage
+        }
+
+        public enum StopReason: String, Codable, Hashable, Sendable {
+            case endTurn = "end_turn"
+            case maxTokens = "max_tokens"
+            case stopSequence = "stop_sequence"
+            
+            public func __conversion() -> AbstractLLM.ChatCompletion.StopReason {
+                switch self {
+                    case .endTurn:
+                        return .endTurn
+                    case .maxTokens:
+                        return .maxTokens
+                    case .stopSequence:
+                        return .stopSequence
+                }
+            }
         }
 
         public let id: String
@@ -249,21 +266,21 @@ extension Anthropic.API.ResponseBodies {
         public let type: String?
         public let role: Anthropic.ChatMessage.Role
         public let content: [Content]
-        public let stopReason: String?
+        public let stopReason: StopReason?
         public let stopSequence: String?
         public let usage: Usage
         
+        public enum ContentType: String, Codable, Hashable, Sendable {
+            case image // FIXME: Unimplemented
+            case text
+        }
+
         public struct Content: Codable, Hashable, Sendable {
-            public let type: String
+            public let type: ContentType
             public let text: String
         }
         
         public struct Usage: Codable, Hashable, Sendable {
-            public enum CodingKeys: String, CodingKey {
-                case inputTokens = "input_tokens"
-                case outputTokens = "output_tokens"
-            }
-
             public let inputTokens: Int
             public let outputTokens: Int
         }
@@ -275,7 +292,7 @@ extension Anthropic.API.ResponseBodies {
             case index
             case message
             case delta
-            case contentBlock = "content_block"
+            case contentBlock
         }
 
         public struct Delta: Codable, Hashable, Sendable {

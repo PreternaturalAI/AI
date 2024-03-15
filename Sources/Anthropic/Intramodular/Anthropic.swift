@@ -18,6 +18,8 @@ public final class Anthropic: HTTPClient, PersistentlyRepresentableType, _Static
     public init(interface: API, session: HTTPSession) {
         self.interface = interface
         self.session = session
+        
+        session.disableTimeouts()
     }
     
     public convenience init(apiKey: String?) {

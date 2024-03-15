@@ -24,6 +24,16 @@ extension Anthropic {
 
 extension Anthropic.ChatMessage {
     public init(
+        role: Role,
+        content: [Anthropic.API.ResponseBodies.CreateMessage.Content]
+    ) throws {
+        assert(content.allSatisfy({ $0.type == .text }))
+        
+        self.role = role
+        self.content = content.map({ $0.text }).joined()
+    }
+    
+    public init(
         from message: AbstractLLM.ChatMessage
     ) throws {
         self.init(

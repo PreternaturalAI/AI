@@ -19,6 +19,7 @@ extension Anthropic {
         case claude_v1_2 = "claude-v1.2"
         case claude_v1_3 = "claude-v1.3"
         
+        case claude_3_haiku_20240307 = "claude-3-haiku-20240307"
         case claude_3_sonnet_20240229 = "claude-3-sonnet-20240229"
         case claude_3_opus_20240229 = "claude-3-opus-20240229"
         
@@ -54,6 +55,8 @@ extension Anthropic {
                     return "Claude 1.2"
                 case .claude_v1_3:
                     return "Claude 1.3"
+                case .claude_3_haiku_20240307:
+                    return "Claude 3 Haiku"
                 case .claude_3_sonnet_20240229:
                     return "Claude 3 Sonnet"
                 case .claude_3_opus_20240229:
@@ -63,6 +66,8 @@ extension Anthropic {
         
         public var contextSize: Int? {
             switch self {
+                case .claude_3_haiku_20240307:
+                    return 200000
                 case .claude_3_sonnet_20240229:
                     return 200000
                 case .claude_3_opus_20240229:

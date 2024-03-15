@@ -7,31 +7,30 @@ import LargeLanguageModels
 import NetworkKit
 import Swift
 
-extension OpenAI {
-    public final class APIClient: HTTPClient, PersistentlyRepresentableType {
-        public static var persistentTypeRepresentation: some IdentityRepresentation {
-            _MIServiceTypeIdentifier._OpenAI
-        }
-
-        public let interface: APISpecification
-        public let session: HTTPSession
-        
-        public init(interface: APISpecification, session: HTTPSession) {
-            self.interface = interface
-            self.session = session
-        }
-        
-        public convenience init(apiKey: String?) {
-            self.init(
-                interface: .init(configuration: .init(apiKey: apiKey)),
-                session: .shared
-            )
-        }
-        
-        public convenience init(configuration: APISpecification.Configuration) {
-            self.init(interface: .init(configuration: configuration), session: .shared)
-        }
+public final class _OpenAI_APIClient: HTTPClient, _StaticNamespaceType {
+    public let interface: OpenAI.APISpecification
+    public let session: HTTPSession
+    
+    public init(interface: OpenAI.APISpecification, session: HTTPSession) {
+        self.interface = interface
+        self.session = session
     }
+    
+    public convenience init(apiKey: String?) {
+        self.init(
+            interface: .init(configuration: .init(apiKey: apiKey)),
+            session: .shared
+        )
+    }
+    
+    public convenience init(configuration: OpenAI.APISpecification.Configuration) {
+        self.init(interface: .init(configuration: configuration), session: .shared)
+    }
+}
+
+
+extension OpenAI {
+    public typealias APIClient = _OpenAI_APIClient
 }
 
 extension OpenAI.APIClient {
@@ -168,6 +167,20 @@ extension OpenAI.APIClient {
         thread: OpenAI.Thread.ID
     ) async throws -> OpenAI.Run {
         try await self.run(\.retrieveRunForThread, with: (thread, run))
+    }
+}
+
+// MARK: - Conformances
+
+extension OpenAI.APIClient: _MaybeAsyncProtocol {
+    public func _resolveToNonAsync() async throws -> Self {
+        self
+    }
+}
+
+extension OpenAI.APIClient: PersistentlyRepresentableType {
+    public static var persistentTypeRepresentation: some IdentityRepresentation {
+        _MIServiceTypeIdentifier._OpenAI
     }
 }
 

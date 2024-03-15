@@ -16,8 +16,7 @@ final class AnthropicTests: XCTestCase {
                 .assistant("Not much, just chatting with you!"),
                 .user("That's cool"),
             ]),
-            parameters: AbstractLLM.ChatCompletionParameters(),
-            heuristics: nil
+            parameters: AbstractLLM.ChatCompletionParameters()
         )
         
         print(completion)

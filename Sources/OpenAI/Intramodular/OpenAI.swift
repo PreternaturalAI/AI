@@ -2,8 +2,12 @@
 // Copyright (c) Vatsal Manot
 //
 
+import Expansions
 import Swift
 
-public enum OpenAI {
-    
+@RuntimeDiscoverable
+public enum OpenAI: _TypeIterableStaticNamespaceType {
+    public static var _allNamespaceTypes: [any Any.Type] {
+        OpenAI.APIClient.self
+    }
 }

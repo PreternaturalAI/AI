@@ -40,6 +40,18 @@ extension AbstractLLM {
             self.stops = stops
             self.functions = functions
         }
+        
+        public init(
+            tokenLimit: AbstractLLM.TokenLimit?,
+            temperature: Double?,
+            stops: [String]?,
+            functions: [ChatFunctionDefinition]?
+        ) {
+            self.tokenLimit = tokenLimit
+            self.temperatureOrTopP = temperature.map({ .temperature($0) })
+            self.stops = stops
+            self.functions = functions
+        }
     }
 }
 
