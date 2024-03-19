@@ -199,7 +199,7 @@ extension OpenAI.Model {
         case gpt_4_32k_0314 = "gpt-4-32k-0314"
         case gpt_4_32k_0613 = "gpt-4-32k-0613"
         
-        case gpt_4_turbo_preview = "gpt_4_turbo_preview"
+        case gpt_4_turbo_preview = "gpt-4-turbo-preview"
         
         public var name: String {
             switch self {
