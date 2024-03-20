@@ -2,7 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
-import Expansions
+import Foundation
 import Swift
 
 @RuntimeDiscoverable

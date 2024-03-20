@@ -2,5 +2,4 @@
 // Copyright (c) Vatsal Manot
 //
 
-import Foundation
-import Swift
+@_exported import SwallowMacrosClient

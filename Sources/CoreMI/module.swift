@@ -3,6 +3,7 @@
 //
 
 @_exported import Diagnostics
+@_exported import SwallowMacrosClient
 
 public enum _module {
     
