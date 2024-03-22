@@ -19,13 +19,38 @@ The definitive, open-source Swift framework for interfacing with generative AI.
 
 # Usage
 
-```swift
-import AI
+### Import the framework
+
+```diff
++ import AI
 ```
 
-Chat completions:
+### Initialize a model
+
+Initialize an instance of `LLMRequestHandling` with an API provider of your choice. Here's an example:
 
 ```swift
+import AI
+import OpenAI
+
+let llm: any LLMRequestHandling = OpenAI.APIClient(apiKey: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+```
+
+You can now use `llm` as an interface to an LLM as provided by the underlying provider.
+
+### Chat completions
+
+In the snippet earlier, we initialized an instance of `LLMRequestHandling` with OpenAI as the underlying provider.
+
+OpenAI offers a number of **chat models**, like GPT-3.5 and GPT-4.
+
+A chat model is a language model that can be given a set of messages and asked to generate a response that follows in turn.
+
+You can use the `LLMRequestHandling.complete(_:model:)` function to generate a chat completion for a specific model of your choice. For example:
+
+```swift
+/// ...
+
 let llm: any LLMRequestHandling = OpenAI.APIClient(apiKey: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 
 let messages: [AbstractLLM.ChatMessage] = [
@@ -46,6 +71,8 @@ let result = try await llm.complete(
 
 print(result) // "Hello! How can I assist you today?"
 ```
+
+In this example we constructed an ordered array of chat messages, and used our `llm` instance to generate a completion using GPT-4.
 
 # Roadmap
 
