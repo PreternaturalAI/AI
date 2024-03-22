@@ -11,7 +11,7 @@ extension Anthropic {
         public typealias API = Anthropic.API
         
         case apiKeyMissing
-        case incorrectAPIKeyProvided
+        case invalidAPIKey
         case rateLimitExceeded
         case badRequest(API.Request.Error)
         case runtime(AnyError)
@@ -89,10 +89,10 @@ extension Anthropic.API {
                     ).error {
                         print(error.message)
                         
-                        if error.message.contains("You didn't provide an API key") {
+                        if error.message.contains("x-api-key header is required") {
                             throw Error.apiKeyMissing
-                        } else if error.message.contains("Incorrect API key provided") {
-                            throw Error.incorrectAPIKeyProvided
+                        } else if error.message.contains("invalid x-api-key") {
+                            throw Error.invalidAPIKey
                         }
                     }
                     

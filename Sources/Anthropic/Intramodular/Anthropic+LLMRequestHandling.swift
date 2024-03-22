@@ -54,7 +54,7 @@ extension Anthropic: LLMRequestHandling {
             \.complete,
              with: Anthropic.API.RequestBodies.Complete(
                 prompt: prompt.prefix.promptLiteral._stripToText(),
-                model: .claude_v2,
+                model: .claude_3_opus_20240229,
                 maxTokensToSample: parameters.tokenLimit.fixedValue ?? 256,
                 stopSequences: parameters.stops,
                 stream: false,
