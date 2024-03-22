@@ -2,6 +2,8 @@
 // Copyright (c) Vatsal Manot
 //
 
+import LargeLanguageModels
+
 @testable import OpenAI
 
 import XCTest
@@ -35,28 +37,26 @@ She no went to the market.
         _ = result
     }
     
-    func testChatCompletions() async throws {        
-        let result = try await client.createChatCompletion(
-            messages: [
-                OpenAI.ChatMessage(
-                    role: .system,
-                    body: "You are an extremely intelligent assistant."
-                ),
-                OpenAI.ChatMessage(
-                    role: .user,
-                    body: "Sup?"
-                ),
-                OpenAI.ChatMessage(
-                    role: .assistant,
-                    body: "I'm coming up with a list of things! Here you go:"
-                ),
-                
-            ],
-            model: .chat(.gpt_3_5_turbo),
-            parameters: .init()
+    func testChatCompletions() async throws {
+        let llm: any LLMRequestHandling = OpenAI.APIClient(apiKey: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
+        let messages: [AbstractLLM.ChatMessage] = [
+            AbstractLLM.ChatMessage(
+                role: .system,
+                body: "You are an extremely intelligent assistant."
+            ),
+            AbstractLLM.ChatMessage(
+                role: .user,
+                body: "Sup?"
+            )
+        ]
+        
+        let result = try await llm.complete(
+            messages,
+            model: OpenAI.Model.chat(.gpt_4)
         )
         
-        print(result.choices)
+        print(result) // "Hello! How can I assist you today?"
     }
     
     func testGPTVisionTurbo() async throws {

@@ -47,6 +47,15 @@ extension AbstractLLM {
             self.role = role
             self.content = content
         }
+        
+        public init(
+            role: ChatRole,
+            body: PromptLiteral
+        ) {
+            self.id = nil
+            self.role = role
+            self.content = body
+        }
     }
 }
 
