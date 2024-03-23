@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode: ['15.3']
+        xcode: ['latest']
         macos: ['macos-13']
         scheme: ['AI']
         command: ['build']
