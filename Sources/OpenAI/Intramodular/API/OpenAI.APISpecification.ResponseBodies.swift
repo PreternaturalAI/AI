@@ -28,6 +28,8 @@ extension OpenAI.APISpecification.ResponseBodies {
             self.usage = try container.decode(forKey: .usage)
             
             try super.init(from: decoder)
+            
+            self.data = self.data.sorted(by: \.index)
         }
         
         public override func encode(to encoder: Encoder) throws {

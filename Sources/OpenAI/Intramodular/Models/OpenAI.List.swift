@@ -14,7 +14,8 @@ extension OpenAI {
             case lastID = "lastId"
         }
         
-        public let data: [T]
+        public package(set) var data: [T]
+        
         public let hasMore: Bool?
         public let firstID: String?
         public let lastID: String?
