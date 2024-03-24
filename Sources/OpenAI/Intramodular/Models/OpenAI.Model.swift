@@ -30,6 +30,7 @@ extension OpenAI {
         case instructGPT(InstructGPT)
         case embedding(Embedding)
         case chat(Chat)
+        case speech(Speech)
         
         /// Deprecated by OpenAI.
         case feature(Feature)
@@ -57,6 +58,8 @@ extension OpenAI {
                 case .embedding(let value):
                     return value
                 case .chat(let value):
+                    return value
+                case .speech(let value):
                     return value
                 case .unknown:
                     assertionFailure(.unimplemented)
@@ -203,76 +206,63 @@ extension OpenAI.Model {
         
         public var name: String {
             switch self {
-                case .gpt_3_5_turbo:
-                    return "ChatGPT 3.5"
-                case .gpt_3_5_turbo_16k:
-                    return "ChatGPT 3.5"
-                case .gpt_4:
-                    return "ChatGPT 4"
-                case .gpt_4_32k:
-                    return "ChatGPT 4"
-                case .gpt_4_1106_preview:
-                    return "GPT-4 Turbo"
-                case .gpt_4_0125_preview:
-                    return "GPT-4 Turbo"
-                case .gpt_4_vision_preview:
-                    return "GPT-4V"
-                case .gpt_3_5_turbo_0301:
-                    return "GPT-3.5"
-                case .gpt_3_5_turbo_0613:
-                    return "GPT-3.5"
-                case .gpt_3_5_turbo_0125:
-                    return "GPT-3.5"
-                case .gpt_3_5_turbo_16k_0613:
-                    return "GPT-3.5"
-                case .gpt_4_0314:
-                    return "GPT-4"
-                case .gpt_4_0613:
-                    return "GPT-4"
-                case .gpt_4_32k_0314:
-                    return "GPT-4"
-                case .gpt_4_32k_0613:
-                    return "GPT-4"
-                case .gpt_4_turbo_preview:
-                    return "GPT-4 Turbo (Preview)"
+                case .gpt_3_5_turbo: "ChatGPT 3.5"
+                case .gpt_3_5_turbo_16k: "ChatGPT 3.5"
+                case .gpt_4: "ChatGPT 4"
+                case .gpt_4_32k: "ChatGPT 4"
+                case .gpt_4_1106_preview: "GPT-4 Turbo"
+                case .gpt_4_0125_preview: "GPT-4 Turbo"
+                case .gpt_4_vision_preview: "GPT-4V"
+                case .gpt_3_5_turbo_0301: "GPT-3.5"
+                case .gpt_3_5_turbo_0613: "GPT-3.5"
+                case .gpt_3_5_turbo_0125: "GPT-3.5"
+                case .gpt_3_5_turbo_16k_0613: "GPT-3.5"
+                case .gpt_4_0314: "GPT-4"
+                case .gpt_4_0613: "GPT-4"
+                case .gpt_4_32k_0314: "GPT-4"
+                case .gpt_4_32k_0613: "GPT-4"
+                case .gpt_4_turbo_preview: "GPT-4 Turbo (Preview)"
             }
         }
         
         public var contextSize: Int {
             let _4k = 4096
             let _8k = 8192
-            let _16k = 16384
-            let _32k = 16384
+            let _16k = 16385
+            let _32k = 32768
+            let _128k = 128000
             
             // let _128k = 131072
             
+            return switch self {
+                case .gpt_3_5_turbo, .gpt_3_5_turbo_0125, .gpt_3_5_turbo_16k: _16k
+                case .gpt_4: _8k
+                case .gpt_4_32k: _32k
+                case .gpt_3_5_turbo_0301, .gpt_3_5_turbo_0613: _4k
+                case .gpt_3_5_turbo_16k_0613: _16k
+                case .gpt_4_0314: _8k
+                case .gpt_4_0613: _8k
+                case .gpt_4_32k_0314: _32k
+                case .gpt_4_32k_0613: _32k
+                case .gpt_4_1106_preview, .gpt_4_0125_preview: _128k
+                case .gpt_4_vision_preview: _128k
+                case .gpt_4_turbo_preview: _128k
+            }
+        }
+    }
+}
+
+extension OpenAI.Model {
+    public enum Speech: String, Named, OpenAI._ModelType, CaseIterable {
+        case tts_1 = "tts-1"
+        case tts_1_hd = "tts-1-hd"
+        
+        public var contextSize: Int { return 4096 }
+        
+        public var name: String {
             switch self {
-                case .gpt_3_5_turbo:
-                    return _4k
-                case .gpt_3_5_turbo_16k:
-                    return _16k
-                case .gpt_4:
-                    return _8k
-                case .gpt_4_32k:
-                    return _32k
-                case .gpt_3_5_turbo_0301, .gpt_3_5_turbo_0613, .gpt_3_5_turbo_0125:
-                    return _4k
-                case .gpt_3_5_turbo_16k_0613:
-                    return _16k
-                case .gpt_4_0314:
-                    return _8k
-                case .gpt_4_0613:
-                    return _8k
-                case .gpt_4_32k_0314:
-                    return _32k
-                case .gpt_4_32k_0613:
-                    return _32k
-                case .gpt_4_1106_preview, .gpt_4_0125_preview:
-                    return 4096 // FIXME: !!!
-                case .gpt_4_vision_preview:
-                    return 4096 // FIXME: !!!
-                case .gpt_4_turbo_preview:
-                    return 4096 // FIXME: !!!
+                case .tts_1: "Text-to-speech"
+                case .tts_1_hd: "Text-to-speech HD"
             }
         }
     }
@@ -324,6 +314,8 @@ extension OpenAI.Model: RawRepresentable {
             case .embedding(let model):
                 return model.rawValue
             case .chat(let model):
+                return model.rawValue
+            case .speech(let model):
                 return model.rawValue
             case .unknown(let rawValue):
                 return rawValue
