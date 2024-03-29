@@ -14,14 +14,20 @@ extension AbstractLLM {
         public struct FunctionCall: Codable, CustomDebugStringConvertible, Hashable, Sendable {
             public let name: String
             public let arguments: String
-            
+            public var context: PromptContextValues
+
             public var debugDescription: String {
                 "<function call: \(name)>"
             }
             
-            public init(name: String, arguments: String) {
+            public init(
+                name: String,
+                arguments: String,
+                context: PromptContextValues
+            ) {
                 self.name = name
                 self.arguments = arguments
+                self.context = context
             }
         }
         
