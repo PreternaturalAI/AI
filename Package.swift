@@ -147,23 +147,24 @@ let package = Package(
         .testTarget(
             name: "LargeLanguageModelsTests",
             dependencies: [
-                "LargeLanguageModels"
+                "AI",
+                "Swallow"
             ],
             path: "Tests/LargeLanguageModels"
         ),
         .testTarget(
             name: "AnthropicTests",
             dependencies: [
-                "Anthropic",
-                "LargeLanguageModels"
+                "AI",
+                "Swallow"
             ],
             path: "Tests/Anthropic"
         ),
         .testTarget(
             name: "OpenAITests",
             dependencies: [
-                "LargeLanguageModels",
-                "OpenAI"
+                "AI",
+                "Swallow"
             ],
             path: "Tests/OpenAI"
         )
