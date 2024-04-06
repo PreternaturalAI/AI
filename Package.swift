@@ -139,6 +139,7 @@ let package = Package(
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
+                "Swallow",
             ],
             path: "Sources/AI",
             swiftSettings: []
