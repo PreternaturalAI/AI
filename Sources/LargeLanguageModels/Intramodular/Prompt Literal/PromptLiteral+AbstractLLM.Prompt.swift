@@ -84,7 +84,7 @@ extension PromptLiteral {
                     } else {
                         if noRolesGiven {
                             if let variable = try? (component.payload.rawValue as? (any _opaque_DynamicPromptVariable)) {
-                                assert(variable._resolvedValue != nil)
+                                assert(variable._runtimeResolvedValue != nil)
                                 
                                 role = .assistant
                             } else {

@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CorePersistence
 import LargeLanguageModels
 import NetworkKit
 import Swallow
@@ -20,20 +21,28 @@ extension Anthropic {
             [.domain(.networking)]
         }
     }
-
+    
     public struct API: RESTAPISpecification {
         public typealias Error = APIError
-
-        public struct Configuration: Codable, Hashable {
-            public var apiKey: String?
+        
+        public struct Configuration: _RESTAPIConfiguration {
+            public var apiKey: APIKey?
+            
+            public init(apiKey: APIKey? = nil) {
+                self.apiKey = apiKey
+            }
+            
+            public init(apiKey: String?) {
+                self.apiKey = apiKey.map({ APIKey(serverURL: nil, value: $0) })
+            }
         }
-
+        
         public let configuration: Configuration
-
+        
         public var host: URL  {
             URL(string: "https://api.anthropic.com/v1/")!
         }
-
+        
         public var id: some Hashable {
             configuration
         }
@@ -59,7 +68,8 @@ extension Anthropic.API {
             return try super
                 .buildRequestBase(from: input, context: context)
                 .jsonBody(input, keyEncodingStrategy: .convertToSnakeCase)
-                .header(.custom(key: "anthropic-version", value: "2023-06-01"))
+                .header("anthropic-version", "2023-06-01")
+                .header("anthropic-beta", "tools-2024-04-04")
                 .header(.custom(key: "x-api-key", value: configuration.apiKey))
         }
         
@@ -131,6 +141,7 @@ extension Anthropic.API.RequestBodies {
         public enum CodingKeys: String, CodingKey {
             case model
             case messages
+            case tools
             case system
             case maxTokens = "max_tokens"
             case temperature
@@ -140,9 +151,10 @@ extension Anthropic.API.RequestBodies {
             case stream
             case metadata
         }
-
+        
         public var model: Anthropic.Model
         public var messages: [Anthropic.ChatMessage]
+        public let tools: [Anthropic.Tool]
         public var system: String?
         public var maxTokens: Int
         public var temperature: Double?
@@ -151,22 +163,23 @@ extension Anthropic.API.RequestBodies {
         public var stopSequences: [String]?
         public var stream: Bool?
         public var metadata: Metadata?
-                
+        
         public struct Metadata: Codable, Hashable, Sendable {
             public enum CodingKeys: String, CodingKey {
                 case userID = "user_id"
             }
-
+            
             public var userID: String
             
             public init(userID: String) {
                 self.userID = userID
             }
         }
-                
+        
         public init(
             model: Anthropic.Model,
             messages: [Anthropic.ChatMessage],
+            tools: [Anthropic.Tool],
             system: String?,
             maxTokens: Int,
             temperature: Double?,
@@ -178,6 +191,7 @@ extension Anthropic.API.RequestBodies {
         ) {
             self.model = model
             self.messages = messages
+            self.tools = tools
             self.system = system
             self.maxTokens = maxTokens
             self.temperature = temperature
@@ -243,7 +257,7 @@ extension Anthropic.API.ResponseBodies {
             case stopSequence
             case usage
         }
-
+        
         public enum StopReason: String, Codable, Hashable, Sendable {
             case endTurn = "end_turn"
             case maxTokens = "max_tokens"
@@ -260,7 +274,7 @@ extension Anthropic.API.ResponseBodies {
                 }
             }
         }
-
+        
         public let id: String
         public let model: Anthropic.Model
         public let type: String?
@@ -274,7 +288,7 @@ extension Anthropic.API.ResponseBodies {
             case image // FIXME: Unimplemented
             case text
         }
-
+        
         public struct Content: Codable, Hashable, Sendable {
             public let type: ContentType
             public let text: String
@@ -294,14 +308,14 @@ extension Anthropic.API.ResponseBodies {
             case delta
             case contentBlock
         }
-
+        
         public struct Delta: Codable, Hashable, Sendable {
             public let type: String?
             public let text: String?
             public let stopReason: String?
             public let stopSequence: String?
         }
-
+        
         public let type: String
         public let index: Int?
         public let message: CreateMessage?

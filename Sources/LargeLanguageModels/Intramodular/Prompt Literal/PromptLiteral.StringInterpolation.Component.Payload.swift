@@ -7,7 +7,7 @@ import Foundation
 import Swallow
 
 extension PromptLiteral.StringInterpolation.Component {
-    public enum Payload: HashEquatable, @unchecked Sendable {
+    public enum Payload: _CasePathExtracting, HashEquatable, @unchecked Sendable {
         case stringLiteral(String)
         case image(Image)
         case localizedStringResource(LocalizedStringResource)
@@ -44,7 +44,24 @@ extension PromptLiteral.StringInterpolation.Component.Payload {
             }
         }
     }
+    
+    public var functionCall: AbstractLLM.ChatPrompt.FunctionCall? {
+        get {
+            self[casePath: /Self.other]?[casePath: /Other.functionCall]
+        } set {
+            self = try! .other(.functionCall(newValue.unwrap()))
+        }
+    }
+    
+    public var functionInvocation: AbstractLLM.ChatPrompt.FunctionInvocation? {
+        get {
+            self[casePath: /Self.other]?[casePath: /Other.functionInvocation]
+        } set {
+            self = try! .other(.functionInvocation(newValue.unwrap()))
+        }
+    }
 }
+
 // MARK: - Conformances
 
 extension PromptLiteral.StringInterpolation.Component.Payload: Codable {
@@ -163,7 +180,7 @@ extension PromptLiteral.StringInterpolation.Component.Payload {
         case url(URL)
     }
 
-    public enum Other: Hashable, Sendable {
+    public enum Other: _CasePathExtracting, Hashable, Sendable {
         case functionCall(AbstractLLM.ChatPrompt.FunctionCall)
         case functionInvocation(AbstractLLM.ChatPrompt.FunctionInvocation)
         

@@ -215,6 +215,9 @@ extension Anthropic: LLMRequestHandling {
         let requestBody = Anthropic.API.RequestBodies.CreateMessage(
             model: model,
             messages: messages,
+            tools: try (parameters?.functions ?? []).map {
+                try Anthropic.Tool(_from: $0)
+            },
             system: system,
             maxTokens: parameters?.tokenLimit?.fixedValue ?? 4000, // FIXME: Hardcoded,
             temperature: parameters?.temperatureOrTopP?.temperature,
