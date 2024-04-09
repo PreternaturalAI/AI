@@ -68,7 +68,8 @@ extension Anthropic.API {
             return try super
                 .buildRequestBase(from: input, context: context)
                 .jsonBody(input, keyEncodingStrategy: .convertToSnakeCase)
-                .header(.custom(key: "anthropic-version", value: "2023-06-01"))
+                .header("anthropic-version", "2023-06-01")
+                .header("anthropic-beta", "tools-2024-04-04")
                 .header(.custom(key: "x-api-key", value: configuration.apiKey))
         }
         
