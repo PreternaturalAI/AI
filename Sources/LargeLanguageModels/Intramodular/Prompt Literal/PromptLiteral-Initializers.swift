@@ -36,5 +36,18 @@ extension PromptLiteral {
             assert(!isEmpty)
         }
     }
+    
+    public init(
+        image: _AnyImage.Name
+    ) throws {
+        try self.init(image: try AppKitOrUIKitImage(named: image).unwrap())
+    }
+    
+    public init(
+        image: String,
+        in bundle: Bundle?
+    ) throws {
+        try self.init(image: try AppKitOrUIKitImage(named: .bundleResource(image, in: bundle)).unwrap())
+    }
 }
 #endif

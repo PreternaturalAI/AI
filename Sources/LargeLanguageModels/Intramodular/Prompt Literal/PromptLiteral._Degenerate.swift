@@ -87,7 +87,10 @@ extension PromptLiteral {
                     switch other {
                         case .functionCall(let call):
                             try append(
-                                _Degenerate.Component(payload: .functionCall(call), context: component.context)
+                                _Degenerate.Component(
+                                    payload: .functionCall(call),
+                                    context: component.context
+                                )
                             )
                         case .functionInvocation(let invocation):
                             try append(
@@ -138,7 +141,7 @@ extension PromptLiteral._Degenerate.Component {
         case string(String)
         case image(Image)
         case functionCall(AbstractLLM.ChatPrompt.FunctionCall)
-        case functionInvocation(AbstractLLM.ChatPrompt.FunctionInvocation)
+        case functionInvocation(AbstractLLM.ChatPrompt.RawFunctionInvocation)
         
         public var type: PayloadType {
             switch self {

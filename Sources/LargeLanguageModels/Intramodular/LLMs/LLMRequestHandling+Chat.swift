@@ -6,6 +6,13 @@ import CoreMI
 import Swallow
 
 extension LLMRequestHandling {
+    public func complete(
+        _ messages: [AbstractLLM.ChatMessage],
+        parameters: AbstractLLM.ChatCompletionParameters
+    ) async throws -> AbstractLLM.ChatCompletion {
+        try await complete(prompt: AbstractLLM.ChatPrompt(messages: messages), parameters: parameters)
+    }
+    
     /// Stream a completion for a given chat prompt.
     public func completion(
         for messages: [AbstractLLM.ChatMessage],

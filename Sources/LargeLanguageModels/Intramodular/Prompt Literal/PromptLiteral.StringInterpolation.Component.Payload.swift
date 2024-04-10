@@ -53,7 +53,7 @@ extension PromptLiteral.StringInterpolation.Component.Payload {
         }
     }
     
-    public var functionInvocation: AbstractLLM.ChatPrompt.FunctionInvocation? {
+    public var functionInvocation: AbstractLLM.ChatPrompt.RawFunctionInvocation? {
         get {
             self[casePath: /Self.other]?[casePath: /Other.functionInvocation]
         } set {
@@ -182,7 +182,7 @@ extension PromptLiteral.StringInterpolation.Component.Payload {
 
     public enum Other: _CasePathExtracting, Hashable, Sendable {
         case functionCall(AbstractLLM.ChatPrompt.FunctionCall)
-        case functionInvocation(AbstractLLM.ChatPrompt.FunctionInvocation)
+        case functionInvocation(AbstractLLM.ChatPrompt.RawFunctionInvocation)
         
         var rawValue: any Hashable {
             switch self {
