@@ -236,6 +236,8 @@ extension OpenAI.Model {
                     return "GPT-4"
                 case .gpt_4_turbo_preview:
                     return "GPT-4 Turbo (Preview)"
+                case .gpt_4_turbo:
+                    return "GPT-4 Turbo"
             }
         }
         
@@ -273,6 +275,8 @@ extension OpenAI.Model {
                 case .gpt_4_vision_preview:
                     return 4096 // FIXME: !!!
                 case .gpt_4_turbo_preview:
+                    return 4096 // FIXME: !!!
+                case .gpt_4_turbo:
                     return 4096 // FIXME: !!!
             }
         }
