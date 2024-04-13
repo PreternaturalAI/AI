@@ -22,6 +22,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build_and_test:
     name: ${{ matrix.command }} on  ${{ matrix.platform }} (xcode ${{ matrix.xcode }}, ${{ matrix.macos }})
@@ -61,3 +66,63 @@ jobs:
         code-coverage: true
         verbosity: xcpretty
         upload-logs: always
+  generate_and_deploy_docs:
+    name: Build Documentation
+    runs-on: ${{ matrix.macos }}
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: ['latest']
+        macos: ['macos-14']
+        scheme: ['DocumentationBuilder']
+        command: ['docbuild']
+        platform: ['macOS']
+    steps:
+      - name: Switch xcode to ${{ matrix.xcode }}
+        uses: maxim-lobanov/setup-xcode@v1.5.1
+        with:
+          xcode-version: ${{ matrix.xcode }}
+      - name: Double-check macOS version (${{ matrix.macos }})
+        run: sw_vers
+      - name: Code Checkout
+        uses: actions/checkout@v2
+      - name: Check xcodebuild version
+        run: xcodebuild -version
+      - name: Check xcode embedded SDKs
+        run: xcodebuild -showsdks
+      - name: Show buildable schemes
+        run: xcodebuild -list
+      - name: Show eligible build destinations for ${{ matrix.scheme }}
+        run: xcodebuild -showdestinations -scheme ${{ matrix.scheme }}
+      - name: Skip Macro Validation
+        run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+      - name: Generate DocC Documentation
+        id: generate_docs
+        run: |
+          xcodebuild docbuild -scheme DocumentationBuilder -destination generic/platform=${{ matrix.platform }} -derivedDataPath ./build
+          doccarchive_path=$(find ./build -name '*.doccarchive' -print -quit)
+          if [ -z "$doccarchive_path" ]; then
+            echo "No .doccarchive file found."
+            exit 1
+          fi
+          echo "::set-output name=doccarchive_path::$doccarchive_path"
+      - name: Convert DocC Archive to Static Website
+        run: |
+          docc_path=$(xcrun --find docc)
+          if [ -z "$docc_path" ]; then
+            echo "docc command not found."
+            exit 1
+          fi
+          ${docc_path} process-archive transform-for-static-hosting ${{ steps.generate_docs.outputs.doccarchive_path }} \
+          --output-path ./docs \
+          --hosting-base-path /DocumentationBuilder
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
