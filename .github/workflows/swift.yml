@@ -74,7 +74,7 @@ jobs:
       matrix:
         xcode: ['latest']
         macos: ['macos-14']
-        scheme: ['DocumentationBuilder']
+        scheme: ['AI']
         command: ['docbuild']
         platform: ['macOS']
     steps:
@@ -99,7 +99,7 @@ jobs:
       - name: Generate DocC Documentation
         id: generate_docs
         run: |
-          xcodebuild docbuild -scheme DocumentationBuilder -destination generic/platform=${{ matrix.platform }} -derivedDataPath ./build
+          xcodebuild docbuild -scheme AI -destination generic/platform=${{ matrix.platform }} -derivedDataPath ./build
           doccarchive_path=$(find ./build -name '*.doccarchive' -print -quit)
           if [ -z "$doccarchive_path" ]; then
             echo "No .doccarchive file found."
@@ -115,7 +115,7 @@ jobs:
           fi
           ${docc_path} process-archive transform-for-static-hosting ${{ steps.generate_docs.outputs.doccarchive_path }} \
           --output-path ./docs \
-          --hosting-base-path /DocumentationBuilder
+          --hosting-base-path /AI
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
