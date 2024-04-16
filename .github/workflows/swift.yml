@@ -99,7 +99,7 @@ jobs:
       - name: Generate Documentation
         run: |
           xcodebuild docbuild -scheme AI -destination generic/platform=${{ matrix.platform }}
-          doccarchive_path=$(find -name '*.doccarchive' -print -quit)
+          doccarchive_path=$(find . -name '*.doccarchive' -print -quit)
           if [ -z "$doccarchive_path" ]; then
             echo "No .doccarchive file found."
             exit 1
