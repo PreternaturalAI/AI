@@ -98,7 +98,7 @@ jobs:
         run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
       - name: Generate Documentation
         run: |
-          xcodebuild docbuild -scheme AI -destination generic/platform=${{ matrix.platform }}
+          xcodebuild docbuild -scheme ${{ matrix.scheme }} -destination generic/platform=${{ matrix.platform }}
           doccarchive_path=$(find . -name '*.doccarchive' -print -quit)
           if [ -z "$doccarchive_path" ]; then
             echo "No .doccarchive file found."
