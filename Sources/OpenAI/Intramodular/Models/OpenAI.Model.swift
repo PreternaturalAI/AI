@@ -198,10 +198,11 @@ extension OpenAI.Model {
         case gpt_4_0613 = "gpt-4-0613"
         case gpt_4_32k_0314 = "gpt-4-32k-0314"
         case gpt_4_32k_0613 = "gpt-4-32k-0613"
-        
-        case gpt_4_turbo_preview = "gpt-4-turbo-preview"
+            
         case gpt_4_turbo = "gpt-4-turbo"
         
+        case __deprecated_gpt_4_turbo_preview = "gpt-4-turbo-preview"
+
         public var name: String {
             switch self {
                 case .gpt_3_5_turbo:
@@ -234,10 +235,10 @@ extension OpenAI.Model {
                     return "GPT-4"
                 case .gpt_4_32k_0613:
                     return "GPT-4"
-                case .gpt_4_turbo_preview:
-                    return "GPT-4 Turbo (Preview)"
                 case .gpt_4_turbo:
                     return "GPT-4 Turbo"
+                case .__deprecated_gpt_4_turbo_preview:
+                    return "GPT-4 Turbo (Preview)"
             }
         }
         
@@ -274,9 +275,9 @@ extension OpenAI.Model {
                     return 4096 // FIXME: !!!
                 case .gpt_4_vision_preview:
                     return 4096 // FIXME: !!!
-                case .gpt_4_turbo_preview:
-                    return 4096 // FIXME: !!!
                 case .gpt_4_turbo:
+                    return 4096 // FIXME: !!!
+                case .__deprecated_gpt_4_turbo_preview:
                     return 4096 // FIXME: !!!
             }
         }
@@ -349,5 +350,14 @@ extension OpenAI.Model: RawRepresentable {
         } else {
             self = .unknown(rawValue)
         }
+    }
+}
+
+// MARK: - Deprecated
+
+extension OpenAI.Model.Chat {
+    @available(*, deprecated, renamed: "gpt_4_turbo")
+    public var gpt_4_turbo_preview: Self {
+        .__deprecated_gpt_4_turbo_preview
     }
 }

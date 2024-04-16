@@ -36,7 +36,6 @@ extension PromptLiteral {
 }
 
 extension PromptLiteral.StringInterpolation.Component {
-    @_spi(Internal)
     public func _stripToText() throws -> String {
         switch payload {
             case .stringLiteral(let value):

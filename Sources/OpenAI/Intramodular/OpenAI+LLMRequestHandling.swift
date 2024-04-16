@@ -251,7 +251,7 @@ extension OpenAI.APIClient {
         if containsImage {
             result = .chat(.gpt_4_vision_preview)
         } else {
-            result = .chat(.gpt_4_turbo_preview)
+            result = .chat(.gpt_4_turbo)
         }
         
         if result == .chat(.gpt_3_5_turbo) {

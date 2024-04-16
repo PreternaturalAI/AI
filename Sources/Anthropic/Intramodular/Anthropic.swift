@@ -7,6 +7,7 @@ import LargeLanguageModels
 import NetworkKit
 import Swallow
 
+@RuntimeDiscoverable
 public final class Anthropic: HTTPClient, PersistentlyRepresentableType, _StaticNamespaceType {
     public static var persistentTypeRepresentation: some IdentityRepresentation {
         _MIServiceTypeIdentifier._Anthropic
