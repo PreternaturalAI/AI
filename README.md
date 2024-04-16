@@ -4,6 +4,7 @@
 [![Swift](https://github.com/PreternaturalAI/AI/actions/workflows/swift.yml/badge.svg)](https://github.com/PreternaturalAI/AI/actions/workflows/swift.yml)
 
 <img src="https://github.com/PreternaturalAI/AI/assets/8635253/6ee85468-8fdf-4c32-92a3-44b8f2fe1eb5" width="400">
+
 #### Supported Platforms
 <p align="left">
 <picture>
