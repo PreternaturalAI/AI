@@ -108,7 +108,8 @@ print(result) // "Hello! How can I assist you today?"
 In this example we constructed an ordered array of chat messages, and used our `llm` instance to generate a completion using GPT-4.
 
 # Roadmap
-<img src="https://github.com/PreternaturalAI/AI/assets/8635253/d660ab91-c0a0-4ef8-938e-094cba0abba7" width="400">
+<img src="https://github.com/PreternaturalAI/AI/assets/8635253/db9a2101-08fd-4b62-8f0a-2b9596ddb358" width="400">
+
 
 - [x] OpenAI
 - [x] Anthropic
