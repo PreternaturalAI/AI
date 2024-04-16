@@ -3,6 +3,8 @@
 
 [![Swift](https://github.com/PreternaturalAI/AI/actions/workflows/swift.yml/badge.svg)](https://github.com/PreternaturalAI/AI/actions/workflows/swift.yml)
 
+![ExportedImage](https://github.com/PreternaturalAI/AI/assets/8635253/62dc3fd1-82a0-498a-a75e-b8eaba25e03e)
+
 #### Supported Platforms
 <p align="left">
 <picture>
@@ -106,8 +108,6 @@ print(result) // "Hello! How can I assist you today?"
 ```
 
 In this example we constructed an ordered array of chat messages, and used our `llm` instance to generate a completion using GPT-4.
-
-![ExportedImage](https://github.com/PreternaturalAI/AI/assets/8635253/62dc3fd1-82a0-498a-a75e-b8eaba25e03e)
 
 # Roadmap
 
