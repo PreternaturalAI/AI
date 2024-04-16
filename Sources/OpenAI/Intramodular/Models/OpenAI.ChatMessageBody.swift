@@ -30,7 +30,9 @@ extension OpenAI {
         
         case text(String)
         case content([_Content])
+        /// The call made to a function provided to the LLM.
         case functionCall(FunctionCall)
+        /// The result of a function call of a function that was provided to the LLM.
         case functionInvocation(FunctionInvocation)
         
         func _coerceToContentArray() throws -> [_Content] {

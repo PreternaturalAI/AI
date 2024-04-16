@@ -20,6 +20,7 @@
   <source media="(prefers-color-scheme: light)" srcset="Images/macos-active.svg">
   <img alt="macos" src="Images/macos-active.svg" height="24">
 </picture>&nbsp;
+  
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="Images/ios.svg">
   <source media="(prefers-color-scheme: light)" srcset="Images/ios-active.svg">
