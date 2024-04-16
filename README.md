@@ -9,25 +9,24 @@
   <source media="(prefers-color-scheme: dark)" srcset="Images/macos.svg">
   <source media="(prefers-color-scheme: light)" srcset="Images/macos-active.svg">
   <img alt="macos" src="Images/macos-active.svg" height="24">
-</picture>
-
+</picture>&nbsp;
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="Images/ios.svg">
   <source media="(prefers-color-scheme: light)" srcset="Images/ios-active.svg">
   <img alt="macos" src="Images/ios-active.svg" height="24">
-</picture>
+</picture>&nbsp;
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="Images/ipados.svg">
   <source media="(prefers-color-scheme: light)" srcset="Images/ipados-active.svg">
   <img alt="macos" src="Images/ipados-active.svg" height="24">
-</picture>
+</picture>&nbsp;
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="Images/tvos.svg">
   <source media="(prefers-color-scheme: light)" srcset="Images/tvos-active.svg">
   <img alt="macos" src="Images/tvos-active.svg" height="24">
-</picture>
+</picture>&nbsp;
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="Images/watchos.svg">
