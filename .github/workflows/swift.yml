@@ -98,18 +98,18 @@ jobs:
         run: defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
       - name: Generate Documentation
         run: |
-            xcodebuild docbuild -scheme ${{ matrix.scheme }} -destination generic/platform=${{ matrix.platform }}
-            doccarchive_path=$(find ~/Library/Developer/Xcode/DerivedData -name '*.doccarchive' -print -quit)
-            if [ -z "$doccarchive_path" ]; then
-              echo "No .doccarchive file found in the default derived data directory."
+          xcodebuild docbuild -scheme ${{ matrix.scheme }} -destination generic/platform=${{ matrix.platform }}
+          doccarchive_path=$(find ~/Library/Developer/Xcode/DerivedData -name '*.doccarchive' -print -quit)
+          if [ -z "$doccarchive_path" ]; then
+            echo "No .doccarchive file found in the default derived data directory."
             exit 1
-            fi
-            echo "::set-output name=doccarchive_path::$doccarchive_path"
+          fi
+          echo "doccarchive_path=$doccarchive_path" >> $GITHUB_OUTPUT
       - name: Convert DocC Archive to Static Website
         run: |
           docc_path=$(xcrun --find docc)
           if [ -z "$docc_path" ]; then
-          echo "docc command not found."
+            echo "docc command not found."
             exit 1
           fi
           ${docc_path} process-archive transform-for-static-hosting "${{ steps.generate_docs.outputs.doccarchive_path }}" \
