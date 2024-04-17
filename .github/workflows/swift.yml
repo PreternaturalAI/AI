@@ -109,10 +109,10 @@ jobs:
         run: |
           docc_path=$(xcrun --find docc)
           if [ -z "$docc_path" ]; then
-            echo "docc command not found."
+          echo "docc command not found."
             exit 1
           fi
-          ${docc_path} process-archive transform-for-static-hosting ${{ steps.generate_docs.outputs.doccarchive_path }} \
+          ${docc_path} process-archive transform-for-static-hosting "${{ steps.generate_docs.outputs.doccarchive_path }}" \
           --output-path ./docs \
           --hosting-base-path /AI
       - name: Setup Pages
