@@ -229,7 +229,7 @@ extension OpenAI.ChatCompletionSession {
         onEvent: @escaping (OpenAI.ChatCompletionChunk) throws -> T
     ) -> AsyncThrowingStream<T, Error> {
         return AsyncThrowingStream(bufferingPolicy: .unbounded) { continuation in
-            Task {
+            Task(priority: .userInitiated) {
                 do {
                     for try await line in bytes.lines {
                         if line.starts(with: "data: [DONE]") {

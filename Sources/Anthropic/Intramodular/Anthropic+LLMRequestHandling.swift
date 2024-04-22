@@ -151,7 +151,7 @@ extension Anthropic: LLMRequestHandling {
         let session = URLSession(configuration: sessionConfiguration)
                 
         let result = AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error> { (continuation: AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error>.Continuation) in
-            let task = Task<Void, Swift.Error> {
+            let task = Task<Void, Swift.Error>(priority: .userInitiated) {
                 let (bytes, _) = try await session.bytes(for: URLRequest(request))
                 
                 for try await line in bytes.lines {
@@ -174,8 +174,6 @@ extension Anthropic: LLMRequestHandling {
                             )
                             
                             continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
-                            
-                            await Task.yield()
                         } else {
                             print("")
                         }
