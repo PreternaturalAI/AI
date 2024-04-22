@@ -34,6 +34,7 @@ extension TextEmbeddingsRequestHandling {
         nil
     }
     
+    /// Produce an array of text embeddings for the given array of strings.
     public func textEmbeddings(
         for strings: [String]
     ) async throws -> TextEmbeddings {
@@ -45,6 +46,7 @@ extension TextEmbeddingsRequestHandling {
         )
     }
     
+    /// Produce an array of text embeddings for the given array of strings.
     public func textEmbeddings(
         for strings: [String],
         model: some _MLModelIdentifierConvertible
@@ -57,6 +59,21 @@ extension TextEmbeddingsRequestHandling {
         )
     }
     
+    /// Produce a single text embedding for the given text.
+    public func singleTextEmbedding(
+        for string: String
+    ) async throws -> SingleTextEmbedding {
+        let embeddings: TextEmbeddings = try await self.fulfill(
+            TextEmbeddingsRequest(model: nil, strings: [string])
+        )
+        
+        let result: SingleTextEmbedding = try embeddings.data.toCollectionOfOne().first
+        
+        return result
+    }
+    
+    /// Produce a single text embedding for the given text.
+    @available(*, deprecated, renamed: "singleTextEmbedding")
     public func textEmbedding(
         for string: String
     ) async throws -> _RawTextEmbedding {

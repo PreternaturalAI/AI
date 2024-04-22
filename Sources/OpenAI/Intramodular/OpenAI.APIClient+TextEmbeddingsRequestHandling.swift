@@ -16,7 +16,7 @@ extension OpenAI.APIClient: TextEmbeddingsRequestHandling {
             )
         }
         
-        let model = request.model ?? _MLModelIdentifier(from: OpenAI.Model.Embedding.ada)
+        let model: _MLModelIdentifier = request.model ?? _MLModelIdentifier(from: OpenAI.Model.Embedding.ada)
         let embeddingModel = try OpenAI.Model.Embedding(rawValue: model.name).unwrap()
         
         let embeddings = try await createEmbeddings(
@@ -31,7 +31,8 @@ extension OpenAI.APIClient: TextEmbeddingsRequestHandling {
             data: request.input.zip(embeddings).map {
                 TextEmbeddings.Element(
                     text: $0,
-                    embedding: $1.embedding
+                    embedding: $1.embedding,
+                    model: model
                 )
             }
         )

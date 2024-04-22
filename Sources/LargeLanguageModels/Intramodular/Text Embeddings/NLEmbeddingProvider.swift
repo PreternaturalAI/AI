@@ -48,6 +48,7 @@ public final class NLEmbeddingProvider: TextEmbeddingsRequestHandling {
     public func fulfill(
         _ request: TextEmbeddingsRequest
     ) async throws -> TextEmbeddings {
+        let model: _MLModelIdentifier = try self.model
         let embedding: NLEmbedding
         
         if let requestedModel = request.model {
@@ -68,7 +69,8 @@ public final class NLEmbeddingProvider: TextEmbeddingsRequestHandling {
                     text: string,
                     embedding: _RawTextEmbedding(
                         rawValue: try embedding.vector(for: string).unwrap()
-                    )
+                    ),
+                    model: model
                 )
             }
         )
