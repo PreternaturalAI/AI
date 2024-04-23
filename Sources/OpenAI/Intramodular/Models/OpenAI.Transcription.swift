@@ -8,7 +8,7 @@
 import Foundation
 
 extension OpenAI {
-    public final class Transcriptions: OpenAI.Object {
+    public final class Transcription: OpenAI.Object {
         public let data: Data
         
         public required init(from decoder: Decoder) throws {
@@ -21,7 +21,7 @@ extension OpenAI {
         
         public init(data: Data) {
             self.data = data
-            super.init(type: .transcriptions)
+            super.init(type: .transcription)
         }
         
         enum CodingKeys: CodingKey {

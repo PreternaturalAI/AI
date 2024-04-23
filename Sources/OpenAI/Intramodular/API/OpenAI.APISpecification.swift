@@ -203,7 +203,7 @@ extension OpenAI {
         @POST
         @Path("/v1/audio/transcriptions")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
-        public var createTranscriptions = Endpoint<RequestBodies.CreateTranscriptions, Data, Void>()
+        public var createTranscription = Endpoint<RequestBodies.CreateTranscription, Data, Void>()
     }
 }
 

@@ -455,7 +455,7 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct CreateTranscriptions: Codable {
+    public struct CreateTranscription: Codable {
         
         public enum ResponseFormat: String, Codable, CaseIterable {
             case json
@@ -467,6 +467,8 @@ extension OpenAI.APISpecification.RequestBodies {
 
         /// The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
         public let file: OpenAI.File
+        ///An optional text to guide the model's style or continue a previous audio segment. The prompt should match the audio language.
+        public let prompt: String?
         /// ID of the model to use. Only whisper-1 (which is powered by our open source Whisper V2 model) is currently available.
         public let model: OpenAI.Model
         
@@ -490,23 +492,26 @@ extension OpenAI.APISpecification.RequestBodies {
         
         
         public enum CodingKeys: String, CodingKey {
-            case model
             case file
+            case prompt
+            case model
             case language
             case temperature
             case timestampGranularities = "timestamp_granularities[]"
             case responseFormat = "response_format"
         }
 
-        public init(model: OpenAI.Model,
-                    file: OpenAI.File,
+        public init(file: OpenAI.File,
+                    prompt: String?,
+                    model: OpenAI.Model = OpenAI.Model.transcriptions(.whisper_1),
                     language: LargeLanguageModels.ISO639LanguageCode? = nil,
                     temperature: Double? = 0,
                     timestampGranularities: TimestampGranularities? = nil,
                     responseFormat: ResponseFormat? = ResponseFormat.verboseJSON
             ) {
-            self.model = model
             self.file = file
+            self.prompt = prompt
+            self.model = model
             self.language = language
             self.temperature = temperature
             self.timestampGranularities = timestampGranularities

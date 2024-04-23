@@ -193,21 +193,23 @@ extension OpenAI.APIClient {
     }
     
     public func createTranscriptions(
-        model: OpenAI.Model.Transcriptions,
         file: OpenAI.File,
+        prompt: String?,
+        model: OpenAI.Model.Transcriptions?,
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
-        timestampGranularities: OpenAI.APISpecification.RequestBodies.CreateTranscriptions.TimestampGranularities? = nil
-    ) async throws -> OpenAI.Transcriptions {
-        let requestBody = OpenAI.APISpecification.RequestBodies.CreateTranscriptions(
-            model: OpenAI.Model.transcriptions(model),
-            file: file,
+        timestampGranularities: OpenAI.APISpecification.RequestBodies.CreateTranscription.TimestampGranularities? = nil
+    ) async throws -> OpenAI.Transcription {
+        let requestBody = OpenAI.APISpecification.RequestBodies.CreateTranscription(
+            file: file, 
+            prompt: prompt,
+            model: OpenAI.Model.transcriptions(.whisper_1),
             language: language,
             temperature: temperature,
             timestampGranularities: timestampGranularities
         )
-        let data = try await run(\.createTranscriptions, with: requestBody)
-        return OpenAI.Transcriptions(data: data)
+        let data = try await run(\.createTranscription, with: requestBody)
+        return OpenAI.Transcription(data: data)
     }
 }
 
