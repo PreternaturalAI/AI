@@ -29,11 +29,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode: ['15.2']
-        macos: ['macos-13']
+        xcode: ['latest']
+        macos: ['macos-14']
         scheme: ['AI']
         command: ['build']
-        platform: ['macOS'] # ADD 'iOS', 'tvOS', 'watchOS'
+        platform: ['macOS', 'iOS']
     steps:
     - name: Switch xcode to ${{ matrix.xcode }}
       uses: maxim-lobanov/setup-xcode@v1.5.1

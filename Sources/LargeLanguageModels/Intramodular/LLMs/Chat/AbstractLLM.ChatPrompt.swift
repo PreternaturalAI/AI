@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CorePersistence
 import Foundation
 import Swallow
 
@@ -14,14 +15,41 @@ extension AbstractLLM {
         public struct FunctionCall: Codable, CustomDebugStringConvertible, Hashable, Sendable {
             public let name: String
             public let arguments: String
+            public var context: PromptContextValues
             
             public var debugDescription: String {
                 "<function call: \(name)>"
             }
             
-            public init(name: String, arguments: String) {
+            public init(
+                name: String,
+                arguments: String,
+                context: PromptContextValues
+            ) {
                 self.name = name
                 self.arguments = arguments
+                self.context = context
+            }
+            
+            /// Decodes the given type assuming that the function call's arguments are expressed in JSON
+            public func decode<T: Decodable>(
+                _ type: T.Type
+            ) throws -> T {
+                let json = try JSON(jsonString: arguments)
+                
+                do {
+                    return try json.decode(type, keyDecodingStrategy: .convertFromSnakeCase)
+                } catch(let error) {
+                    do {
+                        defer {
+                            runtimeIssue("Recovered by using camel case.")
+                        }
+                        
+                        return try json.decode(type)
+                    } catch(_) {
+                        throw error
+                    }
+                }
             }
         }
         
@@ -110,7 +138,7 @@ extension AbstractLLM.ChatPrompt {
         }
     }
     
-    public struct FunctionInvocation: Codable, Hashable, Sendable {
+    public struct RawFunctionInvocation: Codable, Hashable, Sendable {
         public let name: String
         public let result: FunctionResult
         

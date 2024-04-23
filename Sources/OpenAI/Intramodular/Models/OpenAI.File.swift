@@ -17,6 +17,14 @@ extension OpenAI {
             case purpose
         }
         
+        public enum Purpose: String, Codable, Hashable, Sendable {
+            case assistants
+            case fineTune = "fine-tune"
+            case answers
+            case search
+            case classifications
+        }
+
         public let id: ID
         public let bytes: Int
         public let createdAt: Date // FIXME?
@@ -46,5 +54,23 @@ extension OpenAI {
             try container.encode(filename, forKey: .filename)
             try container.encode(purpose, forKey: .purpose)
         }
+    }
+}
+
+// MARK: - Conformances
+
+extension OpenAI.File: CustomStringConvertible {
+    public var description: String {
+        filename 
+    }
+}
+
+// MARK: - Auxiliary
+
+extension OpenAI.File {
+    public struct DeletionStatus: Codable, Hashable, Sendable {
+        public let id: OpenAI.File.ID
+        public let object: OpenAI.ObjectType
+        public let deleted: Bool
     }
 }

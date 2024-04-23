@@ -6,6 +6,7 @@ import CorePersistence
 import Diagnostics
 import Foundation
 import Swallow
+import SwiftUIX
 
 /// A type that can be constructed from an `AbstractLLM.ChatMessage`.
 public protocol __AbstractLLM_ChatMessageInitiable {
@@ -37,7 +38,7 @@ extension AbstractLLM {
                 if let functionCallOrInvocation = try content._degenerate()._getFunctionCallOrInvocation() {
                     if functionCallOrInvocation is AbstractLLM.ChatPrompt.FunctionCall {
                         assert(role == .assistant)
-                    } else if functionCallOrInvocation is AbstractLLM.ChatPrompt.FunctionInvocation {
+                    } else if functionCallOrInvocation is AbstractLLM.ChatPrompt.RawFunctionInvocation {
                         assert(role == .other(.function))
                     }
                 }
@@ -46,6 +47,15 @@ extension AbstractLLM {
             self.id = id
             self.role = role
             self.content = content
+        }
+        
+        public init(
+            role: ChatRole,
+            body: PromptLiteral
+        ) {
+            self.id = nil
+            self.role = role
+            self.content = body
         }
     }
 }
@@ -109,30 +119,6 @@ extension AbstractLLM.ChatMessage {
             content: content
         )
     }
-    
-    public static func assistant(
-        _ content: PromptLiteral
-    ) -> Self {
-        Self(role: .assistant, content: content)
-    }
-    
-    public static func assistant(
-        _ content: () -> PromptLiteral
-    ) -> Self {
-        Self(role: .assistant, content: content())
-    }
-    
-    public static func assistant(
-        _ content: String
-    ) -> Self {
-        Self(role: .assistant, content: content)
-    }
-    
-    public static func assistant(
-        _ content: () -> String
-    ) -> Self {
-        Self(role: .assistant, content: content())
-    }
 }
 
 extension AbstractLLM.ChatMessage {
@@ -158,6 +144,75 @@ extension AbstractLLM.ChatMessage {
         _ content: () -> String
     ) -> Self {
         Self(role: .system, content: content())
+    }
+}
+
+extension AbstractLLM.ChatMessage {
+    public static func assistant(
+        _ content: PromptLiteral
+    ) -> Self {
+        Self(role: .assistant, content: content)
+    }
+    
+    public static func assistant(
+        _ content: () -> PromptLiteral
+    ) -> Self {
+        Self(role: .assistant, content: content())
+    }
+    
+    public static func assistant(
+        _ content: String
+    ) -> Self {
+        Self(role: .assistant, content: content)
+    }
+    
+    public static func assistant(
+        _ content: () -> String
+    ) -> Self {
+        Self(role: .assistant, content: content())
+    }
+    
+    /// A function call.
+    public static func functionCall(
+        _ functionCall: AbstractLLM.ChatPrompt.FunctionCall
+    ) -> Self {
+        Self(role: .assistant, content: try! PromptLiteral(functionCall: functionCall))
+    }
+    
+    /// The function call of a given function, with its arguments expressed as JSON.
+    public static func functionCall(
+        of function: AbstractLLM.ChatFunctionDefinition,
+        arguments: JSON
+    ) -> Self {
+        Self(
+            role: .assistant,
+            content: try! PromptLiteral(
+                functionCall: AbstractLLM.ChatPrompt.FunctionCall(
+                    name: function.name,
+                    arguments: arguments.prettyPrintedDescription,
+                    context: .init()
+                )
+            )
+        )
+    }
+    
+    /// A function invocation is a function call + the result.
+    ///
+    /// Conceptually, this represents the function call as the LLM would invoke it _including_ the function's result.
+    ///
+    /// You can construct it manually as part of few-shot prompting to guide the LLM on how to call your function.
+    ///
+    /// This is **not** the same thing as just a 'function call'. A function call is **only** the function name + the parameters that the LLM generates to invoke it, _without_ the actual result of the function.
+    public static func functionInvocation(
+        _ functionInvocation: AbstractLLM.ChatPrompt.RawFunctionInvocation
+    ) -> Self {
+        Self(
+            role: .other(.function),
+            content: try! PromptLiteral(
+                functionInvocation: functionInvocation,
+                role: .chat(.other(.function))
+            )
+        )
     }
 }
 
@@ -166,6 +221,12 @@ extension AbstractLLM.ChatMessage {
         _ content: PromptLiteral
     ) -> Self {
         Self(role: .user, content: content)
+    }
+    
+    public static func user(
+        _ content: AppKitOrUIKitImage
+    ) -> Self {
+        Self(role: .user, content: try! PromptLiteral(image: content))
     }
     
     public static func user(

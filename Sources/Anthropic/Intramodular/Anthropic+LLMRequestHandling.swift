@@ -54,7 +54,7 @@ extension Anthropic: LLMRequestHandling {
             \.complete,
              with: Anthropic.API.RequestBodies.Complete(
                 prompt: prompt.prefix.promptLiteral._stripToText(),
-                model: .claude_v2,
+                model: .claude_3_opus_20240229,
                 maxTokensToSample: parameters.tokenLimit.fixedValue ?? 256,
                 stopSequences: parameters.stops,
                 stream: false,
@@ -151,7 +151,7 @@ extension Anthropic: LLMRequestHandling {
         let session = URLSession(configuration: sessionConfiguration)
                 
         let result = AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error> { (continuation: AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error>.Continuation) in
-            let task = Task<Void, Swift.Error> {
+            let task = Task<Void, Swift.Error>(priority: .userInitiated) {
                 let (bytes, _) = try await session.bytes(for: URLRequest(request))
                 
                 for try await line in bytes.lines {
@@ -174,8 +174,6 @@ extension Anthropic: LLMRequestHandling {
                             )
                             
                             continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
-                            
-                            await Task.yield()
                         } else {
                             print("")
                         }
@@ -215,6 +213,9 @@ extension Anthropic: LLMRequestHandling {
         let requestBody = Anthropic.API.RequestBodies.CreateMessage(
             model: model,
             messages: messages,
+            tools: try (parameters?.functions ?? []).map {
+                try Anthropic.Tool(_from: $0)
+            },
             system: system,
             maxTokens: parameters?.tokenLimit?.fixedValue ?? 4000, // FIXME: Hardcoded,
             temperature: parameters?.temperatureOrTopP?.temperature,

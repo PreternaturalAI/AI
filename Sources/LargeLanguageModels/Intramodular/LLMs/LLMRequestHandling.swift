@@ -118,6 +118,41 @@ extension LLMRequestHandling {
     }
     
     public func complete(
+        messages: [AbstractLLM.ChatMessage],
+        model: some _MLModelIdentifierConvertible
+    ) async throws -> AbstractLLM.ChatCompletion {
+        let prompt = AbstractLLM.ChatPrompt(
+            messages: messages,
+            context: try withMutableScope(PromptContextValues.current) { context in
+                context.completionType = .chat
+                context.modelIdentifier = try .one(model.__conversion())
+            }
+        )
+        
+        return try await complete(prompt: prompt)
+    }
+    
+    public func complete(
+        _ messages: [AbstractLLM.ChatMessage]
+    ) async throws -> AbstractLLM.ChatCompletion {
+        let prompt = AbstractLLM.ChatPrompt(
+            messages: messages
+        )
+        
+        return try await complete(prompt: prompt)
+    }
+    
+    public func completion(
+        for messages: [AbstractLLM.ChatMessage]
+    ) async throws -> AbstractLLM.ChatCompletionStream {
+        let prompt = AbstractLLM.ChatPrompt(
+            messages: messages
+        )
+        
+        return try await completion(for: prompt)
+    }
+    
+    public func complete(
         _ message: AbstractLLM.ChatMessage,
         model: some _MLModelIdentifierConvertible
     ) async throws -> AbstractLLM.ChatCompletion {

@@ -7,7 +7,10 @@ import Foundation
 import Swallow
 
 extension AbstractLLM {
-    public struct ChatFunctionDefinition: Codable, Hashable, Sendable {
+    public struct ChatFunctionDefinition: Codable, Hashable, Identifiable, Sendable {
+        public typealias ID = _TypeAssociatedID<Self, AnyPersistentIdentifier>
+        
+        public let id: ID
         public let name: String
         public let context: String
         public let parameters: JSONSchema
@@ -17,6 +20,7 @@ extension AbstractLLM {
             context: String,
             parameters: JSONSchema
         ) {
+            self.id = ID(rawValue: AnyPersistentIdentifier(rawValue: UUID()))
             self.name = name
             self.context = context
             self.parameters = parameters
@@ -27,7 +31,7 @@ extension AbstractLLM {
         public let tokenLimit: TokenLimit?
         public let temperatureOrTopP: TemperatureOrTopP?
         public let stops: [String]?
-        public let functions: [ChatFunctionDefinition]?
+        public let functions: IdentifierIndexingArrayOf<ChatFunctionDefinition>?
         
         public init(
             tokenLimit: AbstractLLM.TokenLimit? = nil,
@@ -38,7 +42,19 @@ extension AbstractLLM {
             self.tokenLimit = tokenLimit
             self.temperatureOrTopP = temperatureOrTopP
             self.stops = stops
-            self.functions = functions
+            self.functions = functions.map({ IdentifierIndexingArrayOf($0) })
+        }
+        
+        public init(
+            tokenLimit: AbstractLLM.TokenLimit? = nil,
+            temperatureOrTopP: AbstractLLM.TemperatureOrTopP? = nil,
+            stops: [String]? = nil,
+            tools: [ChatFunctionDefinition]? 
+        ) {
+            self.tokenLimit = tokenLimit
+            self.temperatureOrTopP = temperatureOrTopP
+            self.stops = stops
+            self.functions = tools.map({ IdentifierIndexingArrayOf($0) })
         }
         
         public init(
@@ -50,7 +66,7 @@ extension AbstractLLM {
             self.tokenLimit = tokenLimit
             self.temperatureOrTopP = temperature.map({ .temperature($0) })
             self.stops = stops
-            self.functions = functions
+            self.functions = functions.map({ IdentifierIndexingArrayOf($0) })
         }
     }
 }

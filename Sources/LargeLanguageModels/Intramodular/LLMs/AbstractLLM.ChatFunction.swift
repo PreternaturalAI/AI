@@ -21,7 +21,7 @@ extension AbstractLLM {
             }
         }
                 
-        public var _resolvedValue: Self? {
+        public var _runtimeResolvedValue: Self? {
             assertionFailure()
             
             return self

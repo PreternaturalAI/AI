@@ -201,27 +201,47 @@ extension OpenAI.Model {
         case gpt_4_0613 = "gpt-4-0613"
         case gpt_4_32k_0314 = "gpt-4-32k-0314"
         case gpt_4_32k_0613 = "gpt-4-32k-0613"
+            
+        case gpt_4_turbo = "gpt-4-turbo"
         
-        case gpt_4_turbo_preview = "gpt-4-turbo-preview"
-        
+        case __deprecated_gpt_4_turbo_preview = "gpt-4-turbo-preview"
+
         public var name: String {
             switch self {
-                case .gpt_3_5_turbo: "ChatGPT 3.5"
-                case .gpt_3_5_turbo_16k: "ChatGPT 3.5"
-                case .gpt_4: "ChatGPT 4"
-                case .gpt_4_32k: "ChatGPT 4"
-                case .gpt_4_1106_preview: "GPT-4 Turbo"
-                case .gpt_4_0125_preview: "GPT-4 Turbo"
-                case .gpt_4_vision_preview: "GPT-4V"
-                case .gpt_3_5_turbo_0301: "GPT-3.5"
-                case .gpt_3_5_turbo_0613: "GPT-3.5"
-                case .gpt_3_5_turbo_0125: "GPT-3.5"
-                case .gpt_3_5_turbo_16k_0613: "GPT-3.5"
-                case .gpt_4_0314: "GPT-4"
-                case .gpt_4_0613: "GPT-4"
-                case .gpt_4_32k_0314: "GPT-4"
-                case .gpt_4_32k_0613: "GPT-4"
-                case .gpt_4_turbo_preview: "GPT-4 Turbo (Preview)"
+                case .gpt_3_5_turbo:
+                    return "ChatGPT 3.5"
+                case .gpt_3_5_turbo_16k:
+                    return "ChatGPT 3.5"
+                case .gpt_4:
+                    return "ChatGPT 4"
+                case .gpt_4_32k:
+                    return "ChatGPT 4"
+                case .gpt_4_1106_preview:
+                    return "GPT-4 Turbo"
+                case .gpt_4_0125_preview:
+                    return "GPT-4 Turbo"
+                case .gpt_4_vision_preview:
+                    return "GPT-4V"
+                case .gpt_3_5_turbo_0301:
+                    return "GPT-3.5"
+                case .gpt_3_5_turbo_0613:
+                    return "GPT-3.5"
+                case .gpt_3_5_turbo_0125:
+                    return "GPT-3.5"
+                case .gpt_3_5_turbo_16k_0613:
+                    return "GPT-3.5"
+                case .gpt_4_0314:
+                    return "GPT-4"
+                case .gpt_4_0613:
+                    return "GPT-4"
+                case .gpt_4_32k_0314:
+                    return "GPT-4"
+                case .gpt_4_32k_0613:
+                    return "GPT-4"
+                case .gpt_4_turbo:
+                    return "GPT-4 Turbo"
+                case .__deprecated_gpt_4_turbo_preview:
+                    return "GPT-4 Turbo (Preview)"
             }
         }
         
@@ -336,5 +356,14 @@ extension OpenAI.Model: RawRepresentable {
         } else {
             self = .unknown(rawValue)
         }
+    }
+}
+
+// MARK: - Deprecated
+
+extension OpenAI.Model.Chat {
+    @available(*, deprecated, renamed: "gpt_4_turbo")
+    public var gpt_4_turbo_preview: Self {
+        .__deprecated_gpt_4_turbo_preview
     }
 }

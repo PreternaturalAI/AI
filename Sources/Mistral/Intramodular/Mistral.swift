@@ -8,6 +8,7 @@ import Merge
 import NetworkKit
 import Swallow
 
+@RuntimeDiscoverable
 public final class Mistral: HTTPClient, _StaticNamespaceType {
     public static var persistentTypeRepresentation: some IdentityRepresentation {
         _MIServiceTypeIdentifier._Mistral

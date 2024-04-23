@@ -7,6 +7,7 @@ import LargeLanguageModels
 import NetworkKit
 import Swallow
 
+@RuntimeDiscoverable
 public final class Anthropic: HTTPClient, PersistentlyRepresentableType, _StaticNamespaceType {
     public static var persistentTypeRepresentation: some IdentityRepresentation {
         _MIServiceTypeIdentifier._Anthropic
@@ -24,7 +25,7 @@ public final class Anthropic: HTTPClient, PersistentlyRepresentableType, _Static
     
     public convenience init(apiKey: String?) {
         self.init(
-            interface: .init(configuration: .init(apiKey: apiKey)),
+            interface: API(configuration: .init(apiKey: apiKey)),
             session: .shared
         )
     }

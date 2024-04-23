@@ -146,7 +146,11 @@ extension AbstractLLM.ChatMessage {
                     id: AnyPersistentIdentifier(erasing: id),
                     role: role,
                     content: try PromptLiteral(
-                        functionCall: .init(name: call.name, arguments: call.arguments),
+                        functionCall: .init(
+                            name: call.name,
+                            arguments: call.arguments,
+                            context: .init()
+                        ),
                         role: .chat(role)
                     )
                 )
