@@ -23,6 +23,7 @@ extension OpenAI {
             case answers
             case search
             case classifications
+            case transcriptions
         }
 
         public let id: ID

@@ -5,7 +5,7 @@
 import OpenAI
 
 public var OPENAI_API_KEY: String {
-    ""
+    "AuOrGGtZAmwYz9skIVCoT3BlbkFJKrZUDcDfQT2MCS6s4P7e"
 }
 
 public var client: OpenAI.APIClient {

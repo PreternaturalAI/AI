@@ -197,6 +197,13 @@ extension OpenAI {
             OpenAI.Run,
             Void
         >()
+        
+        // MARK: Whisper
+        // File uploads are currently limited to 25 MB and the following input file types are supported: mp3, mp4, mpeg, mpga, m4a, wav, and webm.
+        @POST
+        @Path("/v1/audio/transcriptions")
+        @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
+        public var createTranscriptions = Endpoint<RequestBodies.CreateTranscriptions, Data, Void>()
     }
 }
 

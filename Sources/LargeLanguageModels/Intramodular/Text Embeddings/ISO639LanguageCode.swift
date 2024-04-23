@@ -6,7 +6,7 @@ import Foundation
 import Swallow
 
 // Source of codes: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
-public enum ISO639LanguageCode: String, CaseIterable {
+public enum ISO639LanguageCode: String, CaseIterable, Codable {
     case ab = "AB"
     case aa = "AA"
     case af = "AF"

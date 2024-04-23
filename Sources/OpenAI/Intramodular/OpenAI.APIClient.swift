@@ -192,20 +192,22 @@ extension OpenAI.APIClient {
         return OpenAI.Speech(data: data)
     }
     
-    public func createSpeech(
-        model: OpenAI.Model.Speech,
-        text: String,
-        voice: OpenAI.APISpecification.RequestBodies.CreateSpeech.Voice = .alloy,
-        speed: Double?
-    ) async throws -> OpenAI.Speech {
-        let requestBody = OpenAI.APISpecification.RequestBodies.CreateSpeech(
-            model: OpenAI.Model.speech(model),
-            input: text,
-            voice: voice,
-            speed: speed
+    public func createTranscriptions(
+        model: OpenAI.Model.Transcriptions,
+        file: OpenAI.File,
+        language: LargeLanguageModels.ISO639LanguageCode? = nil,
+        temperature: Double? = 0,
+        timestampGranularities: OpenAI.APISpecification.RequestBodies.CreateTranscriptions.TimestampGranularities? = nil
+    ) async throws -> OpenAI.Transcriptions {
+        let requestBody = OpenAI.APISpecification.RequestBodies.CreateTranscriptions(
+            model: OpenAI.Model.transcriptions(model),
+            file: file,
+            language: language,
+            temperature: temperature,
+            timestampGranularities: timestampGranularities
         )
-        let data = try await run(\.createSpeech, with: requestBody)
-        return OpenAI.Speech(data: data)
+        let data = try await run(\.createTranscriptions, with: requestBody)
+        return OpenAI.Transcriptions(data: data)
     }
 }
 

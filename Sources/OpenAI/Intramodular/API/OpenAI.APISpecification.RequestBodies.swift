@@ -4,6 +4,7 @@
 
 import CorePersistence
 import NetworkKit
+import LargeLanguageModels
 
 extension OpenAI.APISpecification {
     public enum RequestBodies {
@@ -449,6 +450,72 @@ extension OpenAI.APISpecification.RequestBodies {
                 return inputSpeed < Self.Speed.min.rawValue ? "\(Self.Speed.min.rawValue)" : "\(Self.Speed.max.rawValue)"
             }
             return "\(inputSpeed)"
+        }
+    }
+}
+
+extension OpenAI.APISpecification.RequestBodies {
+    public struct CreateTranscriptions: Codable {
+        
+        public enum ResponseFormat: String, Codable, CaseIterable {
+            case json
+            case text
+            case srt
+            case verboseJSON = "verbose_json"
+            case vtt
+        }
+
+        /// The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+        public let file: OpenAI.File
+        /// ID of the model to use. Only whisper-1 (which is powered by our open source Whisper V2 model) is currently available.
+        public let model: OpenAI.Model
+        
+        /// The language of the input audio. Supplying the input language in ISO-639-1 format will improve accuracy and latency.
+        /// https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
+        public let language: LargeLanguageModels.ISO639LanguageCode?
+        
+        /// Defaults to 0
+        public let temperature: Double?
+         
+        ///The timestamp granularities to populate for this transcription. response_format must be set verbose_json to use timestamp granularities. Either or both of these options are supported: word, or segment. Note: There is no additional latency for segment timestamps, but generating word timestamps incurs additional latency.
+        public enum TimestampGranularities: String, Codable, CaseIterable {
+            case word
+            case segment
+        }
+        public let timestampGranularities: TimestampGranularities?
+
+        /// The format of the transcript output, in one of these options: json, text, srt, verbose_json, or vtt.
+        /// Defaults to verbose_json
+        public let responseFormat: ResponseFormat?
+        
+        
+        public enum CodingKeys: String, CodingKey {
+            case model
+            case file
+            case language
+            case temperature
+            case timestampGranularities = "timestamp_granularities[]"
+            case responseFormat = "response_format"
+        }
+
+        public init(model: OpenAI.Model,
+                    file: OpenAI.File,
+                    language: LargeLanguageModels.ISO639LanguageCode? = nil,
+                    temperature: Double? = 0,
+                    timestampGranularities: TimestampGranularities? = nil,
+                    responseFormat: ResponseFormat? = ResponseFormat.verboseJSON
+            ) {
+            self.model = model
+            self.file = file
+            self.language = language
+            self.temperature = temperature
+            self.timestampGranularities = timestampGranularities
+            if let _ = timestampGranularities {
+                // timestampGranularities require for response format to be verboseJSON
+                self.responseFormat = .verboseJSON
+            } else {
+                self.responseFormat = responseFormat
+            }
         }
     }
 }

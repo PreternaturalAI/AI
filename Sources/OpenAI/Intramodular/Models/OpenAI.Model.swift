@@ -31,6 +31,7 @@ extension OpenAI {
         case embedding(Embedding)
         case chat(Chat)
         case speech(Speech)
+        case transcriptions(Transcriptions)
         
         /// Deprecated by OpenAI.
         case feature(Feature)
@@ -60,6 +61,8 @@ extension OpenAI {
                 case .chat(let value):
                     return value
                 case .speech(let value):
+                    return value
+                case .transcriptions(let value):
                     return value
                 case .unknown:
                     assertionFailure(.unimplemented)
@@ -303,6 +306,20 @@ extension OpenAI.Model {
     }
 }
 
+extension OpenAI.Model {
+    public enum Transcriptions: String, Named, OpenAI._ModelType, CaseIterable {
+        case whisper_1 = "whisper-1"
+        
+        public var contextSize: Int { return 4096 }
+        
+        public var name: String {
+            switch self {
+                case .whisper_1: "Whisper speech-to-text"
+            }
+        }
+    }
+}
+
 // MARK: - Conformances
 
 extension OpenAI.Model: Codable {
@@ -351,6 +368,8 @@ extension OpenAI.Model: RawRepresentable {
             case .chat(let model):
                 return model.rawValue
             case .speech(let model):
+                return model.rawValue
+            case .transcriptions(let model):
                 return model.rawValue
             case .unknown(let rawValue):
                 return rawValue
