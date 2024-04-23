@@ -136,6 +136,38 @@ extension OpenAI.APIClient {
 }
 
 extension OpenAI.APIClient {
+    public func createSpeech(
+        model: OpenAI.Model,
+        text: String,
+        voice: OpenAI.APISpecification.RequestBodies.CreateSpeech.Voice = .alloy,
+        speed: Double?
+    ) async throws -> OpenAI.Speech {
+        let requestBody = OpenAI.APISpecification.RequestBodies.CreateSpeech(
+            model: model,
+            input: text,
+            voice: voice,
+            speed: speed
+        )
+        let data = try await run(\.createSpeech, with: requestBody)
+        return OpenAI.Speech(data: data)
+    }
+    
+    public func createSpeech(
+        model: OpenAI.Model.Speech,
+        text: String,
+        voice: OpenAI.APISpecification.RequestBodies.CreateSpeech.Voice = .alloy,
+        speed: Double?
+    ) async throws -> OpenAI.Speech {
+        let requestBody = OpenAI.APISpecification.RequestBodies.CreateSpeech(
+            model: OpenAI.Model.speech(model),
+            input: text,
+            voice: voice,
+            speed: speed
+        )
+        let data = try await run(\.createSpeech, with: requestBody)
+        return OpenAI.Speech(data: data)
+    }
+    
     public func uploadFile(
         _ file: URL,
         named filename: String? = nil,

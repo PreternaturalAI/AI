@@ -73,6 +73,13 @@ extension OpenAI {
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
         public var createChatCompletions = Endpoint<RequestBodies.CreateChatCompletion, OpenAI.ChatCompletion, Void>()
         
+        // MARK: Speech
+        
+        @POST
+        @Path("/v1/audio/speech")
+        @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
+        public var createSpeech = Endpoint<RequestBodies.CreateSpeech, Data, Void>()
+        
         // MARK: Threads
         
         @Header(["OpenAI-Beta": "assistants=v1"])
@@ -268,10 +275,15 @@ extension OpenAI.APISpecification {
                 throw apiError
             }
             
-            return try response.decode(
-                Output.self,
-                keyDecodingStrategy: .convertFromSnakeCase
-            )
+            switch Output.self {
+                case Data.self:
+                    return try cast(response.data, to: Output.self)
+                default:
+                    return try response.decode(
+                        Output.self,
+                        keyDecodingStrategy: .convertFromSnakeCase
+                    )
+            }
         }
     }
 }
