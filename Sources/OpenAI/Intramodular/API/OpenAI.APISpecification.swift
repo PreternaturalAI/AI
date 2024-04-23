@@ -109,15 +109,65 @@ extension OpenAI {
             Void
         >()
         
+        // MARK: Files
+        
+        @POST
+        @Path("/v1/files")
+        @Body({ context -> HTTPRequest.Multipart.Content in
+            var request: OpenAI.APISpecification.RequestBodies.UploadFile = context.input
+            var content = HTTPRequest.Multipart.Content()
+            
+            content.append(
+                .file(
+                    request.file,
+                    contentType: HTTPMediaType(
+                        rawValue: request.preferredMIMEType
+                    ),
+                    fileName: request.filename,
+                    forField: "file"
+                )
+            )
+            
+            content.append(.text(request.purpose.rawValue, forField: "purpose"))
+            
+            return content
+        })
+        public var uploadFile = Endpoint<OpenAI.APISpecification.RequestBodies.UploadFile, OpenAI.File, Void>()
+        
+        @GET
+        @Path({ context -> String in
+            "/v1/files"
+        })
+        @Query({ context -> [String: String] in
+            if let purpose = context.input.purpose {
+                return ["purpose": purpose.rawValue]
+            } else {
+                return [:]
+            }
+        })
+        public var listFiles = Endpoint<OpenAI.APISpecification.RequestBodies.ListFiles, OpenAI.List<OpenAI.File>, Void>()
+
+        @GET
+        @Path({ context -> String in
+            "/v1/files/\(context.input)"
+        })
+        public var retrieveFile = Endpoint<OpenAI.File.ID, OpenAI.File, Void>()
+                
+        @DELETE
+        @Path({ context -> String in
+            "/v1/files/\(context.input)"
+        })
+        public var deleteFile = Endpoint<OpenAI.File.ID, OpenAI.File.DeletionStatus, Void>()
+
+        // MARK: Assistants
+        
         @Header(["OpenAI-Beta": "assistants=v1"])
         @GET
         @Path({ context -> String in
             "/v1/threads/\(context.input)/messages"
         })
         public var listMessagesForThread = Endpoint<OpenAI.Thread.ID, OpenAI.List<OpenAI.Message>, Void>()
-        
-        // MARK: Threads
-        
+
         @Header(["OpenAI-Beta": "assistants=v1"])
         @POST
         @Path({ context -> String in

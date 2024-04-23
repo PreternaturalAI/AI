@@ -248,6 +248,31 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
+    public struct UploadFile: Codable, Hashable, Sendable {
+        public var file: Data
+        public var filename: String
+        public var preferredMIMEType: String
+        public var purpose: OpenAI.File.Purpose
+        
+        public init(
+            file: Data,
+            filename: String,
+            preferredMIMEType: String,
+            purpose: OpenAI.File.Purpose
+        ) {
+            self.file = file
+            self.filename = filename
+            self.preferredMIMEType = preferredMIMEType
+            self.purpose = purpose
+        }
+    }
+    
+    public struct ListFiles {
+        public let purpose: OpenAI.File.Purpose?
+    }
+}
+
+extension OpenAI.APISpecification.RequestBodies {
     public struct CreateThread: Codable, Hashable, Sendable {
         public var messages: [OpenAI.ChatMessage]?
         public var metadata: [String: String]?

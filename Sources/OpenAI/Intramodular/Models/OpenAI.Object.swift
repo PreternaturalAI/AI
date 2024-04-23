@@ -12,6 +12,7 @@ extension OpenAI {
         case textCompletion = "text_completion"
         case chatCompletion = "chat.completion"
         case chatCompletionChunk = "chat.completion.chunk"
+        case file = "file"
         case thread = "thread"
         case message = "thread.message"
         case assistant = "assistant"
@@ -30,6 +31,8 @@ extension OpenAI {
                     return OpenAI.ChatCompletion.self
                 case .chatCompletionChunk:
                     return OpenAI.ChatCompletionChunk.self
+                case .file:
+                    return OpenAI.File.self
                 case .thread:
                     return OpenAI.Thread.self
                 case .message:

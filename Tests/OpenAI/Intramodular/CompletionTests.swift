@@ -3,14 +3,10 @@
 //
 
 import LargeLanguageModels
-
-@testable import OpenAI
-
+import OpenAI
 import XCTest
 
-final class OpenAITests: XCTestCase {    
-    private let client = OpenAI.APIClient(apiKey: "xxx")
-    
+final class CompletionTests: XCTestCase {
     func tokenize() async throws {
         
     }
@@ -23,7 +19,7 @@ final class OpenAITests: XCTestCase {
         _ = result
     }
     
-    func testTextCompletions() async throws {
+    /*func testTextCompletions() async throws {
         let result = try await client.createCompletion(
             model: .instructGPT(.davinci),
             prompt: """
@@ -35,10 +31,10 @@ She no went to the market.
         )
         
         _ = result
-    }
+    }*/
     
     func testChatCompletions() async throws {
-        let llm: any LLMRequestHandling = OpenAI.APIClient(apiKey: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+        let llm: any LLMRequestHandling = client
 
         let messages: [AbstractLLM.ChatMessage] = [
             AbstractLLM.ChatMessage(

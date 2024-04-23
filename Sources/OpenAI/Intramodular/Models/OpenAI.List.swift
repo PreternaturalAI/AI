@@ -6,7 +6,7 @@ import NetworkKit
 import Swift
 
 extension OpenAI {
-    public class List<T: Codable>: Object {
+    public class List<Element: Codable>: Object {
         private enum CodingKeys: String, CodingKey {
             case data
             case hasMore
@@ -14,7 +14,7 @@ extension OpenAI {
             case lastID = "lastId"
         }
         
-        public package(set) var data: [T]
+        public package(set) var data: [Element]
         
         public let hasMore: Bool?
         public let firstID: String?
@@ -41,5 +41,23 @@ extension OpenAI {
             try container.encode(firstID, forKey: .firstID)
             try container.encode(lastID, forKey: .lastID)
         }
+    }
+}
+
+extension OpenAI.List: CustomStringConvertible {
+    public var description: String {
+        var result = data.description
+        
+        if let hasMore, hasMore {
+            result += " (has more...)"
+        }
+        
+        return result
+    }
+}
+
+extension OpenAI.List: Sequence {
+    public func makeIterator() -> AnyIterator<Element> {
+        data.makeIterator().eraseToAnyIterator()
     }
 }
