@@ -192,7 +192,7 @@ extension OpenAI.APIClient {
         return OpenAI.Speech(data: data)
     }
     
-    public func createTranscriptions(
+    public func createTranscription(
         file: OpenAI.File,
         prompt: String?,
         model: OpenAI.Model.Transcriptions?,
