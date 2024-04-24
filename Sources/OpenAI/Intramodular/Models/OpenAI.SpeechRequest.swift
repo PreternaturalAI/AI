@@ -11,7 +11,7 @@ public struct SpeechRequest {
     
     public init(input: StringOf4096CharOrLess,
                 model: OpenAI.Model.Speech,
-                voice: Voice,
+                voice: Voice = .alloy,
                 responseFormat: ResponseFormat? = nil,
                 speed: ValidatedSpeed? = nil) {
         self.input = input
