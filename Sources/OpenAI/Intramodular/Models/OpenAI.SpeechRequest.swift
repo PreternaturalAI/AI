@@ -12,8 +12,8 @@ public struct SpeechRequest {
     public init(input: StringOf4096CharOrLess,
                 model: OpenAI.Model.Speech,
                 voice: Voice = .alloy,
-                responseFormat: ResponseFormat? = nil,
-                speed: ValidatedSpeed? = nil) {
+                responseFormat: ResponseFormat = .defaultFormat,
+                speed: ValidatedSpeed = ValidatedSpeed()) {
         self.input = input
         self.model = model
         self.voice = voice
@@ -54,26 +54,16 @@ public struct SpeechRequest {
         case aac
         /// FLAC: For lossless audio compression, favored by audio enthusiasts for archiving.
         case flac
-    }
-    public let responseFormat: ResponseFormat?
-    private var defaultResponseFormat: ResponseFormat {
-        if let responseFormat = responseFormat {
-            return responseFormat
-        } else {
+        
+        public static var defaultFormat: ResponseFormat {
             return .mp3
         }
     }
+    public let responseFormat: ResponseFormat
     
     /// The speed of the generated audio. Select a value from **0.25** to **4.0**. **1.0** is the default.
     /// Defaults to 1
-    public let speed: ValidatedSpeed?
-    private var defaultSpeed: String {
-        if let speed = speed {
-            return "\(speed)"
-        } else {
-            return "\(ValidatedSpeed.Speed.normal.rawValue)"
-        }
-    }
+    public let speed: ValidatedSpeed
     
     public func request(fromClient client: OpenAI.APIClient) async throws -> OpenAI.Speech? {
         
@@ -81,8 +71,8 @@ public struct SpeechRequest {
             model: model,
             input: input.string,
             voice: voice.rawValue,
-            responseFormat: defaultResponseFormat.rawValue,
-            speed: defaultSpeed)
+            responseFormat: responseFormat.rawValue,
+            speed: "\(speed.speed)")
         
         do {
             let speech = try await client.createSpeech(requestBody: createSpeechRequest)
@@ -145,6 +135,11 @@ extension SpeechRequest {
             case min = 0.25
         }
         
+        // default value
+        public init() {
+            self.value = 1.0
+        }
+        
         public init(speed: Double) throws {
             guard speed >= Speed.min.rawValue && speed <= Speed.max.rawValue else {
                 throw ValidationError.invalidSpeed(speed)
@@ -165,5 +160,6 @@ extension SpeechRequest {
         }
     }
 }
+
 
 
