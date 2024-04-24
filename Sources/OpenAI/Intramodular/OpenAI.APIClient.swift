@@ -136,6 +136,24 @@ extension OpenAI.APIClient {
 }
 
 extension OpenAI.APIClient {
+    public func uploadFileWithData(
+        _ data: Data,
+        named filename: String,
+        mimeType: String,
+        purpose: OpenAI.File.Purpose = .assistants
+    ) async throws -> OpenAI.File {
+        let request = OpenAI.APISpecification.RequestBodies.UploadFile(
+            file: data,
+            filename: filename,
+            preferredMIMEType: mimeType,
+            purpose: purpose
+        )
+        
+        let file = try await run(\.uploadFile, with: request)
+        
+        return file
+    }
+
     public func uploadFile(
         _ file: URL,
         named filename: String? = nil,
@@ -154,7 +172,7 @@ extension OpenAI.APIClient {
         
         return file
     }
-    
+        
     public func listFiles(
         purpose: OpenAI.File.Purpose? = .assistants
     ) async throws -> OpenAI.List<OpenAI.File> {
