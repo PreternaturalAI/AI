@@ -42,7 +42,11 @@ extension OpenAI.APISpecification.ResponseBodies {
         }
     }
     
-    public struct CreateChatCompletion: Codable, Hashable {
+    public struct CreateChatCompletion: Codable, Hashable, Sendable {
         public let message: OpenAI.ChatMessage
+    }
+    
+    public struct CreateTranscription: Codable, Hashable, Sendable {
+        public let text: String
     }
 }

@@ -248,7 +248,7 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct UploadFile: Codable, Hashable, Sendable {
+    public struct UploadFile: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible, Sendable {
         public var file: Data
         public var filename: String
         public var preferredMIMEType: String
@@ -264,6 +264,30 @@ extension OpenAI.APISpecification.RequestBodies {
             self.filename = filename
             self.preferredMIMEType = preferredMIMEType
             self.purpose = purpose
+        }
+        
+        public func __conversion() throws -> HTTPRequest.Multipart.Content {
+            var result = HTTPRequest.Multipart.Content()
+                        
+            result.append(
+                .file(
+                    named: "file",
+                    data: file,
+                    filename: filename,
+                    contentType: HTTPMediaType(
+                        rawValue: preferredMIMEType
+                    )
+                )
+            )
+            
+            result.append(
+                .text(
+                    named: "purpose",
+                    value: purpose.rawValue
+                )
+            )
+            
+            return result
         }
     }
     
@@ -385,7 +409,6 @@ extension OpenAI.APISpecification.RequestBodies {
 
 extension OpenAI.APISpecification.RequestBodies {
     public struct CreateSpeech: Codable {
-        
         /// Encapsulates the voices available for audio generation.
         ///
         /// To get aquinted with each of the voices and listen to the samples visit:
@@ -428,7 +451,13 @@ extension OpenAI.APISpecification.RequestBodies {
             case speed
         }
 
-        public init(model: OpenAI.Model, input: String, voice: Voice, responseFormat: ResponseFormat = .mp3, speed: Double?) {
+        public init(
+            model: OpenAI.Model,
+            input: String,
+            voice: Voice,
+            responseFormat: ResponseFormat = .mp3,
+            speed: Double?
+        ) {
             self.model = model
             self.speed = CreateSpeech.normalizedSpeechSpeed(for: speed)
             self.input = input
@@ -442,7 +471,9 @@ extension OpenAI.APISpecification.RequestBodies {
             case min = 0.25
         }
         
-        static func normalizedSpeechSpeed(for inputSpeed: Double?) -> String {
+        fileprivate static func normalizedSpeechSpeed(
+            for inputSpeed: Double?
+        ) -> String {
             guard let inputSpeed else { return "\(Self.Speed.normal.rawValue)" }
             let isSpeedOutOfBounds = inputSpeed <= Self.Speed.min.rawValue || Self.Speed.max.rawValue <= inputSpeed
             guard !isSpeedOutOfBounds else {
@@ -453,7 +484,143 @@ extension OpenAI.APISpecification.RequestBodies {
     }
 }
 
+extension OpenAI.APISpecification.RequestBodies {
+    public struct CreateTranscription: Codable, HTTPRequest.Multipart.ContentConvertible {
+        public enum CodingKeys: String, CodingKey {
+            case file
+            case filename
+            case preferredMIMEType
+            case prompt
+            case model
+            case language
+            case temperature
+            case timestampGranularities = "timestamp_granularities[]"
+            case responseFormat = "response_format"
+        }
+        
+        ///The timestamp granularities to populate for this transcription. response_format must be set verbose_json to use timestamp granularities. Either or both of these options are supported: word, or segment. Note: There is no additional latency for segment timestamps, but generating word timestamps incurs additional latency.
+        public enum TimestampGranularities: String, Codable, CaseIterable {
+            case word
+            case segment
+        }
 
+        public enum ResponseFormat: String, Codable, CaseIterable {
+            case json
+            case text
+            case srt
+            case verboseJSON = "verbose_json"
+            case vtt
+        }
+        
+        /// The audio file object to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+        public let file: Data
+        public let filename: String
+        public let preferredMIMEType: HTTPMediaType
+        
+        /// An optional text to guide the model's style or continue a previous audio segment. The prompt should match the audio language.
+        public let prompt: String?
+        /// ID of the model to use. Only whisper-1 (which is powered by our open source Whisper V2 model) is currently available.
+        public let model: OpenAI.Model
+        
+        /// The language of the input audio. Supplying the input language in ISO-639-1 format will improve accuracy and latency.
+        /// https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
+        public let language: LargeLanguageModels.ISO639LanguageCode?
+        
+        /// Defaults to 0
+        public let temperature: Double?
+        
+        public let timestampGranularities: TimestampGranularities?
+        
+        /// The format of the transcript output, in one of these options: json, text, srt, verbose_json, or vtt.
+        /// Defaults to verbose_json
+        public let responseFormat: ResponseFormat?
+    
+        public init(
+            file: Data,
+            filename: String,
+            preferredMIMEType: HTTPMediaType,
+            prompt: String?,
+            model: OpenAI.Model = OpenAI.Model.whisper(.whisper_1),
+            language: LargeLanguageModels.ISO639LanguageCode? = nil,
+            temperature: Double? = 0,
+            timestampGranularities: TimestampGranularities? = nil,
+            responseFormat: ResponseFormat? = ResponseFormat.verboseJSON
+        ) {
+            self.file = file
+            self.filename = filename
+            self.preferredMIMEType = preferredMIMEType
+            self.prompt = prompt
+            self.model = model
+            self.language = language
+            self.temperature = temperature
+            self.timestampGranularities = timestampGranularities
+            
+            if let _ = timestampGranularities {
+                self.responseFormat = .verboseJSON
+            } else {
+                self.responseFormat = responseFormat
+            }
+        }
+        
+        public func __conversion() -> HTTPRequest.Multipart.Content {
+            var result = HTTPRequest.Multipart.Content()
+            
+            result.append(
+                .file(
+                    named: "file",
+                    data: file,
+                    filename: filename,
+                    contentType: preferredMIMEType
+                )
+            )
+            
+            result.append(
+                .text(
+                    named: "model",
+                    value: model.rawValue
+                )
+            )
+            
+            if let prompt = prompt {
+                result.append(
+                    .text(
+                        named: "prompt",
+                        value: prompt
+                    )
+                )
+            }
+            
+            if let responseFormat = responseFormat {
+                result.append(
+                    .text(
+                        named: "response_format",
+                        value: responseFormat.rawValue
+                    )
+                )
+            }
+            
+            if let temperature = temperature {
+                result.append(
+                    .text(
+                        named: "temperature",
+                        value: temperature.formatted(toDecimalPlaces: 3)
+                    )
+                )
+            }
+            
+            if let language = language {
+                result.append(
+                    .text(
+                        named: "language",
+                        value: language.rawValue
+                    )
+                )
+            }
+
+            return result
+        }
+    }
+}
 
 // MARK: - Auxiliary
 

@@ -31,7 +31,8 @@ extension OpenAI {
         case embedding(Embedding)
         case chat(Chat)
         case speech(Speech)
-        
+        case whisper(Whisper)
+
         /// Deprecated by OpenAI.
         case feature(Feature)
         /// Deprecated by OpenAI.
@@ -60,6 +61,8 @@ extension OpenAI {
                 case .chat(let value):
                     return value
                 case .speech(let value):
+                    return value
+                case .whisper(let value):
                     return value
                 case .unknown:
                     assertionFailure(.unimplemented)
@@ -303,6 +306,27 @@ extension OpenAI.Model {
     }
 }
 
+extension OpenAI.Model {
+    public enum Whisper: String, Named, OpenAI._ModelType, CaseIterable {
+        public static var `default`: Self {
+            .whisper_1
+        }
+        
+        case whisper_1 = "whisper-1"
+        
+        public var contextSize: Int {
+            return 4096
+        }
+        
+        public var name: String {
+            switch self {
+                case .whisper_1: 
+                    "Whisper"
+            }
+        }
+    }
+}
+
 // MARK: - Conformances
 
 extension OpenAI.Model: Codable {
@@ -351,6 +375,8 @@ extension OpenAI.Model: RawRepresentable {
             case .chat(let model):
                 return model.rawValue
             case .speech(let model):
+                return model.rawValue
+            case .whisper(let model):
                 return model.rawValue
             case .unknown(let rawValue):
                 return rawValue

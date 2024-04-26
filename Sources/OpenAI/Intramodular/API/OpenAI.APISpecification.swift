@@ -120,25 +120,7 @@ extension OpenAI {
         
         @POST
         @Path("/v1/files")
-        @Body({ context -> HTTPRequest.Multipart.Content in
-            var request: OpenAI.APISpecification.RequestBodies.UploadFile = context.input
-            var content = HTTPRequest.Multipart.Content()
-            
-            content.append(
-                .file(
-                    request.file,
-                    contentType: HTTPMediaType(
-                        rawValue: request.preferredMIMEType
-                    ),
-                    fileName: request.filename,
-                    forField: "file"
-                )
-            )
-            
-            content.append(.text(request.purpose.rawValue, forField: "purpose"))
-            
-            return content
-        })
+        @Body(multipart: .input)
         public var uploadFile = Endpoint<OpenAI.APISpecification.RequestBodies.UploadFile, OpenAI.File, Void>()
         
         @GET
@@ -197,6 +179,13 @@ extension OpenAI {
             OpenAI.Run,
             Void
         >()
+        
+        // MARK: Whisper
+        
+        @POST
+        @Path("/v1/audio/transcriptions")
+        @Body(multipart: .input)
+        public var createAudioTranscription = Endpoint<RequestBodies.CreateTranscription, ResponseBodies.CreateTranscription, Void>()
     }
 }
 
