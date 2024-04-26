@@ -15,7 +15,8 @@ extension OpenAI.APIClient {
         model: OpenAI.Model.Whisper?,
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
-        timestampGranularities: OpenAI.APISpecification.RequestBodies.CreateTranscription.TimestampGranularities? = nil
+        timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
+        responseFormat: OpenAI.APISpecification.RequestBodies.CreateTranscription.ResponseFormat? = nil
     ) async throws -> OpenAI.AudioTranscription {
         let requestBody = OpenAI.APISpecification.RequestBodies.CreateTranscription(
             file: file,
@@ -25,7 +26,8 @@ extension OpenAI.APIClient {
             model: OpenAI.Model.whisper(.whisper_1),
             language: language,
             temperature: temperature,
-            timestampGranularities: timestampGranularities
+            timestampGranularities: timestampGranularities,
+            responseFormat: responseFormat ?? (timestampGranularities == nil ? .text : .verboseJSON)
         )
         
         let response: OpenAI.APISpecification.ResponseBodies.CreateTranscription 
@@ -33,7 +35,11 @@ extension OpenAI.APIClient {
         response = try await run(\.createAudioTranscription, with: requestBody)
         
         return OpenAI.AudioTranscription(
-            text: response.text
+            language: response.language,
+            duration: response.duration,
+            text: response.text,
+            words: response.words,
+            segments: response.segments
         )
     }
     
@@ -43,7 +49,8 @@ extension OpenAI.APIClient {
         model: OpenAI.Model.Whisper?,
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
-        timestampGranularities: OpenAI.APISpecification.RequestBodies.CreateTranscription.TimestampGranularities? = nil
+        timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
+        responseFormat: OpenAI.APISpecification.RequestBodies.CreateTranscription.ResponseFormat? = nil
     ) async throws -> OpenAI.AudioTranscription {
         let filename = try audioFile._fileNameWithExtension.unwrap()
         let preferredMIMEType = try audioFile._preferredMIMEType.unwrap()
@@ -56,7 +63,8 @@ extension OpenAI.APIClient {
             prompt: prompt,
             model: model,
             temperature: temperature,
-            timestampGranularities: timestampGranularities
+            timestampGranularities: timestampGranularities,
+            responseFormat: responseFormat
         )
     }
     
@@ -66,14 +74,16 @@ extension OpenAI.APIClient {
         model: OpenAI.Model.Whisper?,
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
-        timestampGranularities: OpenAI.APISpecification.RequestBodies.CreateTranscription.TimestampGranularities? = nil
+        timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
+        responseFormat: OpenAI.APISpecification.RequestBodies.CreateTranscription.ResponseFormat? = nil
     ) async throws -> OpenAI.AudioTranscription {
         return try await createTranscription(
             audioFile: try URL(string: audioFile).unwrap(),
             prompt: prompt,
             model: model,
             temperature: temperature,
-            timestampGranularities: timestampGranularities
+            timestampGranularities: timestampGranularities,
+            responseFormat: responseFormat
         )
     }
 }

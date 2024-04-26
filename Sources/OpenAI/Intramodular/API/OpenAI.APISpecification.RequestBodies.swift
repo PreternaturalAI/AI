@@ -144,7 +144,7 @@ extension OpenAI.APISpecification.RequestBodies {
         public let user: String?
         public let functions: [OpenAI.ChatFunctionDefinition]?
         public let functionCallingStrategy: OpenAI.FunctionCallingStrategy?
-
+        
         public init(
             messages: [OpenAI.ChatMessage],
             model: OpenAI.Model,
@@ -184,7 +184,7 @@ extension OpenAI.APISpecification.RequestBodies {
             self.functions = functions
             self.functionCallingStrategy = functionCallingStrategy
         }
-
+        
         public init(
             user: String?,
             messages: [OpenAI.ChatMessage],
@@ -268,7 +268,7 @@ extension OpenAI.APISpecification.RequestBodies {
         
         public func __conversion() throws -> HTTPRequest.Multipart.Content {
             var result = HTTPRequest.Multipart.Content()
-                        
+            
             result.append(
                 .file(
                     named: "file",
@@ -428,7 +428,7 @@ extension OpenAI.APISpecification.RequestBodies {
             case aac
             case flac
         }
-
+        
         /// The text to generate audio for. The maximum length is 4096 characters.
         public let input: String
         /// One of the available TTS models: tts-1 or tts-1-hd
@@ -450,7 +450,7 @@ extension OpenAI.APISpecification.RequestBodies {
             case responseFormat = "response_format"
             case speed
         }
-
+        
         public init(
             model: OpenAI.Model,
             input: String,
@@ -497,13 +497,7 @@ extension OpenAI.APISpecification.RequestBodies {
             case timestampGranularities = "timestamp_granularities[]"
             case responseFormat = "response_format"
         }
-        
-        ///The timestamp granularities to populate for this transcription. response_format must be set verbose_json to use timestamp granularities. Either or both of these options are supported: word, or segment. Note: There is no additional latency for segment timestamps, but generating word timestamps incurs additional latency.
-        public enum TimestampGranularities: String, Codable, CaseIterable {
-            case word
-            case segment
-        }
-
+                
         public enum ResponseFormat: String, Codable, CaseIterable {
             case json
             case text
@@ -529,12 +523,12 @@ extension OpenAI.APISpecification.RequestBodies {
         /// Defaults to 0
         public let temperature: Double?
         
-        public let timestampGranularities: TimestampGranularities?
+        public let timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]?
         
         /// The format of the transcript output, in one of these options: json, text, srt, verbose_json, or vtt.
         /// Defaults to verbose_json
         public let responseFormat: ResponseFormat?
-    
+        
         public init(
             file: Data,
             filename: String,
@@ -543,7 +537,7 @@ extension OpenAI.APISpecification.RequestBodies {
             model: OpenAI.Model = OpenAI.Model.whisper(.whisper_1),
             language: LargeLanguageModels.ISO639LanguageCode? = nil,
             temperature: Double? = 0,
-            timestampGranularities: TimestampGranularities? = nil,
+            timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
             responseFormat: ResponseFormat? = ResponseFormat.verboseJSON
         ) {
             self.file = file
@@ -554,12 +548,7 @@ extension OpenAI.APISpecification.RequestBodies {
             self.language = language
             self.temperature = temperature
             self.timestampGranularities = timestampGranularities
-            
-            if let _ = timestampGranularities {
-                self.responseFormat = .verboseJSON
-            } else {
-                self.responseFormat = responseFormat
-            }
+            self.responseFormat = responseFormat
         }
         
         public func __conversion() -> HTTPRequest.Multipart.Content {
@@ -616,7 +605,22 @@ extension OpenAI.APISpecification.RequestBodies {
                     )
                 )
             }
-
+            
+            if let timestampGranularities = timestampGranularities {
+                let granularities: String = timestampGranularities
+                    .map({ "\"\($0.rawValue)\"" })
+                    .joined(separator: ", ")
+                    .addingPrefixIfMissing("[")
+                    .addingSuffixIfMissing("]")
+                
+                result.append(
+                    .string(
+                        named: "timestamp_granularities[]",
+                        value: granularities
+                    )
+                )
+            }
+            
             return result
         }
     }
