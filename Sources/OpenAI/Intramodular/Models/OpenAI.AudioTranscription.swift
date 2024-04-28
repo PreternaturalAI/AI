@@ -14,11 +14,11 @@ extension OpenAI {
             case segments
         }
 
-        public let language: String?
-        public let duration: Double?
-        public let text: String
-        public let words: [Word]?
-        public let segments: [TranscriptionSegment]?
+        public private(set) var language: String?
+        public private(set) var duration: Double?
+        public private(set) var text: String
+        public private(set) var words: [Word]?
+        public private(set) var segments: [TranscriptionSegment]?
 
         public init(
             language: String?,
@@ -37,15 +37,31 @@ extension OpenAI {
         }
                 
         public required init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            
-            self.language = try container.decodeIfPresent(forKey: .language)
-            self.duration = try container.decodeIfPresent(forKey: .duration)
-            self.text = try container.decode(forKey: .text)
-            self.words = try container.decodeIfPresent(forKey: .words)
-            self.segments = try container.decodeIfPresent(forKey: .segments)
-
-            try super.init(from: decoder)
+            do {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                
+                self.language = try container.decodeIfPresent(forKey: .language)
+                self.duration = try container.decodeIfPresent(forKey: .duration)
+                self.text = try container.decode(forKey: .text)
+                self.words = try container.decodeIfPresent(forKey: .words)
+                self.segments = try container.decodeIfPresent(forKey: .segments)
+                
+                super.init(type: .transcription)
+            } catch {
+                do {
+                    let string = try String(from: decoder)
+                    
+                    self.language = nil
+                    self.duration = nil
+                    self.text = string
+                    self.words = nil
+                    self.segments = nil
+                    
+                    super.init(type: .transcription)
+                } catch(_) {
+                    throw error
+                }
+            }
         }
         
         override public func encode(to encoder: any Encoder) throws {
@@ -102,5 +118,13 @@ extension OpenAI.AudioTranscription {
         public let start: Double
         /// End time of the word in seconds.
         public let end: Double
+    }
+}
+
+// MARK: - Conformances
+
+extension OpenAI.AudioTranscription: CustomStringConvertible {
+    public var description: String {
+        text
     }
 }

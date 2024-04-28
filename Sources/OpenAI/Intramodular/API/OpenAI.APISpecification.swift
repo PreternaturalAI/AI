@@ -26,7 +26,7 @@ extension OpenAI {
     
     public struct APISpecification: RESTAPISpecification {
         public typealias Error = APIError
-
+        
         public struct Configuration: Codable, Hashable {
             public var host: URL
             public var apiKey: String?
@@ -39,9 +39,9 @@ extension OpenAI {
                 self.apiKey = apiKey
             }
         }
-
+        
         public let configuration: Configuration
-
+        
         public var host: URL {
             configuration.host
         }
@@ -55,7 +55,7 @@ extension OpenAI {
         }
         
         // MARK: Embeddings
-
+        
         @POST
         @Path("/v1/embeddings")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
@@ -135,19 +135,19 @@ extension OpenAI {
             }
         })
         public var listFiles = Endpoint<OpenAI.APISpecification.RequestBodies.ListFiles, OpenAI.List<OpenAI.File>, Void>()
-
+        
         @GET
         @Path({ context -> String in
             "/v1/files/\(context.input)"
         })
         public var retrieveFile = Endpoint<OpenAI.File.ID, OpenAI.File, Void>()
-                
+        
         @DELETE
         @Path({ context -> String in
             "/v1/files/\(context.input)"
         })
         public var deleteFile = Endpoint<OpenAI.File.ID, OpenAI.File.DeletionStatus, Void>()
-
+        
         // MARK: Assistants
         
         @Header(["OpenAI-Beta": "assistants=v1"])
@@ -156,7 +156,7 @@ extension OpenAI {
             "/v1/threads/\(context.input)/messages"
         })
         public var listMessagesForThread = Endpoint<OpenAI.Thread.ID, OpenAI.List<OpenAI.Message>, Void>()
-
+        
         @Header(["OpenAI-Beta": "assistants=v1"])
         @POST
         @Path({ context -> String in
@@ -207,7 +207,7 @@ extension OpenAI.APISpecification {
             }
             
             request = request.header(.contentType(.json))
-
+            
             return request
         }
         
@@ -268,10 +268,26 @@ extension OpenAI.APISpecification {
                 case Data.self:
                     return try cast(response.data, to: Output.self)
                 default:
-                    return try response.decode(
-                        Output.self,
-                        keyDecodingStrategy: .convertFromSnakeCase
-                    )
+                    do {
+                        return try response.decode(
+                            Output.self,
+                            keyDecodingStrategy: .convertFromSnakeCase
+                        )
+                    } catch {
+                        if Output.self == OpenAI.APISpecification.ResponseBodies.CreateTranscription.self {
+                            if let string = response.data.toUTF8String() {
+                                return try cast(OpenAI.APISpecification.ResponseBodies.CreateTranscription(
+                                    language: nil,
+                                    duration: nil,
+                                    text: string,
+                                    words: nil,
+                                    segments: nil
+                                ))
+                            }
+                        }
+                        
+                        throw error
+                    }
             }
         }
     }
