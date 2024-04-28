@@ -6,13 +6,19 @@ import Foundation
 import LargeLanguageModels
 import NetworkKit
 
+extension HTTPMediaType {
+    fileprivate func _assertIsSupportedMediaTypeForAudioTranscription() {
+
+    }
+}
+
 extension OpenAI.APIClient {
     public func createTranscription(
         file: Data,
         filename: String,
         preferredMIMEType: HTTPMediaType,
-        prompt: String?,
-        model: OpenAI.Model.Whisper?,
+        prompt: String? = nil,
+        model: OpenAI.Model.Whisper? = nil,
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
         timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
@@ -23,7 +29,7 @@ extension OpenAI.APIClient {
             filename: filename,
             preferredMIMEType: preferredMIMEType,
             prompt: prompt,
-            model: OpenAI.Model.whisper(.whisper_1),
+            model: OpenAI.Model.whisper(model ?? .whisper_1),
             language: language,
             temperature: temperature,
             timestampGranularities: timestampGranularities,
@@ -45,8 +51,8 @@ extension OpenAI.APIClient {
     
     public func createTranscription(
         audioFile: URL,
-        prompt: String?,
-        model: OpenAI.Model.Whisper?,
+        prompt: String? = nil,
+        model: OpenAI.Model.Whisper? = nil,
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
         timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
@@ -70,8 +76,8 @@ extension OpenAI.APIClient {
     
     public func createTranscription(
         audioFile: String,
-        prompt: String?,
-        model: OpenAI.Model.Whisper?,
+        prompt: String? = nil,
+        model: OpenAI.Model.Whisper? = nil,
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
         timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
