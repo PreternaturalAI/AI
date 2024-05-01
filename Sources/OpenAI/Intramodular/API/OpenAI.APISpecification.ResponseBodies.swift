@@ -53,4 +53,8 @@ extension OpenAI.APISpecification.ResponseBodies {
         public let words: [OpenAI.AudioTranscription.Word]?
         public let segments: [OpenAI.AudioTranscription.TranscriptionSegment]?
     }
+    
+    public struct CreateImage: Codable, Hashable, Sendable {
+        public let data: [String: String]
+    }
 }

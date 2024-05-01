@@ -20,6 +20,7 @@ extension OpenAI {
         case assistant = "assistant"
         case assistantFile = "assistant.file"
         case run = "thread.run"
+        case image
         
         public func resolveType() -> Any.Type {
             switch self {
@@ -37,6 +38,8 @@ extension OpenAI {
                     return OpenAI.Speech.self
                 case .transcription:
                     return OpenAI.AudioTranscription.self
+                case .image:
+                    return OpenAI.Image.self
                 case .file:
                     return OpenAI.File.self
                 case .thread:

@@ -186,6 +186,11 @@ extension OpenAI {
         @Path("/v1/audio/transcriptions")
         @Body(multipart: .input)
         public var createAudioTranscription = Endpoint<RequestBodies.CreateTranscription, ResponseBodies.CreateTranscription, Void>()
+        
+        @POST
+        @Path("/v1/images/generations")
+        @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
+        public var createImage = Endpoint<RequestBodies.CreateImage, ResponseBodies.CreateImage, Void>()
     }
 }
 

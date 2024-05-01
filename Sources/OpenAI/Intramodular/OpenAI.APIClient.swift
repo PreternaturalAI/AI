@@ -228,6 +228,27 @@ extension OpenAI.APIClient {
 }
 
 extension OpenAI.APIClient {
+    public func createImage(
+        prompt: String,
+        responseFormat: OpenAI.APISpecification.RequestBodies.CreateImage.ResponseFormat = .url,
+        quality: OpenAI.APISpecification.RequestBodies.CreateImage.Quality = .standard,
+        size: OpenAI.APISpecification.RequestBodies.CreateImage.Size = .w1024h1024,
+        style: OpenAI.APISpecification.RequestBodies.CreateImage.Style = .vivid,
+        user: String? = nil
+    ) async throws -> OpenAI.Image {
+        let requestBody = OpenAI.APISpecification.RequestBodies.CreateImage(
+            prompt: prompt,
+            responseFormat: responseFormat,
+            quality: quality,
+            size: size,
+            style: style,
+            user: user)
+        let createImage = try await run(\.createImage, with: requestBody)
+        return OpenAI.Image(data: createImage.data)
+    }
+}
+
+extension OpenAI.APIClient {
     @discardableResult
     public func createRun(
         threadID: OpenAI.Thread.ID,

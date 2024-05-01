@@ -626,6 +626,90 @@ extension OpenAI.APISpecification.RequestBodies {
     }
 }
 
+extension OpenAI.APISpecification.RequestBodies {
+    public struct CreateImage: Codable {
+        /// Creates an image given a prompt.
+        /// API Docs: https://platform.openai.com/docs/api-reference/images/create
+        
+        /// A text description of the desired image(s). The maximum length is 1000 characters for dall-e-2 and 4000 characters for dall-e-3.
+        public let prompt: String
+
+        // only DALLE-3 is supported
+        public let model: OpenAI.Model.DALLE
+        
+        /// The number of images to generate. Must be between 1 and 10. For dall-e-3, only n=1 is supported.
+        /// Defaults to 1
+        public let number: Int
+
+        /// The format in which the generated images are returned. Must be one of url or b64_json. URLs are only valid for 60 minutes after the image has been generated.
+        /// Defaults to url
+        public enum ResponseFormat: String, Codable, CaseIterable {
+            case url
+            case b64_json
+        }
+        public let responseFormat: ResponseFormat
+        
+        /// The quality of the image that will be generated. hd creates images with finer details and greater consistency across the image. This param is only supported for dall-e-3.
+        /// Defaults to standard
+        public enum Quality: String, Codable, CaseIterable {
+            case standard
+            case hd
+        }
+        public let quality: String
+        
+        /// The size of the generated images. Must be one of 256x256, 512x512, or 1024x1024 for dall-e-2. Must be one of 1024x1024, 1792x1024, or 1024x1792 for dall-e-3 models.
+        /// Defaults to 1024x1024
+        public enum Size: String, Codable, CaseIterable {
+            case w1024h1024 = "1024x1024"
+            case w1792h1024 = "1792x1024"
+            case w1024h1792 = "1024x1792"
+        }
+        public let size: String
+        
+        /// The style of the generated images. Must be one of vivid or natural. Vivid causes the model to lean towards generating hyper-real and dramatic images. Natural causes the model to produce more natural, less hyper-real looking images. This param is only supported for dall-e-3.
+        /// Defaults to vivid
+        public enum Style: String, Codable, CaseIterable {
+            case vivid
+            case natural
+        }
+        public let style: String
+        
+        /// A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+        /// Learn more: https://platform.openai.com/docs/guides/safety-best-practices/end-user-ids
+        public let user: String?
+        
+        public enum CodingKeys: String, CodingKey {
+            case prompt
+            case model
+            case number = "n"
+            case responseFormat = "response_format"
+            case quality
+            case size
+            case style
+            case user
+        }
+        
+        public init(
+            prompt: String,
+            responseFormat: ResponseFormat = .url,
+            quality: Quality = .standard,
+            size: Size = .w1024h1024,
+            style: Style = .vivid,
+            user: String? = nil
+        ) {
+            self.prompt = prompt
+            self.model = .dalle3
+            self.number = 1
+            self.responseFormat = responseFormat
+            self.quality = quality.rawValue
+            self.size = size.rawValue
+            self.style = style.rawValue
+            self.user = user
+        }
+    }
+}
+
+
 // MARK: - Auxiliary
 
 extension OpenAI.APISpecification.RequestBodies.CreateChatCompletion {
