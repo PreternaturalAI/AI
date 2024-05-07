@@ -12,24 +12,24 @@ extension OpenAI.APISpecification {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct CreateCompletion: Codable, Hashable {
-        public let prompt: Either<String, [String]>
-        public let model: OpenAI.Model
-        public let suffix: String?
-        public let maxTokens: Int?
-        public let temperature: Double?
-        public let topP: Double?
-        public let n: Int?
-        public let stream: Bool?
-        public let logprobs: Int?
-        public let stop: Either<String, [String]>?
-        public let presencePenalty: Double?
-        public let frequencyPenalty: Double?
-        public let bestOf: Int?
-        public let logitBias: [String: Int]?
-        public let user: String?
+    struct CreateCompletion: Codable, Hashable {
+        let prompt: Either<String, [String]>
+        let model: OpenAI.Model
+        let suffix: String?
+        let maxTokens: Int?
+        let temperature: Double?
+        let topP: Double?
+        let n: Int?
+        let stream: Bool?
+        let logprobs: Int?
+        let stop: Either<String, [String]>?
+        let presencePenalty: Double?
+        let frequencyPenalty: Double?
+        let bestOf: Int?
+        let logitBias: [String: Int]?
+        let user: String?
         
-        public init(
+        init(
             prompt: Either<String, [String]>,
             model: OpenAI.Model,
             suffix: String?,
@@ -69,7 +69,7 @@ extension OpenAI.APISpecification.RequestBodies {
             self.user = user
         }
         
-        public init(
+        init(
             prompt: Either<String, [String]>,
             model: OpenAI.Model,
             parameters: OpenAI.APIClient.TextCompletionParameters,
@@ -97,14 +97,14 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct CreateEmbedding: Codable, Hashable {
-        public let model: OpenAI.Model.Embedding
-        public let input: [String]
+    struct CreateEmbedding: Codable, Hashable {
+        let model: OpenAI.Model.Embedding
+        let input: [String]
     }
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct CreateChatCompletion: Codable, Hashable {
+    struct CreateChatCompletion: Codable, Hashable {
         private enum CodingKeys: String, CodingKey {
             case user
             case messages
@@ -126,26 +126,26 @@ extension OpenAI.APISpecification.RequestBodies {
             case seed = "seed"
         }
         
-        public let messages: [OpenAI.ChatMessage]
-        public let model: OpenAI.Model
-        public let frequencyPenalty: Double?
-        public let logitBias: [String: Int]?
-        public let logprobs: Bool?
-        public let topLogprobs: Int?
-        public let maxTokens: Int?
-        public let choices: Int?
-        public let presencePenalty: Double?
-        public let responseFormat: OpenAI.ChatCompletion.ResponseFormat?
-        public let seed: String?
-        public let stop: [String]?
-        public let stream: Bool?
-        public let temperature: Double?
-        public let topProbabilityMass: Double?
-        public let user: String?
-        public let functions: [OpenAI.ChatFunctionDefinition]?
-        public let functionCallingStrategy: OpenAI.FunctionCallingStrategy?
+        let messages: [OpenAI.ChatMessage]
+        let model: OpenAI.Model
+        let frequencyPenalty: Double?
+        let logitBias: [String: Int]?
+        let logprobs: Bool?
+        let topLogprobs: Int?
+        let maxTokens: Int?
+        let choices: Int?
+        let presencePenalty: Double?
+        let responseFormat: OpenAI.ChatCompletion.ResponseFormat?
+        let seed: String?
+        let stop: [String]?
+        let stream: Bool?
+        let temperature: Double?
+        let topProbabilityMass: Double?
+        let user: String?
+        let functions: [OpenAI.ChatFunctionDefinition]?
+        let functionCallingStrategy: OpenAI.FunctionCallingStrategy?
         
-        public init(
+        init(
             messages: [OpenAI.ChatMessage],
             model: OpenAI.Model,
             frequencyPenalty: Double? = nil,
@@ -185,7 +185,7 @@ extension OpenAI.APISpecification.RequestBodies {
             self.functionCallingStrategy = functionCallingStrategy
         }
         
-        public init(
+        init(
             user: String?,
             messages: [OpenAI.ChatMessage],
             functions: [OpenAI.ChatFunctionDefinition]?,
@@ -221,7 +221,7 @@ extension OpenAI.APISpecification.RequestBodies {
             self.seed = nil
         }
         
-        public init(
+        init(
             messages: [OpenAI.ChatMessage],
             model: OpenAI.Model,
             parameters: OpenAI.APIClient.ChatCompletionParameters,
@@ -248,13 +248,13 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct UploadFile: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible, Sendable {
-        public var file: Data
-        public var filename: String
-        public var preferredMIMEType: String
-        public var purpose: OpenAI.File.Purpose
+    struct UploadFile: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible, Sendable {
+        var file: Data
+        var filename: String
+        var preferredMIMEType: String
+        var purpose: OpenAI.File.Purpose
         
-        public init(
+        init(
             file: Data,
             filename: String,
             preferredMIMEType: String,
@@ -266,7 +266,7 @@ extension OpenAI.APISpecification.RequestBodies {
             self.purpose = purpose
         }
         
-        public func __conversion() throws -> HTTPRequest.Multipart.Content {
+        func __conversion() throws -> HTTPRequest.Multipart.Content {
             var result = HTTPRequest.Multipart.Content()
             
             result.append(
@@ -291,17 +291,17 @@ extension OpenAI.APISpecification.RequestBodies {
         }
     }
     
-    public struct ListFiles {
-        public let purpose: OpenAI.File.Purpose?
+    struct ListFiles {
+        let purpose: OpenAI.File.Purpose?
     }
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct CreateThread: Codable, Hashable, Sendable {
-        public var messages: [OpenAI.ChatMessage]?
-        public var metadata: [String: String]?
+    struct CreateThread: Codable, Hashable, Sendable {
+        var messages: [OpenAI.ChatMessage]?
+        var metadata: [String: String]?
         
-        public init(
+        init(
             messages: [OpenAI.ChatMessage]? = nil,
             metadata: [String : String]? = nil
         ) {
@@ -310,15 +310,15 @@ extension OpenAI.APISpecification.RequestBodies {
         }
     }
     
-    public struct CreateThreadAndRun: Codable, Hashable, Sendable {
-        public var assistantID: String
-        public var thread: CreateThread?
-        public var model: OpenAI.Model?
-        public var instructions: String?
-        public var tools: [OpenAI.Tool]?
-        public var metadata: [String: String] = [:]
+    struct CreateThreadAndRun: Codable, Hashable, Sendable {
+        var assistantID: String
+        var thread: CreateThread?
+        var model: OpenAI.Model?
+        var instructions: String?
+        var tools: [OpenAI.Tool]?
+        var metadata: [String: String] = [:]
         
-        public init(
+        init(
             assistantID: String,
             thread: CreateThread?,
             model: OpenAI.Model?,
@@ -337,20 +337,20 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct CreateMessage: Codable, Hashable, Sendable {
-        public enum CodingKeys: String, CodingKey {
+    struct CreateMessage: Codable, Hashable, Sendable {
+        enum CodingKeys: String, CodingKey {
             case role
             case content
             case fileIdentifiers = "file_ids"
             case metadata
         }
         
-        public let role: OpenAI.ChatRole
-        public let content: String
-        public let fileIdentifiers: [String]?
-        public let metadata: [String: String]?
+        let role: OpenAI.ChatRole
+        let content: String
+        let fileIdentifiers: [String]?
+        let metadata: [String: String]?
         
-        public init(
+        init(
             role: OpenAI.ChatRole,
             content: String,
             fileIdentifiers: [String]?,
@@ -362,7 +362,7 @@ extension OpenAI.APISpecification.RequestBodies {
             self.metadata = metadata
         }
         
-        public init(from message: OpenAI.ChatMessage) throws {
+        init(from message: OpenAI.ChatMessage) throws {
             assert(message.role == .user) // only .user is supported by the API right now
             
             self.init(
@@ -376,8 +376,8 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct CreateRun: Codable, Hashable, Sendable {
-        public enum CodingKeys: String, CodingKey {
+    struct CreateRun: Codable, Hashable, Sendable {
+        enum CodingKeys: String, CodingKey {
             case assistantID = "assistantId"
             case model
             case instructions
@@ -385,13 +385,13 @@ extension OpenAI.APISpecification.RequestBodies {
             case metadata
         }
         
-        public let assistantID: String
-        public let model: OpenAI.Model?
-        public let instructions: String?
-        public let tools: [OpenAI.Tool]?
-        public let metadata: [String: String]?
+        let assistantID: String
+        let model: OpenAI.Model?
+        let instructions: String?
+        let tools: [OpenAI.Tool]?
+        let metadata: [String: String]?
         
-        public init(
+        init(
             assistantID: String,
             model: OpenAI.Model?,
             instructions: String?,
@@ -408,21 +408,8 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct CreateSpeech: Codable {
-        /// Encapsulates the voices available for audio generation.
-        ///
-        /// To get aquinted with each of the voices and listen to the samples visit:
-        /// [OpenAI Text-to-Speech – Voice Options](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
-        public enum Voice: String, Codable, CaseIterable {
-            case alloy
-            case echo
-            case fable
-            case onyx
-            case nova
-            case shimmer
-        }
-        
-        public enum ResponseFormat: String, Codable, CaseIterable {
+    struct CreateSpeech: Codable {        
+        enum ResponseFormat: String, Codable, CaseIterable {
             case mp3
             case opus
             case aac
@@ -430,20 +417,20 @@ extension OpenAI.APISpecification.RequestBodies {
         }
         
         /// The text to generate audio for. The maximum length is 4096 characters.
-        public let input: String
+        let input: String
         /// One of the available TTS models: tts-1 or tts-1-hd
-        public let model: OpenAI.Model
+        let model: OpenAI.Model
         /// The voice to use when generating the audio. Supported voices are alloy, echo, fable, onyx, nova, and shimmer. Previews of the voices are available in the Text to speech guide.
         /// https://platform.openai.com/docs/guides/text-to-speech/voice-options
-        public let voice: Voice
+        let voice: OpenAI.Speech.Voice
         /// The format to audio in. Supported formats are mp3, opus, aac, and flac.
         /// Defaults to mp3
-        public let responseFormat: ResponseFormat?
+        let responseFormat: ResponseFormat?
         /// The speed of the generated audio. Select a value from **0.25** to **4.0**. **1.0** is the default.
         /// Defaults to 1
-        public let speed: String?
+        let speed: String?
         
-        public enum CodingKeys: String, CodingKey {
+        enum CodingKeys: String, CodingKey {
             case model
             case input
             case voice
@@ -451,10 +438,10 @@ extension OpenAI.APISpecification.RequestBodies {
             case speed
         }
         
-        public init(
+        init(
             model: OpenAI.Model,
             input: String,
-            voice: Voice,
+            voice: OpenAI.Speech.Voice,
             responseFormat: ResponseFormat = .mp3,
             speed: Double?
         ) {
@@ -485,8 +472,8 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    public struct CreateTranscription: Codable, HTTPRequest.Multipart.ContentConvertible {
-        public enum CodingKeys: String, CodingKey {
+    struct CreateTranscription: Codable, HTTPRequest.Multipart.ContentConvertible {
+        enum CodingKeys: String, CodingKey {
             case file
             case filename
             case preferredMIMEType
@@ -497,39 +484,31 @@ extension OpenAI.APISpecification.RequestBodies {
             case timestampGranularities = "timestamp_granularities[]"
             case responseFormat = "response_format"
         }
-                
-        public enum ResponseFormat: String, Codable, CaseIterable {
-            case json
-            case text
-            case srt
-            case verboseJSON = "verbose_json"
-            case vtt
-        }
-        
+                        
         /// The audio file object to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
-        public let file: Data
-        public let filename: String
-        public let preferredMIMEType: HTTPMediaType
+        let file: Data
+        let filename: String
+        let preferredMIMEType: HTTPMediaType
         
         /// An optional text to guide the model's style or continue a previous audio segment. The prompt should match the audio language.
-        public let prompt: String?
+        let prompt: String?
         /// ID of the model to use. Only whisper-1 (which is powered by our open source Whisper V2 model) is currently available.
-        public let model: OpenAI.Model
+        let model: OpenAI.Model
         
         /// The language of the input audio. Supplying the input language in ISO-639-1 format will improve accuracy and latency.
         /// https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
-        public let language: LargeLanguageModels.ISO639LanguageCode?
+        let language: LargeLanguageModels.ISO639LanguageCode?
         
         /// Defaults to 0
-        public let temperature: Double?
+        let temperature: Double?
         
-        public let timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]?
+        let timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]?
         
         /// The format of the transcript output, in one of these options: json, text, srt, verbose_json, or vtt.
         /// Defaults to verbose_json
-        public let responseFormat: ResponseFormat?
+        let responseFormat: OpenAI.AudioTranscription.ResponseFormat?
         
-        public init(
+        init(
             file: Data,
             filename: String,
             preferredMIMEType: HTTPMediaType,
@@ -538,7 +517,7 @@ extension OpenAI.APISpecification.RequestBodies {
             language: LargeLanguageModels.ISO639LanguageCode? = nil,
             temperature: Double? = 0,
             timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
-            responseFormat: ResponseFormat? = ResponseFormat.verboseJSON
+            responseFormat: OpenAI.AudioTranscription.ResponseFormat? = .verboseJSON
         ) {
             self.file = file
             self.filename = filename
@@ -551,7 +530,7 @@ extension OpenAI.APISpecification.RequestBodies {
             self.responseFormat = responseFormat
         }
         
-        public func __conversion() -> HTTPRequest.Multipart.Content {
+        func __conversion() -> HTTPRequest.Multipart.Content {
             var result = HTTPRequest.Multipart.Content()
             
             result.append(
@@ -629,12 +608,12 @@ extension OpenAI.APISpecification.RequestBodies {
 // MARK: - Auxiliary
 
 extension OpenAI.APISpecification.RequestBodies.CreateChatCompletion {
-    public struct ChatFunctionDefinition: Codable, Hashable {
-        public let name: String
-        public let description: String
-        public let parameters: JSONSchema
+    struct ChatFunctionDefinition: Codable, Hashable {
+        let name: String
+        let description: String
+        let parameters: JSONSchema
         
-        public init(name: String, description: String, parameters: JSONSchema) {
+        init(name: String, description: String, parameters: JSONSchema) {
             self.name = name
             self.description = description
             self.parameters = parameters

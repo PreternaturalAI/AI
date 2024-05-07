@@ -22,7 +22,7 @@ extension OpenAI.APIClient {
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
         timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
-        responseFormat: OpenAI.APISpecification.RequestBodies.CreateTranscription.ResponseFormat? = nil
+        responseFormat: OpenAI.AudioTranscription.ResponseFormat? = nil
     ) async throws -> OpenAI.AudioTranscription {
         let requestBody = OpenAI.APISpecification.RequestBodies.CreateTranscription(
             file: file,
@@ -56,7 +56,7 @@ extension OpenAI.APIClient {
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
         timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
-        responseFormat: OpenAI.APISpecification.RequestBodies.CreateTranscription.ResponseFormat? = nil
+        responseFormat: OpenAI.AudioTranscription.ResponseFormat? = nil
     ) async throws -> OpenAI.AudioTranscription {
         let filename = try audioFile._fileNameWithExtension.unwrap()
         let preferredMIMEType = try audioFile._preferredMIMEType.unwrap()
@@ -81,7 +81,7 @@ extension OpenAI.APIClient {
         language: LargeLanguageModels.ISO639LanguageCode? = nil,
         temperature: Double? = 0,
         timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
-        responseFormat: OpenAI.APISpecification.RequestBodies.CreateTranscription.ResponseFormat? = nil
+        responseFormat: OpenAI.AudioTranscription.ResponseFormat? = nil
     ) async throws -> OpenAI.AudioTranscription {
         return try await createTranscription(
             audioFile: try URL(string: audioFile).unwrap(),

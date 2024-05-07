@@ -42,15 +42,15 @@ extension OpenAI.APISpecification.ResponseBodies {
         }
     }
     
-    public struct CreateChatCompletion: Codable, Hashable, Sendable {
+    struct CreateChatCompletion: Codable, Hashable, Sendable {
         public let message: OpenAI.ChatMessage
     }
     
-    public struct CreateTranscription: Codable, Hashable, Sendable {
-        public let language: String?
-        public let duration: Double?
-        public let text: String
-        public let words: [OpenAI.AudioTranscription.Word]?
-        public let segments: [OpenAI.AudioTranscription.TranscriptionSegment]?
+    struct CreateTranscription: Codable, Hashable, Sendable {
+        let language: String?
+        let duration: Double?
+        let text: String
+        let words: [OpenAI.AudioTranscription.Word]?
+        let segments: [OpenAI.AudioTranscription.TranscriptionSegment]?
     }
 }
