@@ -12,7 +12,8 @@ final class DalleTests: XCTestCase {
 
     func testCreateImage() async throws {
         let result = try await client.createImage(
-            prompt: "a kitten playing with yarn")
+            prompt: "a kitten playing with yarn"
+        )
         
         _ = result
     }

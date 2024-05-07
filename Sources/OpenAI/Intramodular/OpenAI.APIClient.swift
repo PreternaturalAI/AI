@@ -33,14 +33,6 @@ extension OpenAI {
     public typealias APIClient = _OpenAI_APIClient
 }
 
-extension OpenAI.APIClient {
-    public func createEmbeddings(
-        model: OpenAI.Model.Embedding,
-        for input: [String]
-    ) async throws -> OpenAI.APISpecification.ResponseBodies.CreateEmbedding {
-        try await run(\.createEmbeddings, with: .init(model: model, input: input))
-    }
-}
 
 extension OpenAI.APIClient {
     public func createCompletion(
@@ -132,119 +124,6 @@ extension OpenAI.APIClient {
             default:
                 throw _PlaceholderError()
         }
-    }
-}
-
-extension OpenAI.APIClient {
-    public func uploadFileWithData(
-        _ data: Data,
-        named filename: String,
-        mimeType: String,
-        purpose: OpenAI.File.Purpose = .assistants
-    ) async throws -> OpenAI.File {
-        let request = OpenAI.APISpecification.RequestBodies.UploadFile(
-            file: data,
-            filename: filename,
-            preferredMIMEType: mimeType,
-            purpose: purpose
-        )
-        
-        let file = try await run(\.uploadFile, with: request)
-        
-        return file
-    }
-
-    public func uploadFile(
-        _ file: URL,
-        named filename: String? = nil,
-        purpose: OpenAI.File.Purpose = .assistants
-    ) async throws -> OpenAI.File {
-        let data = try Data(contentsOf: file)
-        
-        let request = OpenAI.APISpecification.RequestBodies.UploadFile(
-            file: data,
-            filename: try (filename ?? file._fileNameWithExtension).unwrap(),
-            preferredMIMEType: try file._preferredMIMEType.unwrap(),
-            purpose: purpose
-        )
-        
-        let file = try await run(\.uploadFile, with: request)
-        
-        return file
-    }
-        
-    public func listFiles(
-        purpose: OpenAI.File.Purpose? = .assistants
-    ) async throws -> OpenAI.List<OpenAI.File> {
-        let result = try await run(\.listFiles, with: .init(purpose: purpose))
-        
-        return result
-    }
-    
-    @discardableResult
-    public func deleteFile(
-        _ fileID: OpenAI.File.ID
-    ) async throws -> OpenAI.File.DeletionStatus {
-        let status: OpenAI.File.DeletionStatus = try await run(\.deleteFile, with: fileID)
-        
-        try _tryAssert(status.deleted)
-        
-        return status
-    }
-}
-
-extension OpenAI.APIClient {
-    public func createSpeech(
-        model: OpenAI.Model,
-        text: String,
-        voice: OpenAI.APISpecification.RequestBodies.CreateSpeech.Voice = .alloy,
-        speed: Double?
-    ) async throws -> OpenAI.Speech {
-        let requestBody = OpenAI.APISpecification.RequestBodies.CreateSpeech(
-            model: model,
-            input: text,
-            voice: voice,
-            speed: speed
-        )
-        let data = try await run(\.createSpeech, with: requestBody)
-        return OpenAI.Speech(data: data)
-    }
-    
-    public func createSpeech(
-        model: OpenAI.Model.Speech,
-        text: String,
-        voice: OpenAI.APISpecification.RequestBodies.CreateSpeech.Voice = .alloy,
-        speed: Double?
-    ) async throws -> OpenAI.Speech {
-        let requestBody = OpenAI.APISpecification.RequestBodies.CreateSpeech(
-            model: OpenAI.Model.speech(model),
-            input: text,
-            voice: voice,
-            speed: speed
-        )
-        let data = try await run(\.createSpeech, with: requestBody)
-        return OpenAI.Speech(data: data)
-    }
-}
-
-extension OpenAI.APIClient {
-    public func createImage(
-        prompt: String,
-        responseFormat: OpenAI.APISpecification.RequestBodies.CreateImage.ResponseFormat = .url,
-        quality: OpenAI.APISpecification.RequestBodies.CreateImage.Quality = .standard,
-        size: OpenAI.APISpecification.RequestBodies.CreateImage.Size = .w1024h1024,
-        style: OpenAI.APISpecification.RequestBodies.CreateImage.Style = .vivid,
-        user: String? = nil
-    ) async throws -> OpenAI.Image {
-        let requestBody = OpenAI.APISpecification.RequestBodies.CreateImage(
-            prompt: prompt,
-            responseFormat: responseFormat,
-            quality: quality,
-            size: size,
-            style: style,
-            user: user)
-        let createImage = try await run(\.createImage, with: requestBody)
-        return OpenAI.Image(data: createImage.data)
     }
 }
 
@@ -429,4 +308,3 @@ extension OpenAI.APIClient.ChatCompletionParameters {
         self.seed = nil
     }
 }
-

@@ -28,8 +28,8 @@ extension OpenAI {
         public typealias Error = APIError
         
         public struct Configuration: Codable, Hashable {
-            public var host: URL
-            public var apiKey: String?
+            var host: URL
+            var apiKey: String?
             
             public init(
                 host: URL = URL(string: "https://api.openai.com")!,
@@ -59,26 +59,26 @@ extension OpenAI {
         @POST
         @Path("/v1/embeddings")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
-        public var createEmbeddings = Endpoint<RequestBodies.CreateEmbedding, ResponseBodies.CreateEmbedding, Void>()
+        var createEmbeddings = Endpoint<RequestBodies.CreateEmbedding, ResponseBodies.CreateEmbedding, Void>()
         
         // MARK: Completions
         
         @POST
         @Path("/v1/completions")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
-        public var createCompletions = Endpoint<RequestBodies.CreateCompletion, OpenAI.TextCompletion, Void>()
+        var createCompletions = Endpoint<RequestBodies.CreateCompletion, OpenAI.TextCompletion, Void>()
         
         @POST
         @Path("/v1/chat/completions")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
-        public var createChatCompletions = Endpoint<RequestBodies.CreateChatCompletion, OpenAI.ChatCompletion, Void>()
+        var createChatCompletions = Endpoint<RequestBodies.CreateChatCompletion, OpenAI.ChatCompletion, Void>()
         
         // MARK: Speech
         
         @POST
         @Path("/v1/audio/speech")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
-        public var createSpeech = Endpoint<RequestBodies.CreateSpeech, Data, Void>()
+        var createSpeech = Endpoint<RequestBodies.CreateSpeech, Data, Void>()
         
         // MARK: Threads
         
@@ -86,21 +86,21 @@ extension OpenAI {
         @POST
         @Path("/v1/threads")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
-        public var createThread = Endpoint<RequestBodies.CreateThread, OpenAI.Thread, Void>()
+        var createThread = Endpoint<RequestBodies.CreateThread, OpenAI.Thread, Void>()
         
         @Header(["OpenAI-Beta": "assistants=v1"])
         @GET
         @Path({ context -> String in
             "/v1/threads/\(context.input.rawValue)"
         })
-        public var retrieveThread = Endpoint<OpenAI.Thread.ID, OpenAI.Thread, Void>()
+        var retrieveThread = Endpoint<OpenAI.Thread.ID, OpenAI.Thread, Void>()
         
         @Header(["OpenAI-Beta": "assistants=v1"])
         @DELETE
         @Path({ context -> String in
             "/v1/threads/\(context.input.rawValue)"
         })
-        public var deleteThread = Endpoint<OpenAI.Thread.ID, JSON, Void>()
+        var deleteThread = Endpoint<OpenAI.Thread.ID, JSON, Void>()
         
         // MARK: Messages
         
@@ -110,7 +110,7 @@ extension OpenAI {
             "/v1/threads/\(context.input.thread.rawValue)/messages"
         })
         @Body(json: \.requestBody, keyEncodingStrategy: .convertToSnakeCase)
-        public var createMessageForThread = Endpoint<
+        var createMessageForThread = Endpoint<
             (thread: OpenAI.Thread.ID, requestBody: OpenAI.APISpecification.RequestBodies.CreateMessage),
             OpenAI.Message,
             Void
@@ -121,7 +121,7 @@ extension OpenAI {
         @POST
         @Path("/v1/files")
         @Body(multipart: .input)
-        public var uploadFile = Endpoint<OpenAI.APISpecification.RequestBodies.UploadFile, OpenAI.File, Void>()
+        var uploadFile = Endpoint<OpenAI.APISpecification.RequestBodies.UploadFile, OpenAI.File, Void>()
         
         @GET
         @Path({ context -> String in
@@ -134,19 +134,19 @@ extension OpenAI {
                 return [:]
             }
         })
-        public var listFiles = Endpoint<OpenAI.APISpecification.RequestBodies.ListFiles, OpenAI.List<OpenAI.File>, Void>()
+        var listFiles = Endpoint<OpenAI.APISpecification.RequestBodies.ListFiles, OpenAI.List<OpenAI.File>, Void>()
         
         @GET
         @Path({ context -> String in
             "/v1/files/\(context.input)"
         })
-        public var retrieveFile = Endpoint<OpenAI.File.ID, OpenAI.File, Void>()
+        var retrieveFile = Endpoint<OpenAI.File.ID, OpenAI.File, Void>()
         
         @DELETE
         @Path({ context -> String in
             "/v1/files/\(context.input)"
         })
-        public var deleteFile = Endpoint<OpenAI.File.ID, OpenAI.File.DeletionStatus, Void>()
+        var deleteFile = Endpoint<OpenAI.File.ID, OpenAI.File.DeletionStatus, Void>()
         
         // MARK: Assistants
         
@@ -155,7 +155,7 @@ extension OpenAI {
         @Path({ context -> String in
             "/v1/threads/\(context.input)/messages"
         })
-        public var listMessagesForThread = Endpoint<OpenAI.Thread.ID, OpenAI.List<OpenAI.Message>, Void>()
+        var listMessagesForThread = Endpoint<OpenAI.Thread.ID, OpenAI.List<OpenAI.Message>, Void>()
         
         @Header(["OpenAI-Beta": "assistants=v1"])
         @POST
@@ -163,7 +163,7 @@ extension OpenAI {
             "/v1/threads/\(context.input.thread.rawValue)/runs"
         })
         @Body(json: \.requestBody, keyEncodingStrategy: .convertToSnakeCase)
-        public var createRun = Endpoint<
+        var createRun = Endpoint<
             (thread: OpenAI.Thread.ID, requestBody: OpenAI.APISpecification.RequestBodies.CreateRun),
             OpenAI.Run,
             Void
@@ -174,23 +174,25 @@ extension OpenAI {
         @Path({ context -> String in
             "/v1/threads/\(context.input.thread.rawValue)/runs/\(context.input.run.id.rawValue)"
         })
-        public var retrieveRunForThread = Endpoint<
+        var retrieveRunForThread = Endpoint<
             (thread: OpenAI.Thread.ID, run: OpenAI.Run.ID),
             OpenAI.Run,
             Void
         >()
         
-        // MARK: Whisper
+        // MARK: Audio Transcription
         
         @POST
         @Path("/v1/audio/transcriptions")
         @Body(multipart: .input)
-        public var createAudioTranscription = Endpoint<RequestBodies.CreateTranscription, ResponseBodies.CreateTranscription, Void>()
+        var createAudioTranscription = Endpoint<RequestBodies.CreateTranscription, ResponseBodies.CreateTranscription, Void>()
+
+        // MARK: Image Generation
         
         @POST
         @Path("/v1/images/generations")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
-        public var createImage = Endpoint<RequestBodies.CreateImage, ResponseBodies.CreateImage, Void>()
+        var createImage = Endpoint<RequestBodies.CreateImage, OpenAI.List<OpenAI.Image>, Void>()
     }
 }
 
@@ -222,7 +224,7 @@ extension OpenAI.APISpecification {
                 public let param: AnyCodable?
                 public let message: String
                 
-                public var errorDescription: String? {
+                var errorDescription: String? {
                     message
                 }
             }

@@ -1,11 +1,9 @@
 //
-//  OpenAI.Speech.swift
-//  graph
-//
-//  Created by Purav Manot on 10/03/24.
+// Copyright (c) Vatsal Manot
 //
 
-import Foundation
+import NetworkKit
+import Swift
 
 extension OpenAI {
     public final class Speech: OpenAI.Object {
@@ -27,5 +25,20 @@ extension OpenAI {
         enum CodingKeys: CodingKey {
             case data
         }
+    }
+}
+
+extension OpenAI.Speech {
+    /// Encapsulates the voices available for audio generation.
+    ///
+    /// To get aquinted with each of the voices and listen to the samples visit:
+    /// [OpenAI Text-to-Speech – Voice Options](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+    public enum Voice: String, Codable, CaseIterable {
+        case alloy
+        case echo
+        case fable
+        case onyx
+        case nova
+        case shimmer
     }
 }

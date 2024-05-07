@@ -55,7 +55,9 @@ let package = Package(
             resources: [
                 .process("Resources")
             ],
-            swiftSettings: []
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "Anthropic",
@@ -66,7 +68,9 @@ let package = Package(
                 "Swallow"
             ],
             path: "Sources/Anthropic",
-            swiftSettings: []
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "ElevenLabs",
@@ -78,7 +82,9 @@ let package = Package(
                 "Swallow"
             ],
             path: "Sources/ElevenLabs",
-            swiftSettings: []
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "Mistral",
@@ -102,7 +108,10 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/Ollama"
+            path: "Sources/Ollama",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "OpenAI",
@@ -114,7 +123,9 @@ let package = Package(
             ],
             path: "Sources/OpenAI",
             resources: [],
-            swiftSettings: []
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "Perplexity",
@@ -126,7 +137,10 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/Perplexity"
+            path: "Sources/Perplexity",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "AI",
@@ -142,7 +156,9 @@ let package = Package(
                 "Swallow",
             ],
             path: "Sources/AI",
-            swiftSettings: []
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .testTarget(
             name: "LargeLanguageModelsTests",
@@ -150,7 +166,10 @@ let package = Package(
                 "AI",
                 "Swallow"
             ],
-            path: "Tests/LargeLanguageModels"
+            path: "Tests/LargeLanguageModels",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .testTarget(
             name: "AnthropicTests",
@@ -158,7 +177,10 @@ let package = Package(
                 "AI",
                 "Swallow"
             ],
-            path: "Tests/Anthropic"
+            path: "Tests/Anthropic",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .testTarget(
             name: "OpenAITests",
@@ -166,7 +188,10 @@ let package = Package(
                 "AI",
                 "Swallow"
             ],
-            path: "Tests/OpenAI"
+            path: "Tests/OpenAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         )
     ]
 )

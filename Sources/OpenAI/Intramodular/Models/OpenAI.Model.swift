@@ -32,7 +32,7 @@ extension OpenAI {
         case chat(Chat)
         case speech(Speech)
         case whisper(Whisper)
-        case dalle(DALLE)
+        case dall_e(DALL_E)
 
         /// Deprecated by OpenAI.
         case feature(Feature)
@@ -65,7 +65,7 @@ extension OpenAI {
                     return value
                 case .whisper(let value):
                     return value
-                case .dalle(let value):
+                case .dall_e(let value):
                     return value
                 case .unknown:
                     assertionFailure(.unimplemented)
@@ -331,7 +331,7 @@ extension OpenAI.Model {
 }
 
 extension OpenAI.Model {
-    public enum DALLE: String, Named, OpenAI._ModelType, CaseIterable {
+    public enum DALL_E: String, Named, OpenAI._ModelType, CaseIterable {
         public static var `default`: Self {
             .dalle3
         }
@@ -402,7 +402,7 @@ extension OpenAI.Model: RawRepresentable {
                 return model.rawValue
             case .whisper(let model):
                 return model.rawValue
-            case .dalle(let model):
+            case .dall_e(let model):
                 return model.rawValue
             case .unknown(let rawValue):
                 return rawValue
