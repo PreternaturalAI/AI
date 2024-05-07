@@ -180,12 +180,19 @@ extension OpenAI {
             Void
         >()
         
-        // MARK: Whisper
+        // MARK: Audio Transcription
         
         @POST
         @Path("/v1/audio/transcriptions")
         @Body(multipart: .input)
         var createAudioTranscription = Endpoint<RequestBodies.CreateTranscription, ResponseBodies.CreateTranscription, Void>()
+
+        // MARK: Image Generation
+        
+        @POST
+        @Path("/v1/images/generations")
+        @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
+        var createImage = Endpoint<RequestBodies.CreateImage, OpenAI.List<OpenAI.Image>, Void>()
     }
 }
 

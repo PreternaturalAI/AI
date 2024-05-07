@@ -408,7 +408,7 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    struct CreateSpeech: Codable {        
+    struct CreateSpeech: Codable {
         enum ResponseFormat: String, Codable, CaseIterable {
             case mp3
             case opus
@@ -484,7 +484,7 @@ extension OpenAI.APISpecification.RequestBodies {
             case timestampGranularities = "timestamp_granularities[]"
             case responseFormat = "response_format"
         }
-                        
+        
         /// The audio file object to transcribe, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
         let file: Data
         let filename: String
@@ -601,6 +601,50 @@ extension OpenAI.APISpecification.RequestBodies {
             }
             
             return result
+        }
+    }
+}
+
+extension OpenAI.APISpecification.RequestBodies {
+    struct CreateImage: Codable {
+        enum CodingKeys: String, CodingKey {
+            case prompt
+            case model
+            case numberOfImages = "n"
+            case responseFormat = "response_format"
+            case quality
+            case size
+            case style
+            case user
+        }
+        
+        let prompt: String
+        let model: OpenAI.Model.DALL_E
+        let numberOfImages: Int
+        let responseFormat: OpenAI.APIClient.ImageResponseFormat
+        let quality: String
+        let size: String
+        let style: String
+        let user: String?
+        
+        init(
+            prompt: String,
+            model: OpenAI.Model.DALL_E,
+            responseFormat: OpenAI.APIClient.ImageResponseFormat,
+            numberOfImages: Int,
+            quality: OpenAI.Image.Quality = .standard,
+            size: OpenAI.Image.Size = .w1024h1024,
+            style: OpenAI.Image.Style = .vivid,
+            user: String? = nil
+        ) {
+            self.prompt = prompt
+            self.model = model
+            self.numberOfImages = numberOfImages
+            self.responseFormat = responseFormat
+            self.quality = quality.rawValue
+            self.size = size.rawValue
+            self.style = style.rawValue
+            self.user = user
         }
     }
 }
