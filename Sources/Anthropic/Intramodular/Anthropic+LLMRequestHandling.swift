@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CorePersistence
 import LargeLanguageModels
 import NetworkKit
 import Swallow
@@ -116,10 +117,10 @@ extension Anthropic: LLMRequestHandling {
         return try AbstractLLM.ChatCompletion(
             prompt: prompt.messages,
             message: message.__conversion(),
-            stopReason: response.stopReason?.__conversion() 
+            stopReason: response.stopReason?.__conversion()
         )
     }
-
+    
     public func completion(
         for prompt: AbstractLLM.ChatPrompt
     ) throws -> AbstractLLM.ChatCompletionStream {
@@ -139,6 +140,7 @@ extension Anthropic: LLMRequestHandling {
             .header(.contentType(.json))
             .header("X-API-Key", interface.configuration.apiKey.unwrap().value)
             .header("anthropic-version", "2023-06-01")
+            .header("anthropic-beta", "tools-2024-04-04")
         
         let sessionConfiguration = URLSessionConfiguration.default
         
@@ -149,7 +151,7 @@ extension Anthropic: LLMRequestHandling {
         sessionConfiguration.httpAdditionalHeaders!["Cache-Control"] = "no-cache"
         
         let session = URLSession(configuration: sessionConfiguration)
-                
+        
         let result = AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error> { (continuation: AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error>.Continuation) in
             let task = Task<Void, Swift.Error>(priority: .userInitiated) {
                 let (bytes, _) = try await session.bytes(for: URLRequest(request))
@@ -175,13 +177,18 @@ extension Anthropic: LLMRequestHandling {
                             
                             continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
                         } else {
-                            print("")
+                            if let error = try? JSON(jsonString: line, using: .convertFromSnakeCase).decode(Anthropic.API.ResponseBodies.ErrorWrapper.self) {
+                                continuation.yield(with: .failure(error.error))
+                                
+                                return continuation.finish()
+                            }
                         }
                     }
                 }
                 
                 continuation.yield(.stop)
-                continuation.finish()
+                
+                return continuation.finish()
             }
             
             continuation.onTermination = { _ in
