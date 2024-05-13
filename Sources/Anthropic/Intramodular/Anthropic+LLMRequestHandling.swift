@@ -137,7 +137,7 @@ extension Anthropic: LLMRequestHandling {
             .jsonBody(requestBody, keyEncodingStrategy: .convertToSnakeCase)
             .method(.post)
             .header(.contentType(.json))
-            .header("X-API-Key", interface.configuration.apiKey.unwrap())
+            .header("X-API-Key", interface.configuration.apiKey.unwrap().value)
             .header("anthropic-version", "2023-06-01")
         
         let sessionConfiguration = URLSessionConfiguration.default

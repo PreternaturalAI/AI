@@ -207,5 +207,6 @@ extension _MLModelIdentifier {
         case gpt_4_0613 = "gpt-4-0613"
         case gpt_4_32k_0314 = "gpt-4-32k-0314"
         case gpt_4_32k_0613 = "gpt-4-32k-0613"
+        case gpt_4o = "gpt-4o"
     }
 }

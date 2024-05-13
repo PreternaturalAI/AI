@@ -210,6 +210,8 @@ extension OpenAI.Model {
             
         case gpt_4_turbo = "gpt-4-turbo"
         
+        case gpt_4o = "gpt-4o"
+
         case __deprecated_gpt_4_turbo_preview = "gpt-4-turbo-preview"
 
         public var name: String {
@@ -246,6 +248,8 @@ extension OpenAI.Model {
                     return "GPT-4"
                 case .gpt_4_turbo:
                     return "GPT-4 Turbo"
+                case .gpt_4o:
+                    return "GPT-4o"
                 case .__deprecated_gpt_4_turbo_preview:
                     return "GPT-4 Turbo (Preview)"
             }
@@ -288,6 +292,8 @@ extension OpenAI.Model {
                     return 4096 // FIXME: !!!
                 case .__deprecated_gpt_4_turbo_preview:
                     return 4096 // FIXME: !!!
+                case .gpt_4o:
+                    return 4096 * 4
             }
         }
     }

@@ -28,8 +28,8 @@ extension OpenAI {
         public typealias Error = APIError
         
         public struct Configuration: Codable, Hashable {
-            var host: URL
-            var apiKey: String?
+            public var host: URL
+            public var apiKey: String?
             
             public init(
                 host: URL = URL(string: "https://api.openai.com")!,
