@@ -21,6 +21,7 @@ extension OpenAI {
         case assistantFile = "assistant.file"
         case run = "thread.run"
         case image
+        case vectorStore = "vector_store"
         
         public func resolveType() -> Any.Type {
             switch self {
@@ -52,6 +53,8 @@ extension OpenAI {
                     return OpenAI.AssistantFile.self
                 case .run:
                     return OpenAI.Run.self
+                case .vectorStore:
+                    return OpenAI.VectorStore.self
             }
         }
     }

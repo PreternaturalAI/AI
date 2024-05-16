@@ -193,6 +193,13 @@ extension OpenAI {
         @Path("/v1/images/generations")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
         var createImage = Endpoint<RequestBodies.CreateImage, OpenAI.List<OpenAI.Image>, Void>()
+        
+        // Vector Store
+        @Header(["OpenAI-Beta": "assistants=v2"])
+        @POST
+        @Path("/v1/vector_stores")
+        @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
+        var createVectorStore = Endpoint<RequestBodies.CreateVectorStore, OpenAI.VectorStore, Void>()
     }
 }
 
