@@ -30,4 +30,18 @@ final class VectorStoreTests: XCTestCase {
         
         _ = result
     }
+    
+    func testUpdateVectorStore() async throws {
+        let vectorStores = try await client.listVectorStores()
+        let vectorStoreID = vectorStores.firstID!
+        let newName = "myUpdatedVectorStore"
+        
+        let result = try await client.updateVectorStore(
+            vectorStoreID: vectorStoreID,
+            name: newName,
+            expiresAfter: nil,
+            metadata: ["key" : "value"])
+        
+        _ = result
+    }
 }

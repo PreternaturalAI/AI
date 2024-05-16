@@ -738,6 +738,43 @@ extension OpenAI.APISpecification.RequestBodies {
     }
 }
 
+extension OpenAI.APISpecification.RequestBodies {
+    struct UpdateVectorStore: Codable {
+        enum CodingKeys: String, CodingKey {
+            case vector_store_id
+            case name
+            case expiresAfter = "expires_after"
+            case metadata
+        }
+        
+        /// The ID of the vector store to modify.
+        let vector_store_id: String
+        
+        /// The name of the vector store.
+        let name: String?
+        
+        /// The expiration policy for a vector store.
+        /// anchor (string) - Anchor timestamp after which the expiration policy applies. Supported anchors: last_active_at.
+        /// days (integer) - The number of days after the anchor time that the vector store will expire.
+        let expiresAfter: OpenAI.VectorStore.ExpiresAfter?
+        
+        /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+        let metadata: [String: String]?
+        
+        init(
+            vectorStoreID: String,
+            name: String?,
+            expiresAfter: OpenAI.VectorStore.ExpiresAfter?,
+            metadata: [String: String]?
+        ) {
+            self.vector_store_id = vectorStoreID
+            self.name = name
+            self.expiresAfter = expiresAfter
+            self.metadata = metadata
+        }
+    }
+}
+
 // MARK: - Auxiliary
 
 extension OpenAI.APISpecification.RequestBodies.CreateChatCompletion {

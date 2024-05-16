@@ -214,6 +214,13 @@ extension OpenAI {
             "/v1/vector_stores/\(context.input.vector_store_id)"
         })
         var getVectorStore = Endpoint<OpenAI.APISpecification.RequestBodies.GetVectorStore, OpenAI.VectorStore, Void>()
+        
+        @Header(["OpenAI-Beta": "assistants=v2"])
+        @POST
+        @Path({ context -> String in
+            "/v1/vector_stores/\(context.input.vector_store_id)"
+        })
+        var updateVectorStore = Endpoint<OpenAI.APISpecification.RequestBodies.UpdateVectorStore, OpenAI.VectorStore, Void>()
     }
 }
 

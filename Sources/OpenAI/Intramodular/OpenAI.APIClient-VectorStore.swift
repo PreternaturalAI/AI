@@ -59,4 +59,22 @@ extension OpenAI.APIClient {
         
         return response
     }
+    
+    public func updateVectorStore(
+        vectorStoreID: String,
+        name: String?,
+        expiresAfter: OpenAI.VectorStore.ExpiresAfter?,
+        metadata: [String: String]?
+    ) async throws -> OpenAI.VectorStore {
+
+        let requestBody = OpenAI.APISpecification.RequestBodies.UpdateVectorStore(
+            vectorStoreID: vectorStoreID,
+            name: name,
+            expiresAfter: expiresAfter,
+            metadata: metadata)
+        
+        let response = try await run(\.updateVectorStore, with: requestBody)
+        
+        return response
+    }
 }
