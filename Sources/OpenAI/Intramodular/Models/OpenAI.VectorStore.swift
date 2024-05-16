@@ -24,6 +24,7 @@ extension OpenAI {
             case expiresAt
             case lastActiveAt
             case metadata
+            case deleted
         }
         
         /// The identifier, which can be referenced in API endpoints.
@@ -33,7 +34,7 @@ extension OpenAI {
         public let object: OpenAI.ObjectType
         
         /// The Unix timestamp (in seconds) for when the vector store was created.
-        public let createdAt: Int
+        public let createdAt: Int?
         
         /// The name of the vector store.
         public let name: String?
@@ -82,6 +83,8 @@ extension OpenAI {
         /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
         public let metadata: [String: String]?
         
+        public let deleted: Bool?
+        
         // order options for list
         public enum Order: String, Codable, Hashable, Sendable {
             case ascending = "asc"
@@ -94,7 +97,7 @@ extension OpenAI {
             
             self.id = try container.decode(forKey: .id)
             self.object = try container.decode(forKey: .object)
-            self.createdAt = try container.decode(forKey: .createdAt)
+            self.createdAt = try? container.decode(forKey: .createdAt)
             self.name = try? container.decode(forKey: .name)
             self.usageBytes = try? container.decode(forKey: .usageBytes)
             self.bytes = try? container.decode(forKey: .bytes)
@@ -104,6 +107,7 @@ extension OpenAI {
             self.expiresAt = try? container.decode(forKey: .expiresAt)
             self.lastActiveAt = try? container.decode(forKey: .lastActiveAt)
             self.metadata = try? container.decode(forKey: .metadata)
+            self.deleted = try? container.decode(forKey: .deleted)
             
             try super.init(from: decoder)
         }
@@ -125,6 +129,7 @@ extension OpenAI {
             try? container.encode(expiresAt, forKey: .expiresAt)
             try? container.encode(lastActiveAt, forKey: .lastActiveAt)
             try? container.encode(metadata, forKey: .metadata)
+            try? container.encode(metadata, forKey: .deleted)
         }
     }
 }

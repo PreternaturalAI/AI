@@ -22,6 +22,7 @@ extension OpenAI {
         case run = "thread.run"
         case image
         case vectorStore = "vector_store"
+        case vectorStoreDeleted = "vector_store.deleted"
         
         public func resolveType() -> Any.Type {
             switch self {
@@ -54,6 +55,8 @@ extension OpenAI {
                 case .run:
                     return OpenAI.Run.self
                 case .vectorStore:
+                    return OpenAI.VectorStore.self
+                case .vectorStoreDeleted:
                     return OpenAI.VectorStore.self
             }
         }

@@ -77,4 +77,15 @@ extension OpenAI.APIClient {
         
         return response
     }
+    
+    public func deleteVectorStore(
+        vectorStoreID: String
+    ) async throws -> OpenAI.VectorStore {
+
+        let requestBody = OpenAI.APISpecification.RequestBodies.DeleteVectorStore(vector_store_id: vectorStoreID)
+        
+        let response = try await run(\.deleteVectorStore, with: requestBody)
+        
+        return response
+    }
 }

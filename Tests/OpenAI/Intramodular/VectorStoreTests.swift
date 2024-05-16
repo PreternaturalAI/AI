@@ -44,4 +44,13 @@ final class VectorStoreTests: XCTestCase {
         
         _ = result
     }
+    
+    func testDeleteVectorStore() async throws {
+        let vectorStores = try await client.listVectorStores()
+        let vectorStoreID = vectorStores.firstID!
+        
+        let result = try await client.deleteVectorStore(vectorStoreID: vectorStoreID)
+        
+        _ = result
+    }
 }
