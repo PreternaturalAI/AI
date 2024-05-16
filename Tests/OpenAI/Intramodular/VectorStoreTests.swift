@@ -15,4 +15,10 @@ final class VectorStoreTests: XCTestCase {
 
         _ = result
     }
+    
+    func testListVectorStore() async throws {
+        let result = try await client.listVectorStores()
+
+        _ = result
+    }
 }

@@ -16,6 +16,7 @@ extension OpenAI {
             case object
             case createdAt
             case name
+            case bytes
             case usageBytes
             case fileCounts
             case status
@@ -38,7 +39,8 @@ extension OpenAI {
         public let name: String?
         
         /// The total number of bytes used by the files in the vector store.
-        public let usageBytes: Int
+        public let usageBytes: Int?
+        public let bytes: Int?
         
         /// File Counts Object Keys:
         /// in_progress (integer) - The number of files that are currently being processed.
@@ -60,7 +62,7 @@ extension OpenAI {
             case inProgress
             case completed
         }
-        public let status: Status
+        public let status: Status?
         
         /// The expiration policy for a vector store.
         /// anchor (string) - Anchor timestamp after which the expiration policy applies. Supported anchors: last_active_at.
@@ -75,11 +77,16 @@ extension OpenAI {
         public let expiresAt: Int?
         
         /// The Unix timestamp (in seconds) for when the vector store was last active.
-        public let lastActiveAt: Int
+        public let lastActiveAt: Int?
         
         /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
         public let metadata: [String: String]?
         
+        // order options for list
+        public enum Order: String, Codable, Hashable, Sendable {
+            case ascending = "asc"
+            case descending = "desc"
+        }
         
         public required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -89,12 +96,13 @@ extension OpenAI {
             self.object = try container.decode(forKey: .object)
             self.createdAt = try container.decode(forKey: .createdAt)
             self.name = try? container.decode(forKey: .name)
-            self.usageBytes = try container.decode(forKey: .usageBytes)
+            self.usageBytes = try? container.decode(forKey: .usageBytes)
+            self.bytes = try? container.decode(forKey: .bytes)
             self.fileCounts = try container.decode(forKey: .fileCounts)
-            self.status = try container.decode(forKey: .status)
+            self.status = try? container.decode(forKey: .status)
             self.expiresAfter = try? container.decode(forKey: .expiresAfter)
             self.expiresAt = try? container.decode(forKey: .expiresAt)
-            self.lastActiveAt = try container.decode(forKey: .lastActiveAt)
+            self.lastActiveAt = try? container.decode(forKey: .lastActiveAt)
             self.metadata = try? container.decode(forKey: .metadata)
             
             try super.init(from: decoder)
@@ -108,14 +116,15 @@ extension OpenAI {
             try container.encode(id, forKey: .id)
             try container.encode(object, forKey: .object)
             try container.encode(createdAt, forKey: .createdAt)
-            try container.encode(name, forKey: .name)
-            try container.encode(usageBytes, forKey: .usageBytes)
+            try? container.encode(name, forKey: .name)
+            try? container.encode(usageBytes, forKey: .usageBytes)
+            try? container.encode(bytes, forKey: .bytes)
             try container.encode(fileCounts, forKey: .fileCounts)
-            try container.encode(status, forKey: .status)
-            try container.encode(expiresAfter, forKey: .expiresAfter)
-            try container.encode(expiresAt, forKey: .expiresAt)
-            try container.encode(lastActiveAt, forKey: .lastActiveAt)
-            try container.encode(metadata, forKey: .metadata)
+            try? container.encode(status, forKey: .status)
+            try? container.encode(expiresAfter, forKey: .expiresAfter)
+            try? container.encode(expiresAt, forKey: .expiresAt)
+            try? container.encode(lastActiveAt, forKey: .lastActiveAt)
+            try? container.encode(metadata, forKey: .metadata)
         }
     }
 }

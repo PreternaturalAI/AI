@@ -29,4 +29,23 @@ extension OpenAI.APIClient {
         
         return response
     }
+    
+    public func listVectorStores(
+        limit: Int? = nil,
+        order: OpenAI.VectorStore.Order? = nil,
+        after: String? = nil,
+        before: String? = nil
+    ) async throws -> OpenAI.List<OpenAI.VectorStore> {
+
+        let requestBody = OpenAI.APISpecification.RequestBodies.ListVectorStores(
+            limit: limit,
+            order: order,
+            after: after,
+            before: before
+        )
+        
+        let response = try await run(\.listVectorStores, with: requestBody)
+        
+        return response
+    }
 }

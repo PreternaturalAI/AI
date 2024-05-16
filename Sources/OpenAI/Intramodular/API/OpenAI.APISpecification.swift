@@ -200,6 +200,13 @@ extension OpenAI {
         @Path("/v1/vector_stores")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
         var createVectorStore = Endpoint<RequestBodies.CreateVectorStore, OpenAI.VectorStore, Void>()
+        
+        @Header(["OpenAI-Beta": "assistants=v2"])
+        @GET
+        @Path({ context -> String in
+            "/v1/vector_stores"
+        })
+        var listVectorStores = Endpoint<OpenAI.APISpecification.RequestBodies.ListVectorStores, OpenAI.List<OpenAI.VectorStore>, Void>()
     }
 }
 
