@@ -6,7 +6,11 @@ import NetworkKit
 import Swift
 
 extension OpenAI {
-    public class List<Element: Codable>: Object {
+    public class AnyList: Object {
+        
+    }
+    
+    public class List<Element: Codable>: AnyList {
         private enum CodingKeys: String, CodingKey {
             case data
             case hasMore

@@ -6,7 +6,7 @@ import NetworkKit
 import Swift
 
 extension OpenAI {
-    public enum ObjectType: String, Codable, TypeDiscriminator, Sendable {
+    public enum ObjectType: String, CaseIterable, Codable, TypeDiscriminator, Sendable {
         case list
         case embedding
         case textCompletion = "text_completion"
@@ -76,7 +76,15 @@ extension OpenAI {
         public required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             
-            self.type = try container.decode(ObjectType.self, forKey: .type)
+            let type = try container.decodeIfPresent(ObjectType.self, forKey: .type)
+            
+            if let type {
+                self.type = type
+            } else if Self.self is OpenAI.AnyList.Type {
+                self.type = .list
+            } else {
+                self.type = try ObjectType.allCases.firstAndOnly(where: { $0.resolveType() == Self.self }).unwrap()
+            }
         }
         
         public func encode(to encoder: Encoder) throws {
