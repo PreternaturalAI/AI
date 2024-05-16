@@ -75,7 +75,7 @@ extension Anthropic: LLMRequestHandling {
         prompt: AbstractLLM.ChatPrompt,
         parameters: AbstractLLM.ChatCompletionParameters
     ) async throws -> AbstractLLM.ChatCompletion {
-        let completion = try await _complete(
+        let completion: AbstractLLM.TextCompletion = try await _complete(
             prompt: AbstractLLM.TextPrompt(
                 prefix: PromptLiteral(stringLiteral: prompt.messages.anthropicPromptString)
             ),
@@ -85,18 +85,18 @@ extension Anthropic: LLMRequestHandling {
             )
         )
         
-        let isAssistantReply = (prompt.messages.last?.role ?? .user) == .user
+        let isAssistantReply: Bool = (prompt.messages.last?.role ?? .user) == .user
         let content: String = completion.text
         let message = AbstractLLM.ChatMessage(
             id: UUID(),
-            role: isAssistantReply ? .assistant : .user,
+            role: (isAssistantReply ? .assistant : .user),
             content: content
         )
         
         return AbstractLLM.ChatCompletion(
             prompt: prompt.messages,
             message: message,
-            stopReason: .init() // FIXME: !!!
+            stopReason: AbstractLLM.ChatCompletion.StopReason() // FIXME: !!!
         )
     }
     
