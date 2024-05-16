@@ -21,4 +21,13 @@ final class VectorStoreTests: XCTestCase {
 
         _ = result
     }
+    
+    func testGetVectorStore() async throws {
+        let vectorStores = try await client.listVectorStores()
+        let vectorStoreID = vectorStores.firstID!
+        
+        let result = try await client.getVectorStore(vectorStoreID: vectorStoreID)
+        
+        _ = result
+    }
 }

@@ -55,7 +55,7 @@ extension OpenAI {
             let cancelled: Int
             let total: Int
         }
-        public let fileCounts: FileCounts
+        public let fileCounts: FileCounts?
         
         /// The status of the vector store, which can be either expired, in_progress, or completed. A status of completed indicates that the vector store is ready for use.
         public enum Status: String, Codable, Hashable, Sendable {
@@ -98,7 +98,7 @@ extension OpenAI {
             self.name = try? container.decode(forKey: .name)
             self.usageBytes = try? container.decode(forKey: .usageBytes)
             self.bytes = try? container.decode(forKey: .bytes)
-            self.fileCounts = try container.decode(forKey: .fileCounts)
+            self.fileCounts = try? container.decode(forKey: .fileCounts)
             self.status = try? container.decode(forKey: .status)
             self.expiresAfter = try? container.decode(forKey: .expiresAfter)
             self.expiresAt = try? container.decode(forKey: .expiresAt)
@@ -119,7 +119,7 @@ extension OpenAI {
             try? container.encode(name, forKey: .name)
             try? container.encode(usageBytes, forKey: .usageBytes)
             try? container.encode(bytes, forKey: .bytes)
-            try container.encode(fileCounts, forKey: .fileCounts)
+            try? container.encode(fileCounts, forKey: .fileCounts)
             try? container.encode(status, forKey: .status)
             try? container.encode(expiresAfter, forKey: .expiresAfter)
             try? container.encode(expiresAt, forKey: .expiresAt)

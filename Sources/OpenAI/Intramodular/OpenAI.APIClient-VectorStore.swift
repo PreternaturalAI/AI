@@ -48,4 +48,15 @@ extension OpenAI.APIClient {
         
         return response
     }
+    
+    public func getVectorStore(
+        vectorStoreID: String
+    ) async throws -> OpenAI.VectorStore {
+
+        let requestBody = OpenAI.APISpecification.RequestBodies.GetVectorStore(vector_store_id: vectorStoreID)
+        
+        let response = try await run(\.getVectorStore, with: requestBody)
+        
+        return response
+    }
 }

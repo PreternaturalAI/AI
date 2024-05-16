@@ -721,6 +721,23 @@ extension OpenAI.APISpecification.RequestBodies {
     }
 }
 
+extension OpenAI.APISpecification.RequestBodies {
+    struct GetVectorStore: Codable {
+        enum CodingKeys: String, CodingKey {
+            case vector_store_id
+        }
+        
+        /// The ID of the vector store to retrieve.
+        let vector_store_id: String
+        
+        init(
+            vector_store_id: String
+        ) {
+            self.vector_store_id = vector_store_id
+        }
+    }
+}
+
 // MARK: - Auxiliary
 
 extension OpenAI.APISpecification.RequestBodies.CreateChatCompletion {
