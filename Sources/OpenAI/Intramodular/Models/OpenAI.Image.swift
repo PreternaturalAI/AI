@@ -9,7 +9,8 @@ import Swift
 extension OpenAI {
     public final class Image: OpenAI.Object {
         enum CodingKeys: String, CodingKey {
-            case data
+            case url
+            case revisedPrompt
         }
         
         public let url: String?
@@ -17,18 +18,9 @@ extension OpenAI {
         
         public required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            
-            let data: [String: String] = try container.decode(forKey: .data)
-            
-            self.url = data["url"]
-            self.revisedPrompt = data["revisedPrompt"]
-            
-            super.init(type: .image)
-        }
-        
-        public init(data: [String : Any]) {
-            self.url = data["url"] as! String?
-            self.revisedPrompt = data["revisedPrompt"] as! String?
+                        
+            self.url = try container.decodeIfPresent(forKey: .url)
+            self.revisedPrompt = try container.decodeIfPresent(forKey: .revisedPrompt)
             
             super.init(type: .image)
         }

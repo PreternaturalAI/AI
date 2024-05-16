@@ -1,16 +1,12 @@
 //
-//  DalleTests.swift
-//
-//
-//  Created by Natasha Murashev on 5/1/24.
+// Copyright (c) Vatsal Manot
 //
 
 import OpenAI
 import XCTest
 
 final class DalleTests: XCTestCase {
-
-    func testCreateImage() async throws {
+    func testGeneratingOneImage() async throws {
         let result = try await client.createImage(
             prompt: "a kitten playing with yarn"
         )

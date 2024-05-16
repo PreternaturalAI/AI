@@ -32,7 +32,7 @@ extension OpenAI {
             self.firstID = try container.decodeIfPresent(forKey: .firstID)
             self.lastID = try container.decodeIfPresent(forKey: .lastID)
             
-            try super.init(type: .list)
+            super.init(type: .list)
         }
         
         public override func encode(to encoder: Encoder) throws {

@@ -22,6 +22,10 @@ extension OpenAI {
         case run = "thread.run"
         case image
         
+        public static var _undiscriminatedType: Any.Type? {
+            OpenAI.Object.self
+        }
+        
         public func resolveType() -> Any.Type {
             switch self {
                 case .list:
@@ -73,7 +77,9 @@ extension OpenAI {
             self.type = type
         }
         
-        public required init(from decoder: Decoder) throws {
+        public required init(
+            from decoder: Decoder
+        ) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             
             let type = try container.decodeIfPresent(ObjectType.self, forKey: .type)
