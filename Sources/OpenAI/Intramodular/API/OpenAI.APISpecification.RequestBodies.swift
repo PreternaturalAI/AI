@@ -649,6 +649,149 @@ extension OpenAI.APISpecification.RequestBodies {
     }
 }
 
+extension OpenAI.APISpecification.RequestBodies {
+    struct CreateVectorStore: Codable {
+        enum CodingKeys: String, CodingKey {
+            case name
+            case fileIDs = "file_ids"
+            case expiresAfter = "expires_after"
+            case metadata
+        }
+        
+        /// The name of the vector store.
+        let name: String?
+        
+        /// A list of File IDs that the vector store should use. Useful for tools like file_search that can access files.
+        let fileIDs: [String]?
+        
+        /// The expiration policy for a vector store.
+        /// anchor (string) - Anchor timestamp after which the expiration policy applies. Supported anchors: last_active_at.
+        /// days (integer) - The number of days after the anchor time that the vector store will expire.
+        let expiresAfter: OpenAI.VectorStore.ExpiresAfter?
+        
+        /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+        let metadata: [String: String]?
+        
+        init(
+            name: String?,
+            fileIDs: [String]?,
+            expiresAfter: OpenAI.VectorStore.ExpiresAfter?,
+            metadata: [String: String]?
+        ) {
+            self.fileIDs = fileIDs
+            self.name = name
+            self.expiresAfter = expiresAfter
+            self.metadata = metadata
+        }
+    }
+}
+
+extension OpenAI.APISpecification.RequestBodies {
+    struct ListVectorStores: Codable {
+        enum CodingKeys: String, CodingKey {
+            case limit
+            case order
+            case after
+            case before
+        }
+        
+        /// A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
+        let limit: Int?
+        
+        /// Sort order by the created_at timestamp of the objects. asc for ascending order and desc for descending order.
+        let order: String?
+        
+        /// A cursor for use in pagination. after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.
+        let after: String?
+        
+        /// A cursor for use in pagination. before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.
+        let before: String?
+        
+        init(
+            limit: Int?,
+            order: OpenAI.VectorStore.Order?,
+            after: String?,
+            before: String?
+        ) {
+            self.limit = limit
+            self.order = order?.rawValue
+            self.after = after
+            self.before = before
+        }
+    }
+}
+
+extension OpenAI.APISpecification.RequestBodies {
+    struct GetVectorStore: Codable {
+        enum CodingKeys: String, CodingKey {
+            case vector_store_id
+        }
+        
+        /// The ID of the vector store to retrieve.
+        let vector_store_id: String
+        
+        init(
+            vector_store_id: String
+        ) {
+            self.vector_store_id = vector_store_id
+        }
+    }
+}
+
+extension OpenAI.APISpecification.RequestBodies {
+    struct UpdateVectorStore: Codable {
+        enum CodingKeys: String, CodingKey {
+            case vector_store_id
+            case name
+            case expiresAfter = "expires_after"
+            case metadata
+        }
+        
+        /// The ID of the vector store to modify.
+        let vector_store_id: String
+        
+        /// The name of the vector store.
+        let name: String?
+        
+        /// The expiration policy for a vector store.
+        /// anchor (string) - Anchor timestamp after which the expiration policy applies. Supported anchors: last_active_at.
+        /// days (integer) - The number of days after the anchor time that the vector store will expire.
+        let expiresAfter: OpenAI.VectorStore.ExpiresAfter?
+        
+        /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional information about the object in a structured format. Keys can be a maximum of 64 characters long and values can be a maxium of 512 characters long.
+        let metadata: [String: String]?
+        
+        init(
+            vectorStoreID: String,
+            name: String?,
+            expiresAfter: OpenAI.VectorStore.ExpiresAfter?,
+            metadata: [String: String]?
+        ) {
+            self.vector_store_id = vectorStoreID
+            self.name = name
+            self.expiresAfter = expiresAfter
+            self.metadata = metadata
+        }
+    }
+}
+
+extension OpenAI.APISpecification.RequestBodies {
+    struct DeleteVectorStore: Codable {
+        enum CodingKeys: String, CodingKey {
+            case vector_store_id
+        }
+        
+        /// The ID of the vector store to delete.
+        let vector_store_id: String
+        
+        init(
+            vector_store_id: String
+        ) {
+            self.vector_store_id = vector_store_id
+        }
+    }
+}
+
 // MARK: - Auxiliary
 
 extension OpenAI.APISpecification.RequestBodies.CreateChatCompletion {
