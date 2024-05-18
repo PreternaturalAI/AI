@@ -21,6 +21,8 @@ extension OpenAI {
         case assistantFile = "assistant.file"
         case run = "thread.run"
         case image
+        case vectorStore = "vector_store"
+        case vectorStoreDeleted = "vector_store.deleted"
         
         public static var _undiscriminatedType: Any.Type? {
             OpenAI.Object.self
@@ -56,6 +58,10 @@ extension OpenAI {
                     return OpenAI.AssistantFile.self
                 case .run:
                     return OpenAI.Run.self
+                case .vectorStore:
+                    return OpenAI.VectorStore.self
+                case .vectorStoreDeleted:
+                    return OpenAI.VectorStore.self
             }
         }
     }

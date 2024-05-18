@@ -193,6 +193,41 @@ extension OpenAI {
         @Path("/v1/images/generations")
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
         var createImage = Endpoint<RequestBodies.CreateImage, OpenAI.List<OpenAI.Image>, Void>()
+        
+        // Vector Store
+        @Header(["OpenAI-Beta": "assistants=v2"])
+        @POST
+        @Path("/v1/vector_stores")
+        @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
+        var createVectorStore = Endpoint<RequestBodies.CreateVectorStore, OpenAI.VectorStore, Void>()
+        
+        @Header(["OpenAI-Beta": "assistants=v2"])
+        @GET
+        @Path({ context -> String in
+            "/v1/vector_stores"
+        })
+        var listVectorStores = Endpoint<OpenAI.APISpecification.RequestBodies.ListVectorStores, OpenAI.List<OpenAI.VectorStore>, Void>()
+        
+        @Header(["OpenAI-Beta": "assistants=v2"])
+        @GET
+        @Path({ context -> String in
+            "/v1/vector_stores/\(context.input.vector_store_id)"
+        })
+        var getVectorStore = Endpoint<OpenAI.APISpecification.RequestBodies.GetVectorStore, OpenAI.VectorStore, Void>()
+        
+        @Header(["OpenAI-Beta": "assistants=v2"])
+        @POST
+        @Path({ context -> String in
+            "/v1/vector_stores/\(context.input.vector_store_id)"
+        })
+        var updateVectorStore = Endpoint<OpenAI.APISpecification.RequestBodies.UpdateVectorStore, OpenAI.VectorStore, Void>()
+        
+        @Header(["OpenAI-Beta": "assistants=v2"])
+        @DELETE
+        @Path({ context -> String in
+            "/v1/vector_stores/\(context.input.vector_store_id)"
+        })
+        var deleteVectorStore = Endpoint<OpenAI.APISpecification.RequestBodies.DeleteVectorStore, OpenAI.VectorStore, Void>()
     }
 }
 
