@@ -6,13 +6,11 @@ import CorePersistence
 import Foundation
 import Swallow
 
-public protocol __AbstractLLM_CompletionParameters: Hashable, Sendable {
-    
-}
-
 extension AbstractLLM {
-    public typealias CompletionParameters = __AbstractLLM_CompletionParameters
-            
+    public protocol CompletionParameters: Hashable, Sendable {
+        
+    }
+
     public enum TokenLimit: Hashable, Sendable {
         case max
         case fixed(Int)
@@ -26,6 +24,7 @@ extension AbstractLLM {
         }
     }
     
+    /// Either temperature or top-p should be used, both cannot be specified at the same time.
     public enum TemperatureOrTopP: Hashable, Sendable {
         case temperature(Double)
         case topProbabilityMass(Double)

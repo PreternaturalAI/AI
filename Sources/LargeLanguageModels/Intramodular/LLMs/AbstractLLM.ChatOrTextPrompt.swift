@@ -6,33 +6,31 @@ import Compute
 import Foundation
 import Swallow
 
-public protocol __AbstractLLM_Prompt: Hashable, Sendable {
-    associatedtype CompletionParameters: __AbstractLLM_CompletionParameters
-    associatedtype Completion: Partializable
-    
-    static var completionType: AbstractLLM.CompletionType? { get }
-    
-    var context: PromptContextValues { get set }
-}
-
 extension AbstractLLM {
     public enum CompletionType: CaseIterable, Hashable, Sendable {
         case text
         case chat
     }
     
-    public typealias Prompt = __AbstractLLM_Prompt
+    public protocol Prompt: Hashable, Sendable {
+        associatedtype CompletionParameters: AbstractLLM.CompletionParameters
+        associatedtype Completion: Partializable
+        
+        static var completionType: AbstractLLM.CompletionType? { get }
+        
+        var context: PromptContextValues { get set }
+    }
 }
 
 extension AbstractLLM {
     public enum ChatOrTextPrompt: Prompt {
         public typealias CompletionParameters = AbstractLLM.ChatOrTextCompletionParameters
         public typealias Completion = AbstractLLM.ChatOrTextCompletion
-
+        
         public static var completionType: AbstractLLM.CompletionType? {
             nil
         }
-
+        
         public var context: PromptContextValues {
             get {
                 switch self {
@@ -54,7 +52,7 @@ extension AbstractLLM {
                 }
             }
         }
-
+        
         case text(TextPrompt)
         case chat(ChatPrompt)
     }

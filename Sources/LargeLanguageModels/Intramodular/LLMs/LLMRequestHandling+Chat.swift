@@ -17,6 +17,26 @@ extension LLMRequestHandling {
     }
     
     public func complete(
+        prompt: AbstractLLM.ChatPrompt,
+        parameters: AbstractLLM.ChatCompletionParameters,
+        model: some _MLModelIdentifierConvertible
+    ) async throws -> AbstractLLM.ChatCompletion {
+        var prompt = prompt
+        
+        prompt.context = try withMutableScope(prompt.context) { context in
+            context.completionType = .chat
+            context.modelIdentifier = try .one(model.__conversion())
+        }
+        
+        let completion = try await complete(
+            prompt: prompt,
+            parameters: parameters
+        )
+        
+        return completion
+    }
+    
+    public func complete(
         _ messages: [AbstractLLM.ChatMessage],
         parameters: AbstractLLM.ChatCompletionParameters,
         model: some _MLModelIdentifierConvertible
@@ -50,6 +70,7 @@ extension LLMRequestHandling {
         
         return try await completion(for: prompt)
     }
+    
     
     /// Stream a completion for a given chat prompt.
     public func completion(

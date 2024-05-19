@@ -31,6 +31,7 @@ extension AbstractLLM {
         public let tokenLimit: TokenLimit?
         public let temperatureOrTopP: TemperatureOrTopP?
         public let stops: [String]?
+        /// Only for ChatGPT, Anthropic and other models that support function calling.
         public let functions: IdentifierIndexingArrayOf<ChatFunctionDefinition>?
         
         public init(
