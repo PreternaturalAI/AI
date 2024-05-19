@@ -28,15 +28,6 @@ final class AnthropicTests: XCTestCase {
         
         print(completion)
     }
-    
-    func testSwiftUICodeGen() async throws {
-        let completion = try await client.complete(
-            generateSwiftUICode(requirement: "a message list view styled like Apple's iMessages"),
-            model: Anthropic.Model.claude_3_haiku_20240307
-        )
-        
-        print(completion)
-    }
 }
 
 func generateSwiftUICode(requirement: PromptLiteral) -> [AbstractLLM.ChatMessage] {

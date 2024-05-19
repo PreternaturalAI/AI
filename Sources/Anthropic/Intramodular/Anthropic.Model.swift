@@ -35,35 +35,7 @@ extension Anthropic {
                     return false
             }
         }
-        
-        public var name: String {
-            switch self {
-                case .claude_v1:
-                    return "Claude 1"
-                case .claude_v2:
-                    return "Claude 2"
-                case .claude_instant_v1:
-                    return "Claude Instant 1"
-                    
-                case .claud_instant_v1_0:
-                    return "Claude Instant 1.0"
-                case .claud_instant_v1_2:
-                    return "Claude Instant 1.2"
-                case .claude_v1_0:
-                    return "Claude 1.0"
-                case .claude_v1_2:
-                    return "Claude 1.2"
-                case .claude_v1_3:
-                    return "Claude 1.3"
-                case .claude_3_haiku_20240307:
-                    return "Claude 3 Haiku"
-                case .claude_3_sonnet_20240229:
-                    return "Claude 3 Sonnet"
-                case .claude_3_opus_20240229:
-                    return "Claude 3 Opus"
-            }
-        }
-        
+                
         public var contextSize: Int? {
             switch self {
                 case .claude_3_haiku_20240307:
@@ -76,6 +48,43 @@ extension Anthropic {
                     return nil
             }
         }
+    }
+}
+
+// MARK: - Conformances
+
+extension Anthropic.Model: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+            case .claude_v1:
+                return "Claude 1"
+            case .claude_v2:
+                return "Claude 2"
+            case .claude_instant_v1:
+                return "Claude Instant 1"
+                
+            case .claud_instant_v1_0:
+                return "Claude Instant 1.0"
+            case .claud_instant_v1_2:
+                return "Claude Instant 1.2"
+            case .claude_v1_0:
+                return "Claude 1.0"
+            case .claude_v1_2:
+                return "Claude 1.2"
+            case .claude_v1_3:
+                return "Claude 1.3"
+            case .claude_3_haiku_20240307:
+                return "Claude 3 Haiku"
+            case .claude_3_sonnet_20240229:
+                return "Claude 3 Sonnet"
+            case .claude_3_opus_20240229:
+                return "Claude 3 Opus"
+        }
+    }
+    
+    @available(*, deprecated, renamed: "debugDescription")
+    public var name: String {
+        debugDescription
     }
 }
 
