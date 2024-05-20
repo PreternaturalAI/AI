@@ -161,14 +161,6 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "AITests",
-            dependencies: [
-                "AI",
-                "Swallow"
-            ],
-            path: "Tests/AI"
-        ),
-        .testTarget(
             name: "LargeLanguageModelsTests",
             dependencies: [
                 "AI",
