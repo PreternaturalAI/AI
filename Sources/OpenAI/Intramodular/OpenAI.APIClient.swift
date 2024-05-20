@@ -34,7 +34,21 @@ extension OpenAI {
 }
 
 
+
 extension OpenAI.APIClient {
+    func foo() async throws {
+        let messages: [AbstractLLM.ChatMessage] = [
+            AbstractLLM.ChatMessage(
+                role: .system,
+                body: "You are an extremely intelligent assistant."
+            ),
+            AbstractLLM.ChatMessage(
+                role: .user,
+                body: "Sup?"
+            )
+        ]
+    }
+    
     public func createCompletion(
         model: OpenAI.Model,
         prompt: String,

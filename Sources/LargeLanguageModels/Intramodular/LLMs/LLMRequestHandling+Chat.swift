@@ -4,18 +4,9 @@
 
 import CoreMI
 import Swallow
+import SwiftUIX
 
 extension LLMRequestHandling {
-    public func complete(
-        _ messages: [AbstractLLM.ChatMessage],
-        parameters: AbstractLLM.ChatCompletionParameters
-    ) async throws -> AbstractLLM.ChatCompletion {
-        try await complete(
-            prompt: AbstractLLM.ChatPrompt(messages: messages),
-            parameters: parameters
-        )
-    }
-    
     public func complete(
         prompt: AbstractLLM.ChatPrompt,
         parameters: AbstractLLM.ChatCompletionParameters,
@@ -56,6 +47,76 @@ extension LLMRequestHandling {
         return completion
     }
     
+    public func complete<Result: AbstractLLM.ChatCompletionDecodable>(
+        _ messages: [AbstractLLM.ChatMessage],
+        parameters: AbstractLLM.ChatCompletionParameters,
+        model: some _MLModelIdentifierConvertible,
+        as resultType: Result.Type
+    ) async throws -> Result {
+        try await complete(
+            messages,
+            parameters: parameters,
+            model: model
+        )
+        ._decode(as: Result.self)
+    }
+    
+    public func complete<Result: AbstractLLM.ChatCompletionDecodable>(
+        _ messages: [AbstractLLM.ChatMessage],
+        parameters: AbstractLLM.ChatCompletionParameters,
+        as resultType: Result.Type
+    ) async throws -> Result {
+        try await complete(
+            messages,
+            parameters: parameters
+        )
+        ._decode(as: Result.self)
+    }
+    
+    public func complete<Result: AbstractLLM.ChatCompletionDecodable>(
+        _ messages: [AbstractLLM.ChatMessage],
+        model: some _MLModelIdentifierConvertible,
+        as resultType: ChatCompletionDecodableResultType<Result>
+    ) async throws -> Result {
+        try await complete(
+            messages,
+            model: model
+        )
+        ._decode(as: Result.self)
+    }
+    
+    public func complete<Result: AbstractLLM.ChatCompletionDecodable>(
+        _ messages: [AbstractLLM.ChatMessage],
+        as resultType: Result.Type
+    ) async throws -> Result {
+        try await complete(
+            messages
+        )
+        ._decode(as: Result.self)
+    }
+    
+    public func complete<Result: AbstractLLM.ChatCompletionDecodable>(
+        _ messages: [AbstractLLM.ChatMessage],
+        as resultType: ChatCompletionDecodableResultType<Result>
+    ) async throws -> Result {
+        try await complete(
+            messages
+        )
+        ._decode(as: Result.self)
+    }
+    
+    public func complete(
+        _ messages: [AbstractLLM.ChatMessage],
+        parameters: AbstractLLM.ChatCompletionParameters
+    ) async throws -> AbstractLLM.ChatCompletion {
+        try await complete(
+            prompt: AbstractLLM.ChatPrompt(messages: messages),
+            parameters: parameters
+        )
+    }
+}
+
+extension LLMRequestHandling {
     /// Stream a completion for a given chat prompt.
     public func completion(
         for prompt: AbstractLLM.ChatPrompt,
@@ -70,7 +131,6 @@ extension LLMRequestHandling {
         
         return try await completion(for: prompt)
     }
-    
     
     /// Stream a completion for a given chat prompt.
     public func completion(

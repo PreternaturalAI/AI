@@ -47,9 +47,10 @@ She no went to the market.
             )
         ]
         
-        let result = try await llm.complete(
+        let result: String = try await llm.complete(
             messages,
-            model: OpenAI.Model.chat(.gpt_4)
+            model: OpenAI.Model.chat(.gpt_4),
+            as: String.self
         )
         
         print(result) // "Hello! How can I assist you today?"

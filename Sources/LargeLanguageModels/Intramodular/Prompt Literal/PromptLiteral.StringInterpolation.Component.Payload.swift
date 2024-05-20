@@ -5,6 +5,7 @@
 import CorePersistence
 import Foundation
 import Swallow
+import SwiftUIX
 
 extension PromptLiteral.StringInterpolation.Component {
     public enum Payload: _CasePathExtracting, HashEquatable, @unchecked Sendable {
@@ -195,6 +196,18 @@ extension PromptLiteral.StringInterpolation.Component.Payload {
         
         var value: any Hashable {
             rawValue
+        }
+    }
+}
+
+extension PromptLiteral.StringInterpolation.Component.Payload.Image {
+    @MainActor
+    public func _toAppKitOrUIKitImage() async throws -> SwiftUIX._AnyImage {
+        switch self {
+            case .url(let url):
+                let data: Data = try await URLSession.shared.data(from: url).0
+
+                return try _AnyImage(AppKitOrUIKitImage(data: data).unwrap())
         }
     }
 }

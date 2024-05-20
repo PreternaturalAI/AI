@@ -44,6 +44,14 @@ extension AbstractLLM {
     }
 }
 
+// MARK: - Extensions
+
+extension AbstractLLM.ChatCompletion {
+    public func toString() throws -> String {
+        try String(message.content)
+    }
+}
+
 // MARK: - Conformances
 
 extension AbstractLLM.ChatCompletion: CustomDebugStringConvertible {
