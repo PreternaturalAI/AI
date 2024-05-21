@@ -34,7 +34,7 @@ extension AbstractLLM {
             role: ChatRole,
             content: PromptLiteral
         ) {
-            _expectNoThrow {
+            #try(.optimistic) {
                 if let functionCallOrInvocation = try content._degenerate()._getFunctionCallOrInvocation() {
                     if functionCallOrInvocation is AbstractLLM.ChatPrompt.FunctionCall {
                         assert(role == .assistant)
