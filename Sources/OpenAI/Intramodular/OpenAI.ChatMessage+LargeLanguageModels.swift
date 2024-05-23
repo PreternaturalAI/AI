@@ -75,9 +75,15 @@ extension OpenAI.ChatMessage {
             switch try _content.components.toCollectionOfOne().value.payload {
                 case .functionCall(let call):
                     self.init(
-                        id: nil, // FIXME: !!!
+                        id: nil,
+                        // FIXME: !!!
                         role: role,
-                        body: .functionCall(.init(name: call.name, arguments: call.arguments))
+                        body: .functionCall(
+                            OpenAI.ChatMessageBody.FunctionCall(
+                                name: call.name.rawValue,
+                                arguments: call.arguments
+                            )
+                        )
                     )
                 case .functionInvocation(let invocation):
                     self.init(

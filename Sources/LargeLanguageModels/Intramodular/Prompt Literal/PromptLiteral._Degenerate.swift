@@ -140,8 +140,8 @@ extension PromptLiteral._Degenerate.Component {
         
         case string(String)
         case image(Image)
-        case functionCall(AbstractLLM.ChatPrompt.FunctionCall)
-        case functionInvocation(AbstractLLM.ChatPrompt.RawFunctionInvocation)
+        case functionCall(AbstractLLM.ChatFunctionCall)
+        case functionInvocation(AbstractLLM.ChatFunctionInvocation)
         
         public var type: PayloadType {
             switch self {

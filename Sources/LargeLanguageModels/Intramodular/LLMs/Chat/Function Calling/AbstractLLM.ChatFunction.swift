@@ -9,7 +9,7 @@ extension AbstractLLM {
     public struct ChatFunction: CustomStringConvertible, _opaque_DynamicPromptVariable, HashEquatable, @unchecked Sendable {
         public let id: AnyHashable
         public let definition: AbstractLLM.ChatFunctionDefinition
-        public let body: (AbstractLLM.ChatPrompt.FunctionCall) async throws -> AbstractLLM.ChatPrompt.FunctionResult
+        public let body: (ChatFunctionCall) async throws -> AbstractLLM.ChatFunctionInvocation.FunctionResult
         
         public var description: String {
             "(Chat Function)"
@@ -34,7 +34,7 @@ extension AbstractLLM {
         public init(
             id: AnyHashable?,
             definition: AbstractLLM.ChatFunctionDefinition,
-            body: @escaping (AbstractLLM.ChatPrompt.FunctionCall) async throws -> AbstractLLM.ChatPrompt.FunctionResult
+            body: @escaping (ChatFunctionCall) async throws -> AbstractLLM.ChatFunctionInvocation.FunctionResult
         ) {
             self.id = id ?? AnyHashable(definition.name)
             self.definition = definition

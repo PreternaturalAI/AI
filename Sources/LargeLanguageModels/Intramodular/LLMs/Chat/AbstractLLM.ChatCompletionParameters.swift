@@ -6,33 +6,13 @@ import CorePersistence
 import Foundation
 import Swallow
 
-extension AbstractLLM {
-    public struct ChatFunctionDefinition: Codable, Hashable, Identifiable, Sendable {
-        public typealias ID = _TypeAssociatedID<Self, AnyPersistentIdentifier>
-        
-        public let id: ID
-        public let name: String
-        public let context: String
-        public let parameters: JSONSchema
-        
-        public init(
-            name: String,
-            context: String,
-            parameters: JSONSchema
-        ) {
-            self.id = ID(rawValue: AnyPersistentIdentifier(rawValue: UUID()))
-            self.name = name
-            self.context = context
-            self.parameters = parameters
-        }
-    }
-    
+extension AbstractLLM {    
     public struct ChatCompletionParameters: CompletionParameters {
         public let tokenLimit: TokenLimit?
         public let temperatureOrTopP: TemperatureOrTopP?
         public let stops: [String]?
         /// Only for ChatGPT, Anthropic and other models that support function calling.
-        public let functions: IdentifierIndexingArrayOf<ChatFunctionDefinition>?
+        public var functions: IdentifierIndexingArrayOf<ChatFunctionDefinition>?
         
         public init(
             tokenLimit: AbstractLLM.TokenLimit? = nil,

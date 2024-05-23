@@ -48,7 +48,7 @@ extension PromptLiteral {
     }
     
     public init(
-        functionCall call: AbstractLLM.ChatPrompt.FunctionCall,
+        functionCall call: AbstractLLM.ChatFunctionCall,
         role: PromptMatterRole?
     ) throws {
         try _tryAssert(role == .chat(.assistant))
@@ -57,13 +57,13 @@ extension PromptLiteral {
     }
     
     public init(
-        functionCall call: AbstractLLM.ChatPrompt.FunctionCall
+        functionCall call: AbstractLLM.ChatFunctionCall
     ) throws {
         try self.init(functionCall: call, role: .chat(.assistant))
     }
     
     public init(
-        functionInvocation invocation: AbstractLLM.ChatPrompt.RawFunctionInvocation,
+        functionInvocation invocation: AbstractLLM.ChatFunctionInvocation,
         role: PromptMatterRole?
     ) throws {
         try _tryAssert(role == .chat(.other(.function)))

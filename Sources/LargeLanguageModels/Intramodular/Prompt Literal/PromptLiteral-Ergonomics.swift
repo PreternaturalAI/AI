@@ -5,13 +5,13 @@
 import Swallow
 
 extension AbstractLLM.ChatCompletion {
-    public var _allFunctionCalls: [AbstractLLM.ChatPrompt.FunctionCall] {
+    public var _allFunctionCalls: [AbstractLLM.ChatFunctionCall] {
         self.message.content.stringInterpolation.components.compactMap {
             $0.payload.functionCall
         }
     }
 
-    public var _allRawFunctionInvocations: [AbstractLLM.ChatPrompt.RawFunctionInvocation] {
+    public var _allChatFunctionInvocations: [AbstractLLM.ChatFunctionInvocation] {
         self.message.content.stringInterpolation.components.compactMap {
             $0.payload.functionInvocation
         }

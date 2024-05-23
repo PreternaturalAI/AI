@@ -7,9 +7,6 @@ import OpenAI
 import XCTest
 
 final class CompletionTests: XCTestCase {
-    func tokenize() async throws {
-        
-    }
     func testCreateEmbeddings() async throws {
         let result = try await client.createEmbeddings(
             model: .ada,

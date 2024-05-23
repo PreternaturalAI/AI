@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CoreMI
 import CorePersistence
 import LargeLanguageModels
 import NetworkKit
@@ -17,6 +18,14 @@ public final class _OpenAI_APIClient: HTTPClient, _StaticNamespaceType {
     }
     
     public convenience init(apiKey: String?) {
+        var apiKey = apiKey
+        
+        if apiKey == nil, ProcessInfo.processInfo._isRunningWithinXCTest {
+            #try(.optimistic) {
+                apiKey = try _PreternaturalDotFile.key(for: .openAI)
+            }
+        }
+        
         self.init(
             interface: .init(configuration: .init(apiKey: apiKey)),
             session: .shared
@@ -27,7 +36,6 @@ public final class _OpenAI_APIClient: HTTPClient, _StaticNamespaceType {
         self.init(interface: .init(configuration: configuration), session: .shared)
     }
 }
-
 
 extension OpenAI {
     public typealias APIClient = _OpenAI_APIClient

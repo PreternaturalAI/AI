@@ -6,15 +6,15 @@ import Foundation
 import Merge
 import Swift
 
-public protocol TextToSpeechRequest: _MIRequest {
+public protocol TTSRequest: _MIRequest {
     
 }
 
-public struct NaiveTextToSpeechRequest: Codable, Hashable, Sendable, TextToSpeechRequest {
+public struct NaiveTTSRequest: Codable, Hashable, Sendable, TTSRequest {
     public let text: String
 }
 
-extension NaiveTextToSpeechRequest {
+extension NaiveTTSRequest {
     public struct Result {
         public let data: Data
     }
