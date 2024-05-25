@@ -60,7 +60,7 @@ The definitive, open-source Swift framework for interfacing with generative AI.
   * [Basic Completions](#basic-completions)
   * [Vision: Image-to-Text](#vision-image-to-text)
 * [DALLE-3 Image Generation](#dalle-3-image-generation)
-* [Text Embeddings](#text-embeddings) \
+* [Text Embeddings](#text-embeddings) 
 
 [Roadmap](#roadmap) \
 [Acknowledgements](#acknowledgements) \
