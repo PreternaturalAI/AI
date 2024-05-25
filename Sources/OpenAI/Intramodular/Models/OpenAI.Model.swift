@@ -301,7 +301,9 @@ extension OpenAI.Model {
 
 extension OpenAI.Model {
     public enum Speech: String, Named, OpenAI._ModelType, CaseIterable {
+        /// The tts-1 is  the latest text to speech model, optimized for speed and is ideal to use for real-time text to speech use cases.
         case tts_1 = "tts-1"
+        /// The tts-1-hd is the latest text to speech model, optimized for quality.
         case tts_1_hd = "tts-1-hd"
         
         public var contextSize: Int { return 4096 }
