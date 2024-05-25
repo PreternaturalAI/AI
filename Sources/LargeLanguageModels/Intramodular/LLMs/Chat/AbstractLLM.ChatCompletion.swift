@@ -134,31 +134,18 @@ extension AbstractLLM.ChatCompletion: Partializable {
 
 // MARK: - Auxiliary
 
-extension AbstractLLM.ChatCompletion {
-    @frozen
-    public struct StopReason: Codable, Hashable, Sendable {
-        public enum StopReasonType: Codable, Hashable, Sendable {
-            case endTurn
-            case maxTokens
-            case stopSequence
-        }
-        
-        public let type: StopReasonType?
-        
-        public init(type: StopReasonType? = nil) {
-            self.type = type
-        }
-        
-        public static var endTurn: Self {
-            Self(type: .endTurn)
-        }
-        
-        public static var maxTokens: Self {
-            Self(type: .maxTokens)
-        }
+// MARK: - Helpers
 
-        public static var stopSequence: Self {
-            Self(type: .stopSequence)
+extension AbstractLLM.ChatCompletion {
+    public var _allFunctionCalls: [AbstractLLM.ChatFunctionCall] {
+        self.message.content.stringInterpolation.components.compactMap {
+            $0.payload.functionCall
+        }
+    }
+    
+    public var _allChatFunctionInvocations: [AbstractLLM.ChatFunctionInvocation] {
+        self.message.content.stringInterpolation.components.compactMap {
+            $0.payload.functionInvocation
         }
     }
 }
