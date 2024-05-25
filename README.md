@@ -199,12 +199,13 @@ let messages: [AbstractLLM.ChatMessage] = [
         }
     }]
 
-let result = try await client.complete(
+let result: String = try await client.complete(
     messages,
-    model: model
+    model: model,
+    as: .string
 )
 
-return result.message.content.description
+return result
 ```
 
 ## DALLE-3 Image Generation
