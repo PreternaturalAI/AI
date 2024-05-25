@@ -11,7 +11,7 @@ extension HTTPMediaType {
 
     }
 }
-
+/// Note: In the Whisper mode, the sampling temperature is between 0 and 1 (not 0 and 2 as in the completion model). Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use log probability to automatically increase the temperature until certain thresholds are hit.
 extension OpenAI.APIClient {
     public func createTranscription(
         file: Data,

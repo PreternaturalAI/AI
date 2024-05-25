@@ -5,6 +5,7 @@
 import Swallow
 import SwiftUIX
 
+// Specify the expected result type for strongly-typed results. For example, if you're executing a chat completion, the expected result will be a `.string` type.
 public struct ChatCompletionDecodableResultType<T: AbstractLLM.ChatCompletionDecodable> {
     fileprivate init() {
         
