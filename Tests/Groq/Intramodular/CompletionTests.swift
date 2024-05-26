@@ -11,9 +11,30 @@ import XCTest
 
 final class CompletionTests: XCTestCase {
     
-    func testChatCompletions() async throws {
-        let llm: any LLMRequestHandling = client
-
+    let llm: any LLMRequestHandling = client
+    
+    func testChatCompletionsMixtral8x7b() async throws {
+        let result = try await resultForModel(Groq.Model.mixtral_8x7b)
+        print(result) // "Hello! How can I assist you today?"
+    }
+    
+    func testChatCompletionsGemma7b() async throws {
+        let result = try await resultForModel(Groq.Model.gemma_7b)
+        print(result) // "Hello! How can I assist you today?"
+    }
+    
+    func testChatCompletionsLlama3_70b() async throws {
+        let result = try await resultForModel(Groq.Model.llama3_70b)
+        print(result) // "Hello! How can I assist you today?"
+    }
+    
+    func testChatCompletionsLlama3_8b() async throws {
+        let result = try await resultForModel(Groq.Model.llama3_8b)
+        print(result) // "Hello! How can I assist you today?"
+    }
+    
+    private func resultForModel(_ model: Groq.Model) async throws -> String {
+        
         let messages: [AbstractLLM.ChatMessage] = [
             AbstractLLM.ChatMessage(
                 role: .system,
@@ -27,10 +48,10 @@ final class CompletionTests: XCTestCase {
         
         let result: String = try await llm.complete(
             messages,
-            model: Groq.Model.mixtral_8x7b,
+            model: model,
             as: String.self
         )
         
-        print(result) // "Hello! How can I assist you today?"
+        return result
     }
 }
