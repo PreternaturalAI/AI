@@ -5,7 +5,7 @@
 //  Created by Natasha Murashev on 5/26/24.
 //
 
-import OpenAI
+import Groq
 
 public var GROQ_API_KEY: String {
     "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"

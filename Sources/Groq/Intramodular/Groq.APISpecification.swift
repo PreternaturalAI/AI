@@ -43,7 +43,7 @@ extension Groq {
         
         @POST
         @Path("chat/completions")
-        public var chatCompletions = Endpoint<RequestBodies.ChatCompletions, ResponseBodies.ChatCompletion, Void>()
+        var chatCompletions = Endpoint<RequestBodies.ChatCompletions, ResponseBodies.ChatCompletion, Void>()
     }
 }
 
@@ -144,14 +144,14 @@ extension Groq {
 
 extension Groq.APISpecification.RequestBodies {
     /// https://console.groq.com/docs/api-reference#chat-create
-    public struct ChatCompletions: Codable, Hashable, Sendable {
-        public var model: Groq.Model
-        public var messages: [Groq.ChatMessage]
-        public var temperature: Double?
-        public var topP: Double?
-        public var maxTokens: Int?
-        public var stream: Bool?
-        public var randomSeed: Int?
+    struct ChatCompletions: Codable, Hashable, Sendable {
+        var model: Groq.Model
+        var messages: [Groq.ChatMessage]
+        var temperature: Double?
+        var topP: Double?
+        var maxTokens: Int?
+        var stream: Bool?
+        var randomSeed: Int?
     }
 }
 

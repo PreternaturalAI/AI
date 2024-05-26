@@ -27,7 +27,7 @@ final class CompletionTests: XCTestCase {
         
         let result: String = try await llm.complete(
             messages,
-            model: Groq.Model.gemma_7b,
+            model: Groq.Model.mixtral_8x7b,
             as: String.self
         )
         
