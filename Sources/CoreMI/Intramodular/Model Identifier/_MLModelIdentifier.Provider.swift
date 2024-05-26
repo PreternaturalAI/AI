@@ -16,6 +16,7 @@ extension _MLModelIdentifier {
         case _Anthropic
         case _Apple
         case _Mistral
+        case _Groq
         case _Ollama
         case _OpenAI
         
@@ -32,6 +33,10 @@ extension _MLModelIdentifier {
         public static var anthropic: Self {
             Self._Anthropic
         }
+        
+        public static var groq: Self {
+            Self._Groq
+        }
     }
 }
 
@@ -46,6 +51,8 @@ extension _MLModelIdentifier.Provider: CustomStringConvertible {
                 return "Apple"
             case ._Mistral:
                 return "Mistral"
+            case ._Groq:
+                return "Groq"
             case ._Ollama:
                 return "Ollama"
             case ._OpenAI:
@@ -65,6 +72,8 @@ extension _MLModelIdentifier.Provider: RawRepresentable {
                 return "apple"
             case ._Mistral:
                 return "mistral"
+            case ._Groq:
+                return "groq"
             case ._Ollama:
                 return "ollama"
             case ._OpenAI:
@@ -82,6 +91,8 @@ extension _MLModelIdentifier.Provider: RawRepresentable {
                 self = ._Apple
             case Self._Mistral.rawValue:
                 self = ._Mistral
+            case Self._Groq.rawValue:
+                self = ._Groq
             case Self._OpenAI.rawValue:
                 self = ._OpenAI
             default:
