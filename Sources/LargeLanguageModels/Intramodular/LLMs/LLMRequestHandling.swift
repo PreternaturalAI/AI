@@ -8,12 +8,7 @@ import Merge
 import Swallow
 
 /// A unified interface to a large language model.
-public protocol LLMRequestHandling: _MIRequestHandling {
-    /// The list of available LLMs.
-    ///
-    /// `nil` if unknown.
-    var _availableModels: [_MLModelIdentifier]? { get }
-    
+public protocol LLMRequestHandling: _MIRequestHandling {    
     /// Complete a given prompt.
     func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,

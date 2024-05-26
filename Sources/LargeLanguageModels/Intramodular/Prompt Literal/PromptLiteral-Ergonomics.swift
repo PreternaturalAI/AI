@@ -4,20 +4,6 @@
 
 import Swallow
 
-extension AbstractLLM.ChatCompletion {
-    public var _allFunctionCalls: [AbstractLLM.ChatFunctionCall] {
-        self.message.content.stringInterpolation.components.compactMap {
-            $0.payload.functionCall
-        }
-    }
-
-    public var _allChatFunctionInvocations: [AbstractLLM.ChatFunctionInvocation] {
-        self.message.content.stringInterpolation.components.compactMap {
-            $0.payload.functionInvocation
-        }
-    }
-}
-
 extension AbstractLLM.ChatOrTextCompletion {
     public func _stripToText() throws -> String {
         switch self {

@@ -53,7 +53,7 @@ extension ElevenLabs {
         for text: String,
         voiceID: String,
         voiceSettings: [String: JSON]? = nil,
-        model: String? = nil
+        model: ElevenLabs.Model
     ) async throws -> Data {
         let request = try HTTPRequest(url: URL(string: "\(apiSpecification.host)/v1/text-to-speech/\(voiceID)")!)
             .method(.post)

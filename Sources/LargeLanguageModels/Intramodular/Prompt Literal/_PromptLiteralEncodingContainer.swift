@@ -11,7 +11,9 @@ import Swallow
 ///
 /// This is a key protocol for performing a `PromptLiteral` -> `SomeModelProvider.ChatMessageType` conversion.
 public protocol _PromptLiteralEncodingContainer {
-    mutating func encode(_ degenerate: PromptLiteral._Degenerate.Component) throws
+    mutating func encode(
+        _ degenerate: PromptLiteral._Degenerate.Component
+    ) throws
 }
 
 // MARK: - Supplementary

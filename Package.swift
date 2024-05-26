@@ -16,6 +16,7 @@ let package = Package(
                 "LargeLanguageModels",
                 "Anthropic",
                 "ElevenLabs",
+                "Gemini",
                 "Mistral",
                 "Ollama",
                 "OpenAI",
@@ -85,6 +86,18 @@ let package = Package(
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
+        ),
+        .target(
+            name: "Gemini",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/Gemini"
         ),
         .target(
             name: "Mistral",
