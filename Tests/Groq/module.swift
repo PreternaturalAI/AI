@@ -8,7 +8,7 @@
 import Groq
 
 public var GROQ_API_KEY: String {
-    "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"
+    ""
 }
 
 public var client: Groq {
