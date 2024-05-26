@@ -47,7 +47,7 @@ She no went to the market.
         let result: String = try await llm.complete(
             messages,
             model: OpenAI.Model.chat(.gpt_4),
-            as: String.self
+            as: .string
         )
         
         print(result) // "Hello! How can I assist you today?"
