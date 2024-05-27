@@ -276,7 +276,7 @@ extension OpenAI.APISpecification {
             } catch {
                 let apiError: Error
                 
-                if let error = error as? Request.Error {
+                if let error = error as? HTTPRequest.Error {
                     let errorWrapper = try? response.decode(
                         _ErrorWrapper.self,
                         keyDecodingStrategy: .convertFromSnakeCase

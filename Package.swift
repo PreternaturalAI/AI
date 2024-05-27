@@ -17,6 +17,7 @@ let package = Package(
                 "Anthropic",
                 "ElevenLabs",
                 "Gemini",
+                "Groq",
                 "Mistral",
                 "Ollama",
                 "OpenAI",
@@ -112,6 +113,18 @@ let package = Package(
             path: "Sources/Mistral"
         ),
         .target(
+            name: "Groq",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/Groq"
+        ),
+        .target(
             name: "Ollama",
             dependencies: [
                 "CorePersistence",
@@ -163,6 +176,8 @@ let package = Package(
                 "Anthropic",
                 "ElevenLabs",
                 "Mistral",
+                "Groq",
+                "Gemini",
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
@@ -202,6 +217,17 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/OpenAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "GroqTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/Groq",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
