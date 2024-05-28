@@ -14,7 +14,7 @@ extension ElevenLabs {
 }
 
 extension ElevenLabs.APISpecification {
-    public enum RequestBodies {
+    enum RequestBodies {
         public struct SpeechRequest: Codable {
             public enum CodingKeys: String, CodingKey {
                 case text
@@ -22,14 +22,14 @@ extension ElevenLabs.APISpecification {
                 case model
             }
             
-            public let text: String
-            public let voiceSettings: [String: JSON]
-            public let model: ElevenLabs.Model
+            let text: String
+            let voiceSettings: [String: JSON]
+            let model: ElevenLabs.Client.Model
             
-            public init(
+            init(
                 text: String,
                 voiceSettings: [String: JSON],
-                model: ElevenLabs.Model
+                model: ElevenLabs.Client.Model
             ) {
                 self.text = text
                 self.voiceSettings = voiceSettings
@@ -42,16 +42,16 @@ extension ElevenLabs.APISpecification {
 extension ElevenLabs.APISpecification {
     public enum ResponseBodies {
         public struct Voices: Codable, Hashable, Sendable {
-            public let voices: [ElevenLabs.Voice]
+            public let voices: [ElevenLabs.Client.Voice]
             
-            public init(voices: [ElevenLabs.Voice]) {
+            public init(voices: [ElevenLabs.Client.Voice]) {
                 self.voices = voices
             }
         }
     }
 }
 
-extension ElevenLabs {
+extension ElevenLabs.Client {
     public struct Voice: Codable, Hashable, Identifiable, Sendable {
         public typealias ID = _TypeAssociatedID<Self, String>
 
