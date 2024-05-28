@@ -5,7 +5,7 @@
 import CorePersistence
 import Swallow
 
-extension OpenAI.APIClient {
+extension OpenAI.Client {
     /// The format in which the generated images are returned.
     public enum ImageResponseFormat: String, Codable, CaseIterable {
         /// URLs are only valid for 60 minutes after the image has been generated.

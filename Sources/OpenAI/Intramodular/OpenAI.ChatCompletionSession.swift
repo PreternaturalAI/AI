@@ -58,7 +58,7 @@ extension OpenAI.ChatCompletionSession {
     public func _WIP_complete(
         messages: [OpenAI.ChatMessage],
         model: OpenAI.Model,
-        parameters: OpenAI.APIClient.ChatCompletionParameters
+        parameters: OpenAI.Client.ChatCompletionParameters
     ) async throws -> AnyPublisher<OpenAI.ChatMessage, Error> {
         var _self: OpenAI.ChatCompletionSession! = self
         
@@ -151,7 +151,7 @@ extension OpenAI.ChatCompletionSession {
     public func complete(
         messages: [OpenAI.ChatMessage],
         model: OpenAI.Model,
-        parameters: OpenAI.APIClient.ChatCompletionParameters
+        parameters: OpenAI.Client.ChatCompletionParameters
     ) async throws -> AnyPublisher<OpenAI.ChatMessage, Error> {
         let bytes = try await _complete(
             messages: messages,
@@ -182,7 +182,7 @@ extension OpenAI.ChatCompletionSession {
     private func _complete(
         messages: [OpenAI.ChatMessage],
         model: OpenAI.Model,
-        parameters: OpenAI.APIClient.ChatCompletionParameters
+        parameters: OpenAI.Client.ChatCompletionParameters
     ) async throws -> URLSession.AsyncBytes {
         let chatRequest = OpenAI.APISpecification.RequestBodies.CreateChatCompletion(
             messages: messages,

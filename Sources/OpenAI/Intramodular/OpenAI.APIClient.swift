@@ -8,7 +8,7 @@ import LargeLanguageModels
 import NetworkKit
 import Swift
 
-public final class _OpenAI_APIClient: HTTPClient, _StaticNamespaceType {
+public final class _OpenAI_Client: HTTPClient, _StaticNamespaceType {
     public let interface: OpenAI.APISpecification
     public let session: HTTPSession
     
@@ -38,29 +38,17 @@ public final class _OpenAI_APIClient: HTTPClient, _StaticNamespaceType {
 }
 
 extension OpenAI {
-    public typealias APIClient = _OpenAI_APIClient
+    public typealias Client = _OpenAI_Client
+
+    @available(*, deprecated, renamed: "OpenAI.Client")
+    public typealias APIClient = _OpenAI_Client
 }
 
-
-
-extension OpenAI.APIClient {
-    func foo() async throws {
-        let messages: [AbstractLLM.ChatMessage] = [
-            AbstractLLM.ChatMessage(
-                role: .system,
-                body: "You are an extremely intelligent assistant."
-            ),
-            AbstractLLM.ChatMessage(
-                role: .user,
-                body: "Sup?"
-            )
-        ]
-    }
-    
+extension OpenAI.Client {
     public func createCompletion(
         model: OpenAI.Model,
         prompt: String,
-        parameters: OpenAI.APIClient.TextCompletionParameters
+        parameters: OpenAI.Client.TextCompletionParameters
     ) async throws -> OpenAI.TextCompletion {
         let requestBody = OpenAI.APISpecification.RequestBodies.CreateCompletion(
             prompt: .left(prompt),
@@ -75,7 +63,7 @@ extension OpenAI.APIClient {
     public func createCompletion(
         model: OpenAI.Model,
         prompts: [String],
-        parameters: OpenAI.APIClient.TextCompletionParameters
+        parameters: OpenAI.Client.TextCompletionParameters
     ) async throws -> OpenAI.TextCompletion {
         let requestBody = OpenAI.APISpecification.RequestBodies.CreateCompletion(
             prompt: .right(prompts),
@@ -90,7 +78,7 @@ extension OpenAI.APIClient {
     public func createChatCompletion(
         messages: [OpenAI.ChatMessage],
         model: OpenAI.Model,
-        parameters: OpenAI.APIClient.ChatCompletionParameters
+        parameters: OpenAI.Client.ChatCompletionParameters
     ) async throws -> OpenAI.ChatCompletion {
         let requestBody = OpenAI.APISpecification.RequestBodies.CreateChatCompletion(
             messages: messages,
@@ -105,7 +93,7 @@ extension OpenAI.APIClient {
     public func createChatCompletion(
         messages: [OpenAI.ChatMessage],
         model: OpenAI.Model.Chat,
-        parameters: OpenAI.APIClient.ChatCompletionParameters
+        parameters: OpenAI.Client.ChatCompletionParameters
     ) async throws -> OpenAI.ChatCompletion {
         try await createChatCompletion(
             messages: messages,
@@ -149,7 +137,7 @@ extension OpenAI.APIClient {
     }
 }
 
-extension OpenAI.APIClient {
+extension OpenAI.Client {
     @discardableResult
     public func createRun(
         threadID: OpenAI.Thread.ID,
@@ -186,13 +174,13 @@ extension OpenAI.APIClient {
 
 // MARK: - Conformances
 
-extension OpenAI.APIClient: _MaybeAsyncProtocol {
+extension OpenAI.Client: _MaybeAsyncProtocol {
     public func _resolveToNonAsync() async throws -> Self {
         self
     }
 }
 
-extension OpenAI.APIClient: PersistentlyRepresentableType {
+extension OpenAI.Client: PersistentlyRepresentableType {
     public static var persistentTypeRepresentation: some IdentityRepresentation {
         _MIServiceTypeIdentifier._OpenAI
     }
@@ -200,7 +188,7 @@ extension OpenAI.APIClient: PersistentlyRepresentableType {
 
 // MARK: - Auxiliary
 
-extension OpenAI.APIClient {
+extension OpenAI.Client {
     public struct TextCompletionParameters: Codable, Hashable {
         public var suffix: String?
         public var maxTokens: Int?
@@ -299,7 +287,7 @@ extension OpenAI.APIClient {
     }
 }
 
-extension OpenAI.APIClient.ChatCompletionParameters {
+extension OpenAI.Client.ChatCompletionParameters {
     public init(
         user: String? = nil,
         temperature: Double? = nil,

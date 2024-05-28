@@ -5,7 +5,7 @@
 import NetworkKit
 import Swift
 
-extension OpenAI.APIClient {
+extension OpenAI.Client {
     public func uploadFileWithData(
         _ data: Data,
         named filename: String,

@@ -9,18 +9,18 @@ import Diagnostics
 import Merge
 import Swallow
 
-extension OpenAI.APIClient: _TaskDependenciesExporting {
+extension OpenAI.Client: _TaskDependenciesExporting {
     public var _exportedTaskDependencies: Dependencies {
         var result = Dependencies()
         
-        result[\.llmServices] = self
-        result[\.textEmbeddingsProvider] = self
+        result[\.llm] = self
+        result[\.embedding] = self
         
         return result
     }
 }
 
-extension OpenAI.APIClient: LLMRequestHandling {
+extension OpenAI.Client: LLMRequestHandling {
     private var _debugPrintCompletions: Bool {
         false
     }
@@ -88,7 +88,7 @@ extension OpenAI.APIClient: LLMRequestHandling {
         
         return .init(prefix: promptText, text: text)
     }
-    
+        
     private func _complete(
         prompt: AbstractLLM.ChatPrompt,
         parameters: AbstractLLM.ChatCompletionParameters
@@ -138,6 +138,17 @@ extension OpenAI.APIClient: LLMRequestHandling {
         )
     }
     
+    private func _validateParameters(
+        parameters: AbstractLLM.ChatCompletionParameters,
+        model: OpenAI.Model
+    ) {
+        if let temperature = parameters.temperatureOrTopP?.temperature {
+            if temperature > 1.2 {
+                runtimeIssue("OpenAI's API doesn't seem to support a temperature higher than 1.2, but it is available on their playground at https://platform.openai.com/playground/chat?models=gpt-4o")
+            }
+        }
+    }
+    
     public func completion(
         for prompt: AbstractLLM.ChatPrompt
     ) throws -> AbstractLLM.ChatCompletionStream {
@@ -155,7 +166,7 @@ extension OpenAI.APIClient: LLMRequestHandling {
             try OpenAI.ChatMessage(from: $0)
         }
         let model: OpenAI.Model = try self._model(for: prompt, parameters: nil)
-        let parameters: OpenAI.APIClient.ChatCompletionParameters = try await self._chatCompletionParameters(
+        let parameters: OpenAI.Client.ChatCompletionParameters = try await self._chatCompletionParameters(
             from: prompt.context.completionParameters,
             for: prompt
         )
@@ -181,7 +192,7 @@ extension OpenAI.APIClient: LLMRequestHandling {
     }
 }
 
-extension OpenAI.APIClient {
+extension OpenAI.Client {
     private func _debugPrint(prompt: String, completion: String) {
         guard _debugPrintCompletions else {
             return
@@ -209,7 +220,7 @@ extension OpenAI.APIClient {
     private func _chatCompletionParameters(
         from parameters: (any AbstractLLM.CompletionParameters)?,
         for prompt: AbstractLLM.ChatPrompt
-    ) async throws -> OpenAI.APIClient.ChatCompletionParameters {
+    ) async throws -> OpenAI.Client.ChatCompletionParameters {
         let parameters: AbstractLLM.ChatCompletionParameters = try cast(parameters ?? AbstractLLM.ChatCompletionParameters())
         let model: OpenAI.Model = try self._model(
             for: prompt,
@@ -226,7 +237,7 @@ extension OpenAI.APIClient {
             }
         }
         
-        return try OpenAI.APIClient.ChatCompletionParameters(
+        return try OpenAI.Client.ChatCompletionParameters(
             from: parameters,
             model: model,
             messages: prompt.messages,
@@ -267,12 +278,12 @@ extension OpenAI.APIClient {
     
     private func tokenizer(
         for model: OpenAI.Model
-    ) async throws -> OpenAI.APIClient._Tokenizer {
+    ) async throws -> OpenAI.Client._Tokenizer {
         try await .init(model: model)
     }
 }
 
-extension OpenAI.APIClient {
+extension OpenAI.Client {
     public struct _Tokenizer: PromptLiteralTokenizer {
         public typealias Token = Int
         public typealias Output = [Int]
@@ -317,7 +328,7 @@ extension _MLModelIdentifier {
     }
 }
 
-extension OpenAI.APIClient.TextCompletionParameters {
+extension OpenAI.Client.TextCompletionParameters {
     public init(
         from parameters: AbstractLLM.TextCompletionParameters,
         model: OpenAI.Model,
@@ -332,7 +343,7 @@ extension OpenAI.APIClient.TextCompletionParameters {
     }
 }
 
-extension OpenAI.APIClient.ChatCompletionParameters {
+extension OpenAI.Client.ChatCompletionParameters {
     public init(
         from parameters: AbstractLLM.ChatCompletionParameters,
         model: OpenAI.Model,

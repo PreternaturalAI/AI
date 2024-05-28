@@ -18,7 +18,7 @@ public enum _module {
 }
 
 extension TaskDependencyValues {
-    public var llmServices: (any LLMRequestHandling)? {
+    public var llm: (any LLMRequestHandling)? {
         get {
             self[_OptionalTaskDependencyKey.self]
         } set {
@@ -26,7 +26,7 @@ extension TaskDependencyValues {
         }
     }
     
-    public var textEmbeddingsProvider: (any TextEmbeddingsRequestHandling)? {
+    public var embedding: (any TextEmbeddingsRequestHandling)? {
         get {
             self[_OptionalTaskDependencyKey.self]
         } set {

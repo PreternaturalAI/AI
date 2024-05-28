@@ -9,7 +9,7 @@ import Foundation
 import LargeLanguageModels
 import NetworkKit
 
-extension OpenAI.APIClient {
+extension OpenAI.Client {
     
     public func createVectorStore(
         name: String?,

@@ -12,7 +12,7 @@ extension Ollama: _TaskDependenciesExporting {
     public var _exportedTaskDependencies: Dependencies {
         var result = Dependencies()
         
-        result[\.llmServices] = self
+        result[\.llm] = self
         
         return result
     }

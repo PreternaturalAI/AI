@@ -5,7 +5,7 @@
 import NetworkKit
 import Swift
 
-extension OpenAI.APIClient {
+extension OpenAI.Client {
     public func createEmbeddings(
         model: OpenAI.Model.Embedding,
         for input: [String]

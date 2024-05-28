@@ -7,17 +7,7 @@ import LargeLanguageModels
 import NetworkKit
 import Swallow
 
-extension Anthropic: _TaskDependenciesExporting {
-    public var _exportedTaskDependencies: Dependencies {
-        var result = Dependencies()
-        
-        result[\.llmServices] = self
-        
-        return result
-    }
-}
-
-extension Anthropic: LLMRequestHandling {
+extension Anthropic.Client: LLMRequestHandling {
     public var _availableModels: [_MLModelIdentifier]? {
         Anthropic.Model.allCases.map({ $0.__conversion() })
     }

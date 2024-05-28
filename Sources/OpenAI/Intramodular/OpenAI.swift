@@ -8,6 +8,6 @@ import Swift
 @RuntimeDiscoverable
 public enum OpenAI: _TypeIterableStaticNamespaceType {
     public static var _allNamespaceTypes: [any Any.Type] {
-        OpenAI.APIClient.self
+        OpenAI.Client.self
     }
 }

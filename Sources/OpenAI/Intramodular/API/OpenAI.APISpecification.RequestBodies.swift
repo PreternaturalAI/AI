@@ -72,7 +72,7 @@ extension OpenAI.APISpecification.RequestBodies {
         init(
             prompt: Either<String, [String]>,
             model: OpenAI.Model,
-            parameters: OpenAI.APIClient.TextCompletionParameters,
+            parameters: OpenAI.Client.TextCompletionParameters,
             stream: Bool
         ) {
             self.init(
@@ -224,7 +224,7 @@ extension OpenAI.APISpecification.RequestBodies {
         init(
             messages: [OpenAI.ChatMessage],
             model: OpenAI.Model,
-            parameters: OpenAI.APIClient.ChatCompletionParameters,
+            parameters: OpenAI.Client.ChatCompletionParameters,
             user: String? = nil,
             stream: Bool
         ) {
@@ -621,7 +621,7 @@ extension OpenAI.APISpecification.RequestBodies {
         let prompt: String
         let model: OpenAI.Model.DALL_E
         let numberOfImages: Int
-        let responseFormat: OpenAI.APIClient.ImageResponseFormat
+        let responseFormat: OpenAI.Client.ImageResponseFormat
         let quality: String
         let size: String
         let style: String
@@ -630,7 +630,7 @@ extension OpenAI.APISpecification.RequestBodies {
         init(
             prompt: String,
             model: OpenAI.Model.DALL_E,
-            responseFormat: OpenAI.APIClient.ImageResponseFormat,
+            responseFormat: OpenAI.Client.ImageResponseFormat,
             numberOfImages: Int,
             quality: OpenAI.Image.Quality = .standard,
             size: OpenAI.Image.Size = .w1024h1024,

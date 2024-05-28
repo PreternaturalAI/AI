@@ -96,7 +96,7 @@ import Anthropic
 import Mistral
 
 // OpenAI / GPT
-let client: any LLMRequestHandling = OpenAI.APIClient(apiKey: "YOUR_KEY")
+let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
 // Anthropic / Claude
 let client: any LLMRequestHandling  = Anthropic(apiKey: "YOUR_KEY")
 // Mistral
@@ -137,7 +137,7 @@ You can use the `LLMRequestHandling.complete(_:model:)` function to generate a c
 import AI
 import OpenAI
 
-let llm: any LLMRequestHandling = OpenAI.APIClient(apiKey: "YOUR_KEY")
+let llm: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
 
 let messages: [AbstractLLM.ChatMessage] = [
         // the system prompt is optional
@@ -179,7 +179,7 @@ Language models (LLMs) are rapidly evolving and expanding into multimodal capabi
 import AI
 import OpenAI
 
-let client: any LLMRequestHandling = OpenAI.APIClient(apiKey: "YOUR_KEY")
+let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
 
 let systemPrompt = "You are a VisionExpertGPT. You will receive an image. Your job is to list all the items in the image and write a one-sentence poem about each item. Make sure your poems are creative, capturing the essence of each item in an evocative and imaginative way."
 
@@ -217,7 +217,7 @@ For instance, consider we are building a personal journal app. With the DALLE-3 
 import AI
 import OpenAI
 
-let client: any LLMRequestHandling = OpenAI.APIClient(apiKey: "YOUR_KEY")
+let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
 
 // user's journal entry for today. 
 // Note that the imagePrompt should be less than 4000 characters. 
@@ -246,7 +246,7 @@ Just simply provide any text and the model will return an embedding (an array of
 import AI
 import OpenAI
 
-let client: any LLMRequestHandling = OpenAI.APIClient(apiKey: "YOUR_KEY")
+let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
 
 // supported models (Only OpenAI Embeddings Models are supported)
 let smallTextEmbeddingsModel = OpenAI.Model.embedding(.text_embedding_3_small)

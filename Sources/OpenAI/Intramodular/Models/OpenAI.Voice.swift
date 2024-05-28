@@ -5,7 +5,7 @@
 import NetworkKit
 import Swift
 
-extension OpenAI.APIClient {
+extension OpenAI.Client {
     public func createSpeech(
         model: OpenAI.Model,
         text: String,

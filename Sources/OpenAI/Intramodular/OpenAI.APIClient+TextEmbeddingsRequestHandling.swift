@@ -5,7 +5,7 @@
 import CoreMI
 import CorePersistence
 
-extension OpenAI.APIClient: TextEmbeddingsRequestHandling {
+extension OpenAI.Client: TextEmbeddingsRequestHandling {
     public func fulfill(
         _ request: TextEmbeddingsRequest
     ) async throws -> TextEmbeddings {
