@@ -33,7 +33,7 @@ extension ElevenLabs {
 }
 
 extension ElevenLabs.Client {
-    public func availableVoices() async throws -> [Voice] {
+    public func availableVoices() async throws -> [ElevenLabs.Voice] {
         let request = HTTPRequest(url: URL(string: "\(apiSpecification)/v1/voices")!)
             .method(.get)
             .header("xi-api-key", configuration.apiKey)
@@ -55,7 +55,7 @@ extension ElevenLabs.Client {
         for text: String,
         voiceID: String,
         voiceSettings: [String: JSON]? = nil,
-        model: ElevenLabs.Client.Model
+        model: ElevenLabs.Model
     ) async throws -> Data {
         let request = try HTTPRequest(url: URL(string: "\(apiSpecification.host)/v1/text-to-speech/\(voiceID)")!)
             .method(.post)
@@ -89,7 +89,7 @@ extension ElevenLabs.Client {
         voiceWithName name: String,
         description: String,
         fileURL: URL
-    ) async throws -> Voice.ID {
+    ) async throws -> ElevenLabs.Voice.ID {
         let boundary = UUID().uuidString
         
         var request = try URLRequest(url: URL(string: "\(apiSpecification.host)/v1/voices/add").unwrap())
@@ -149,7 +149,7 @@ extension ElevenLabs.Client {
     }
     
     public func edit(
-        voice: Voice.ID,
+        voice: ElevenLabs.Voice.ID,
         name: String,
         description: String,
         fileURL: URL
@@ -193,7 +193,7 @@ extension ElevenLabs.Client {
     }
     
     public func delete(
-        voice: Voice.ID
+        voice: ElevenLabs.Voice.ID
     ) async throws {
         let url = try URL(string: "\(apiSpecification.host)/v1/voices/\(voice.rawValue)").unwrap()
         
