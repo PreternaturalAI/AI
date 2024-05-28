@@ -10,7 +10,7 @@ import LargeLanguageModels
 import NetworkKit
 import Swallow
 
-extension Groq: _TaskDependenciesExporting {
+extension Groq.Client: _TaskDependenciesExporting {
     public var _exportedTaskDependencies: Dependencies {
         var result = Dependencies()
         
@@ -20,7 +20,7 @@ extension Groq: _TaskDependenciesExporting {
     }
 }
 
-extension Groq: LLMRequestHandling {
+extension Groq.Client: LLMRequestHandling {
     public var _availableModels: [_MLModelIdentifier]? {
         Groq.Model.allCases.map({ $0.__conversion() })
     }
