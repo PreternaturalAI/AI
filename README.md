@@ -98,9 +98,9 @@ import Mistral
 // OpenAI / GPT
 let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
 // Anthropic / Claude
-let client: any LLMRequestHandling  = Anthropic(apiKey: "YOUR_KEY")
+let client: any LLMRequestHandling  = Anthropic.Client(apiKey: "YOUR_KEY")
 // Mistral
-let client: any LLMRequestHandling = Mistral(apiKey: "YOUR_KEY")
+let client: any LLMRequestHandling = Mistral.Client(apiKey: "YOUR_KEY")
 ```
 
 You can now use `client` as an interface to an LLM as provided by the underlying provider.
