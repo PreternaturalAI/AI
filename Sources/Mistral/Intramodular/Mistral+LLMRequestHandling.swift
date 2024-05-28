@@ -7,7 +7,7 @@ import LargeLanguageModels
 import NetworkKit
 import Swallow
 
-extension Mistral: _TaskDependenciesExporting {
+extension Mistral.Client: _TaskDependenciesExporting {
     public var _exportedTaskDependencies: Dependencies {
         var result = Dependencies()
         
@@ -17,7 +17,7 @@ extension Mistral: _TaskDependenciesExporting {
     }
 }
 
-extension Mistral: LLMRequestHandling {
+extension Mistral.Client: LLMRequestHandling {
     public var _availableModels: [_MLModelIdentifier]? {
         Mistral.Model.allCases.map({ $0.__conversion() })
     }
