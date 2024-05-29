@@ -76,12 +76,8 @@ extension ElevenLabs.Client {
         
         let response = try await HTTPSession.shared.data(for: request)
         
-        do {
-            try response.validate()
-        } catch {
-            response.data
-        }
-        
+        try response.validate()
+
         return response.data
     }
     
