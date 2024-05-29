@@ -6,9 +6,9 @@ import CorePersistence
 import Swift
 
 public struct _MIServiceTypeIdentifier: Codable, Hashable, RawRepresentable, Sendable {
-    public let rawValue: String
+    public let rawValue: HadeanIdentifier
     
-    public init(rawValue: String) {
+    public init(rawValue: HadeanIdentifier) {
         self.rawValue = rawValue
     }
 }

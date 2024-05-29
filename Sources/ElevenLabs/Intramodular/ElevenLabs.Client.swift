@@ -7,7 +7,6 @@ import CorePersistence
 import Foundation
 import NetworkKit
 
-
 extension ElevenLabs {
     @RuntimeDiscoverable
     public final class Client: ObservableObject {
