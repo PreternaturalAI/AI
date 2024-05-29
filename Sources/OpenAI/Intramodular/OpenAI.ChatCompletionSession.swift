@@ -12,13 +12,15 @@ import Swallow
 extension OpenAI {
     public final class ChatCompletionSession: Logging {
         private let queue = DispatchQueue()
-        private let client: APIClient
+        private let client: OpenAI.Client
         private let session: URLSession
         private let sessionDelegate = _URLSessionDataDelegate()
 
         private var eventSource: SSE.EventSource?
         
-        public init(client: APIClient) {
+        public init(
+            client: OpenAI.Client
+        ) {
             self.client = client
             
             session = URLSession(

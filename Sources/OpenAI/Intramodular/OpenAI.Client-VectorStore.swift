@@ -1,8 +1,5 @@
 //
-//  File.swift
-//  
-//
-//  Created by Natasha Murashev on 5/16/24.
+// Copyright (c) Vatsal Manot
 //
 
 import Foundation
@@ -10,7 +7,6 @@ import LargeLanguageModels
 import NetworkKit
 
 extension OpenAI.Client {
-    
     public func createVectorStore(
         name: String?,
         fileIDs: [String]?,

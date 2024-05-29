@@ -9,7 +9,7 @@ extension OpenAI {
     public final class AssistantSession: ObservableObject {
         private let taskQueue = ThrowingTaskQueue()
         
-        public let client: APIClient
+        public let client: OpenAI.Client
         public let assistantID: String
         
         @MainActor
@@ -37,7 +37,7 @@ extension OpenAI {
         
         @MainActor
         public init(
-            client: APIClient,
+            client: OpenAI.Client,
             assistantID: String,
             tools: [OpenAI.Tool]
         ) {

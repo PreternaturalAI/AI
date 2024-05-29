@@ -8,6 +8,8 @@ public var OPENAI_API_KEY: String {
     ""
 }
 
-public var client: OpenAI.APIClient {
-    OpenAI.APIClient(apiKey: OPENAI_API_KEY)
+public var client: OpenAI.Client {
+    let client = OpenAI.Client(apiKey: OPENAI_API_KEY)
+        
+    return client
 }
