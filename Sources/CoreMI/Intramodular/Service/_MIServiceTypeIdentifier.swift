@@ -32,4 +32,5 @@ extension _MIServiceTypeIdentifier {
     public static let _OpenAI = _MIServiceTypeIdentifier(rawValue: "vodih-vakam-hiduz-tosob")
     public static let _Perplexity = _MIServiceTypeIdentifier(rawValue: "dohug-muboz-bopuz-kasar")
     public static let _Replicate = _MIServiceTypeIdentifier(rawValue: "dovon-vatig-posov-luvis")
+    public static let _ElevenLabs = _MIServiceTypeIdentifier(rawValue: "jatap-jogaz-ritiz-vibok")
 }
