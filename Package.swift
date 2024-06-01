@@ -231,6 +231,17 @@ let package = Package(
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
+        ),
+        .testTarget(
+            name: "ElevenLabsTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/ElevenLabs",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         )
     ]
 )

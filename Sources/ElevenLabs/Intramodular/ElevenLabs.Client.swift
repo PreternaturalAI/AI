@@ -75,7 +75,7 @@ extension ElevenLabs.Client {
     public func speech(
         for text: String,
         voiceID: String,
-        voiceSettings: [String: JSON]? = nil,
+        voiceSettings: ElevenLabs.VoiceSettings,
         model: ElevenLabs.Model
     ) async throws -> Data {
         let request = try HTTPRequest(url: URL(string: "\(apiSpecification.host)/v1/text-to-speech/\(voiceID)")!)
@@ -86,10 +86,7 @@ extension ElevenLabs.Client {
             .jsonBody(
                 ElevenLabs.APISpecification.RequestBodies.SpeechRequest(
                     text: text,
-                    voiceSettings: voiceSettings ?? [
-                        "stability" : 0,
-                        "similarity_boost": 0
-                    ],
+                    voiceSettings: voiceSettings,
                     model: model
                 ),
                 keyEncodingStrategy: .convertToSnakeCase

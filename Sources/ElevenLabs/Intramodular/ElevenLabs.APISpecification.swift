@@ -23,12 +23,12 @@ extension ElevenLabs.APISpecification {
             }
             
             let text: String
-            let voiceSettings: [String: JSON]
+            let voiceSettings: ElevenLabs.VoiceSettings
             let model: ElevenLabs.Model
             
             init(
                 text: String,
-                voiceSettings: [String: JSON],
+                voiceSettings: ElevenLabs.VoiceSettings,
                 model: ElevenLabs.Model
             ) {
                 self.text = text
