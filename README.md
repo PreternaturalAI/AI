@@ -86,44 +86,71 @@ The definitive, open-source Swift framework for interfacing with generative AI.
 
 ## Initialize an AI Client
 
-Initialize an instance of `LLMRequestHandling` with an API provider of your choice. Here are some examples:
+Initialize an instance of an AI API provider of your choice. Here are some examples:
 
 ```swift
 import AI
 
+// OpenAI / GPT
 import OpenAI
+
+let client: OpenAI.Client = OpenAI.Client(apiKey: "YOUR_API_KEY")
+
+// Anthropic / Claude
 import Anthropic
+
+let client: Anthropic.Client  = Anthropic.Client(apiKey: "YOUR_API_KEY")
+
+// Mistral
 import Mistral
 
-// OpenAI / GPT
-let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
-// Anthropic / Claude
-let client: any LLMRequestHandling  = Anthropic.Client(apiKey: "YOUR_KEY")
-// Mistral
-let client: any LLMRequestHandling = Mistral.Client(apiKey: "YOUR_KEY")
+let client: Mistral.Client = Mistral.Client(apiKey: "YOUR_API_KEY")
+
+// Groq
+import Groq
+
+let client: Groq.Client = Groq.Client(apiKey: "YOUR_API_KEY")
+
+// ElevenLabs
+import ElevenLabs
+
+let client: ElevenLabs.Client = ElevenLabs.Client(apiKey: "YOUR_API_KEY")
+
 ```
 
-You can now use `client` as an interface to an LLM as provided by the underlying provider.
+You can now use `client` as an interface to the supported providers. 
 
 ## Supported Models
 Each AI Client supports multiple models. For example:
 
 ```swift
 // OpenAI Models
-let gpt_4o_Model = OpenAI.Model.gpt_4o
-let gpt_4_Model = OpenAI.Model.gpt_4
-let gpt_3_5_Model = OpenAI.Model.gpt_3_5
-let otherGPTModels = OpenAI.Model.chat(.gpt_OTHER_MODEL_OPTIONS)
+let gpt_4o_Model: OpenAI.Model = .gpt_4o
+let gpt_4_Model: OpenAI.Model = .gpt_4
+let gpt_3_5_Model: OpenAI.Model = .gpt_3_5
+let otherGPTModels: OpenAI.Model = .chat(.gpt_OTHER_MODEL_OPTIONS)
 
 // Anthropic Models
-let caludeHaikuModel = Anthropic.Model.haiku
-let claudeSonnetModel = Anthropic.Model.sonnet
-let claudeOpusModel = Anthropic.Model.opus
+let caludeHaikuModel: Anthropic.Model = .haiku
+let claudeSonnetModel: Anthropic.Model = .sonnet
+let claudeOpusModel: Anthropic.Model = .opus
 
 // Mistral Models
-let mistralTiny = Mistral.Model.mistral_tiny
-let mistralSmall = Mistral.Model.mistral_small
-let mistralMedium = Mistral.Model.mistral_medium
+let mistralTiny: Mistral.Model = .mistral_tiny
+let mistralSmall: Mistral.Model = Mistral.Model.mistral_small
+let mistralMedium: Mistral.Model = Mistral.Model.mistral_medium
+
+// Groq Models
+let gemma_7b: Groq.Model = .gemma_7b
+let llama3_8b: Groq.Model = .llama3_8b
+let llama3_70b: Groq.Model = .llama3_70b
+let mixtral_8x7b: Groq.Model = .mixtral_8x7b
+
+// ElevenLabs Models
+let multilingualV2: ElevenLabs.Model = .MultilingualV2
+let turboV2: ElevenLabs.Model = .TurboV2 // English
+let multilingualV1: ElevenLabs.Model = .MultilingualV1
+let englishV1: ElevenLabs.Model = .EnglishV1
 ```
 
 ## Completions
