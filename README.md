@@ -55,6 +55,7 @@ The definitive, open-source Swift framework for interfacing with generative AI.
 
 * [Import the framework](#import-the-framework)
 * [Initialize an AI Client](#initialize-an-ai-client)
+* [LLM Clients Abstraction](#llm-clients-abstraction)
 * [Supported Models](#supported-models)
 * [Completions](#completions)
   * [Basic Completions](#basic-completions)
@@ -119,6 +120,27 @@ let client: ElevenLabs.Client = ElevenLabs.Client(apiKey: "YOUR_API_KEY")
 ```
 
 You can now use `client` as an interface to the supported providers. 
+
+## LLM Clients Abstraction
+If you need to abstract out the LLM Client (for example, if you want to allow your user to choose between clients), simply initialize an instance of `LLMRequestHandling` with an LLM API provider of your choice. Here are some examples:
+
+```swift
+import AI
+import OpenAI
+import Anthropic
+import Mistral
+import Groq
+
+// OpenAI / GPT
+let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_API_KEY")
+// Anthropic / Claude
+let client: any LLMRequestHandling  = Anthropic.Client(apiKey: "YOUR_API_KEY")
+// Mistral
+let client: any LLMRequestHandling = Mistral.Client(apiKey: "YOUR_API_KEY")
+// Groq
+let client: any LLMRequestHandling = Groq.Client(apiKey: "YOUR_API_KEY")
+```
+You can now use `client` as an interface to an LLM as provided by the underlying provider.
 
 ## Supported Models
 Each AI Client supports multiple models. For example:
