@@ -146,11 +146,16 @@ You can now use `client` as an interface to an LLM as provided by the underlying
 Each AI Client supports multiple models. For example:
 
 ```swift
-// OpenAI Models
+// OpenAI GPT Models
 let gpt_4o_Model: OpenAI.Model = .gpt_4o
 let gpt_4_Model: OpenAI.Model = .gpt_4
 let gpt_3_5_Model: OpenAI.Model = .gpt_3_5
 let otherGPTModels: OpenAI.Model = .chat(.gpt_OTHER_MODEL_OPTIONS)
+
+// Open AI Text Embedding Models
+let smallTextEmbeddingsModel: OpenAI.Model = .embedding(.text_embedding_3_small)
+let largeTextEmbeddingsModel: OpenAI.Model = .embedding(.text_embedding_3_large)
+let adaTextEmbeddingsModel: OpenAI.Model = .embedding(.text_embedding_ada_002)
 
 // Anthropic Models
 let caludeHaikuModel: Anthropic.Model = .haiku
@@ -186,12 +191,15 @@ You can use the `LLMRequestHandling.complete(_:model:)` function to generate a c
 import AI
 import OpenAI
 
-let llm: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
+let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
+
+// the system prompt is optional
+let systemPrompt: PromptLiteral = "You are an extremely intelligent assistant."
+let userPrompt: PromptLiteral = "What is the meaning of life?"
 
 let messages: [AbstractLLM.ChatMessage] = [
-        // the system prompt is optional
-        .system(PromptLiteral("You are an extremely intelligent assistant.")),
-        .user(PromptLiteral("What is the meaning of life?"))
+        .system(systemPrompt),
+        .user(userPrompt)
   ]
 
 // Each of these is Optional
@@ -201,14 +209,13 @@ let parameters = AbstractLLM.ChatCompletionParameters(
     // controls the randomness of the result
     temperatureOrTopP: .temperature(1.2), 
     // stop sequences that indicate to the model when to stop generating further text
-    stops: ["\nUser:", "\nAssistant:"],
+    stops: ["END OF CHAPTER"],
     // check the function calling section below
     functions: nil)
 
-let model = OpenAI.Model.gpt_4o
+let model: OpenAI.Model = .gpt_4o
 
 do {
-
     let result: String = try await client.complete(
         messages,
         parameters: parameters,
@@ -230,9 +237,9 @@ import OpenAI
 
 let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
 
-let systemPrompt = "You are a VisionExpertGPT. You will receive an image. Your job is to list all the items in the image and write a one-sentence poem about each item. Make sure your poems are creative, capturing the essence of each item in an evocative and imaginative way."
+let systemPrompt: PromptLiteral = "You are a VisionExpertGPT. You will receive an image. Your job is to list all the items in the image and write a one-sentence poem about each item. Make sure your poems are creative, capturing the essence of each item in an evocative and imaginative way."
 
-let userPrompt = "List the items in this image and write a short one-sentence poem about each item. Only reply with the items and poems. NOTHING MORE."
+let userPrompt: PromptLiteral = "List the items in this image and write a short one-sentence poem about each item. Only reply with the items and poems. NOTHING MORE."
 
 // Image or NSImage is supported
 let imageLiteral = try PromptLiteral(image: imageInput) 
@@ -240,10 +247,10 @@ let imageLiteral = try PromptLiteral(image: imageInput)
 let model = OpenAI.Model.gpt_4o
   
 let messages: [AbstractLLM.ChatMessage] = [
-    .system(PromptLiteral(systemPrompt),
+    .system(systemPrompt),
     .user {
         .concatenate(separator: nil) {
-            PromptLiteral(userPrompt)
+            userPrompt
             imageLiteral
         }
     }]
@@ -298,13 +305,13 @@ import OpenAI
 let client: any LLMRequestHandling = OpenAI.Client(apiKey: "YOUR_KEY")
 
 // supported models (Only OpenAI Embeddings Models are supported)
-let smallTextEmbeddingsModel = OpenAI.Model.embedding(.text_embedding_3_small)
-let largeTextEmbeddingsModel = OpenAI.Model.embedding(.text_embedding_3_large)
-let adaTextEmbeddingsModel = OpenAI.Model.embedding(.text_embedding_ada_002)
+let smallTextEmbeddingsModel: OpenAI.Model = .embedding(.text_embedding_3_small)
+let largeTextEmbeddingsModel: OpenAI.Model = .embedding(.text_embedding_3_large)
+let adaTextEmbeddingsModel: OpenAI.Model = .embedding(.text_embedding_ada_002)
 
 let textInput = "Hello, Text Embeddings!"
 
-let textEmbeddingsModel = OpenAI.Model.embedding(.text_embedding_3_small)
+let textEmbeddingsModel: OpenAI.Model = .embedding(.text_embedding_3_small)
 
 let embeddings = try await LLMManager.client.textEmbeddings(
     for: [textInput],
