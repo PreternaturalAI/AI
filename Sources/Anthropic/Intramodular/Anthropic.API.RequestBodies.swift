@@ -7,7 +7,7 @@ import NetworkKit
 import Swallow
 
 extension Anthropic.API {
-    public enum RequestBodies: _StaticNamespaceType {
+    public enum RequestBodies: _StaticSwift.Namespace {
         
     }
 }

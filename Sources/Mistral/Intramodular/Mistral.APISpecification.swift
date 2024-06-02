@@ -112,11 +112,11 @@ extension Mistral.APISpecification {
 }
 
 extension Mistral.APISpecification {
-    public enum RequestBodies: _StaticNamespaceType {
+    public enum RequestBodies: _StaticSwift.Namespace {
         
     }
     
-    public enum ResponseBodies: _StaticNamespaceType {
+    public enum ResponseBodies: _StaticSwift.Namespace {
         
     }
 }

@@ -8,7 +8,7 @@ import LargeLanguageModels
 import NetworkKit
 import Swift
 
-public final class _OpenAI_Client: HTTPClient, _StaticNamespaceType {
+public final class _OpenAI_Client: HTTPClient, _StaticSwift.Namespace {
     public let interface: OpenAI.APISpecification
     public let session: HTTPSession
     

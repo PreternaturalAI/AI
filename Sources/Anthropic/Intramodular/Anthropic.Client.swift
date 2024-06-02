@@ -9,7 +9,7 @@ import SwiftDI
 
 extension Anthropic {
     @RuntimeDiscoverable
-    public final class Client: HTTPClient, PersistentlyRepresentableType, _StaticNamespaceType {
+    public final class Client: HTTPClient, PersistentlyRepresentableType, _StaticSwift.Namespace {
         public static var persistentTypeRepresentation: some IdentityRepresentation {
             _MIServiceTypeIdentifier._Anthropic
         }

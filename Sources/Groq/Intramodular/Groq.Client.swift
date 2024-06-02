@@ -13,7 +13,7 @@ import Swallow
 
 extension Groq {
     @RuntimeDiscoverable
-    public final class Client: HTTPClient, _StaticNamespaceType {
+    public final class Client: HTTPClient, _StaticSwift.Namespace {
         public static var persistentTypeRepresentation: some IdentityRepresentation {
             _MIServiceTypeIdentifier._Groq
         }
