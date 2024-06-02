@@ -61,6 +61,10 @@ The definitive, open-source Swift framework for interfacing with generative AI.
   * [Basic Completions](#basic-completions)
   * [Vision: Image-to-Text](#vision-image-to-text)
 * [DALLE-3 Image Generation](#dalle-3-image-generation)
+* [Audio](#audio)
+  * [Audio Transcription](#audio-transcription)
+  * [Audio Generation: OpenAI](#audio-generation-openai)
+  * [Audio Generation: ElevenLabs](#audio-generation-elevenlabs)
 * [Text Embeddings](#text-embeddings) 
 
 [Roadmap](#roadmap) \
@@ -290,6 +294,139 @@ let images = try await openAIClient.createImage(
 
 if let imageURL = images.first?.url {
     return URL(string: imageURL)
+}
+```
+
+## Audio
+Adding audio generation and transcription to mobile apps is becoming increasingly important as users grow more comfortable speaking directly to apps for responses or having their audio input transcribed efficiently. Preternatural enables seamless integration with these cutting-edge, continually improving AI technologies.
+
+### Audio Transcription
+[Whisper](https://openai.com/index/whisper/), created and open-sourced by OpenAI, is an Automatic Speech Recognition (ASR) system trained on 680,000 hours of mostly English audio content collected from the web. This makes Whisper particularly impressive at transcribing audio with background noise and varying accents compared to its predecessors. Another notable feature is its ability to transcribe audio with correct sentence punctuation.
+
+```swift
+import OpenAI
+
+let client = OpenAI.Client(apiKey: "YOUR_API_KEY")
+
+// supported formats include flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm
+let audioFile = URL(string: "YOUR_AUDIO_FILE_URL_PATH")
+
+// Optional - great for including correct spelling of audio-specific keywords
+// For example, here we provide the correct spelling for company-spefic words in an earnings call
+let prompt = "ZyntriQix, Digique Plus, CynapseFive, VortiQore V8, EchoNix Array, OrbitalLink Seven, DigiFractal Matrix, PULSE, RAPT, B.R.I.C.K., Q.U.A.R.T.Z., F.L.I.N.T."
+
+// Optional - Supplying the input language in ISO-639-1 format will improve accuracy and latency.
+// While Whisper supports 98 languages, note that languages other than English have a high error rate, so test thoroughly
+let language: LargeLanguageModels.ISO639LanguageCode = .en
+
+// The sampling temperature, between 0 and 1.
+// Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+// If set to 0, the model will use log probability to automatically increase the temperature until certain thresholds are hit.
+let temperature = 0
+
+// Optional - Setting Timestamp Granularities provides the time stamps for roughly every sentence in the transcription. 
+// note that the timestampGranularties is an array of granularities, so you can inlcude both .segment and .word granularities, or simple one of them
+let timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity] = [.segment, .word]
+
+do {
+    let transcription = try await openAIClient.createTranscription(
+        audioFile: audioFile, 
+        prompt: prompt,
+        language: language,
+        temperature: temperature,
+        timestampGranularities: timestampGranularities
+    )
+    
+    let fullTranscription = transcription.text
+    let segements = transcription.segments
+    let words = transcription.words
+} catch {
+    print(error)
+}
+```
+
+### Audio Generation: OpenAI
+Preternatural offers a simple Text-to-Speech (TTS) integration with OpenAI: 
+
+```swift
+import OpenAI
+
+let client = OpenAI.Client(apiKey: "YOUR_API_KEY")
+
+// OpenAI offers two Text-to-Speech (TTS) Models at this time.
+// The tts-1 is  the latest text to speech model, optimized for speed and is ideal to use for real-time text to speech use cases. 
+let tts_1: OpenAI.Model.Speech = .tts_1
+// The tts-1-hd is the latest text to speech model, optimized for quality.
+let tts_1_hd: OpenAI.Model.Speech = .tts_1_hd
+
+// text for audio generation
+let textInput = "In a quiet, unassuming village nestled deep in a lush, verdant valley, young Elara leads a simple life, dreaming of adventure beyond the horizon. Her village is filled with ancient folklore and tales of mystical relics, but none capture her imagination like the legend of the Enchanted Amulet—a powerful artifact said to grant its bearer the ability to control time."
+
+// OpenAI currently offers 6 voice options
+// Listen to voice samples are on their website: https://platform.openai.com/docs/guides/text-to-speech
+let alloy: OpenAI.Speech.Voice = .alloy
+let echo: OpenAI.Speech.Voice = .echo
+let fable: OpenAI.Speech.Voice = .fable
+let onyx: OpenAI.Speech.Voice = .onyx
+let nova: OpenAI.Speech.Voice = .nova
+let shimmer: OpenAI.Speech.Voice = .shimmer
+
+// The OpenAI API offers the ability to adjust the speed of the audio.
+// Speed between 0.25 and 4.0 could be selected, with 1.0 as the default. 
+let speed = 1.0
+
+let speech: OpenAI.Speech = try await openAIClient.createSpeech(
+    model: tts_1,
+    text: textInput,
+    voice: alloy,
+    speed: speed)
+
+let audioData = speech.data
+```
+
+### Audio Generation: ElevenLabs
+[ElevenLabs](https://elevenlabs.io/) is a voice AI research & deployment company providing the ability to generate speech in hundreds of new and existing voices in 29 languages. They also allow voice cloning - provide only 1 minute of audio and you could generate a new voice! 
+
+```swift
+import ElevenLabs
+
+let client = ElevenLabs.Client(apiKey: "YOUR_API_KEY")
+
+// ElevenLabs offers Multilingual and English-specific models
+// More details on their website here: https://elevenlabs.io/docs/speech-synthesis/models
+let model: ElevenLabs.Model = .MultilingualV2
+
+// Select the voice you would like for the audio on the ElevenLabs website
+// Note that you first have to add voices from the Voice Lab, then check your Voices for the ID
+let voiceID = "4v7HtLWqY9rpQ7Cg2GT4"
+
+let textInput = "In a quiet, unassuming village nestled deep in a lush, verdant valley, young Elara leads a simple life, dreaming of adventure beyond the horizon. Her village is filled with ancient folklore and tales of mystical relics, but none capture her imagination like the legend of the Enchanted Amulet—a powerful artifact said to grant its bearer the ability to control time."
+
+// Optional - if you set any or all settings to nil, default values will be used
+let voiceSettings: ElevenLabs.VoiceSettings = .init(
+    // Increasing stability will make the voice more consistent between re-generations, but it can also make it sounds a bit monotone. On longer text fragments it is recommended to lower this value. 
+    // this is a double between 0 (more variable) and 1 (more stable)
+    stability: 0.5,
+    // Increasing the Similarity Boost setting enhances the overall voice clarity and targets speaker similarity. 
+    // this is a double between 0 (Low) and 1 (High)
+    similarityBoost: 0.75,
+    // High values are recommended if the style of the speech should be exaggerated compared to the selected voice. Higher values can lead to more instability in the generated speech. Setting this to 0 will greatly increase generation speed and is the default setting.
+    // this is a double between 0 (Low) and 1 (High)
+    styleExaggeration: 0.0,
+    // Boost the similarity of the synthesized speech and the voice at the cost of some generation speed.
+    speakerBoost: true)
+
+do {
+    let speech = try await client.speech(
+        for: textInput,
+        voiceID: voiceID,
+        voiceSettings: voiceSettings,
+        model: model
+    )
+    
+    return speech
+} catch {
+    print(error)
 }
 ```
 
