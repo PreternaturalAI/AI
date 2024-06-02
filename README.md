@@ -62,7 +62,7 @@ The definitive, open-source Swift framework for interfacing with generative AI.
   * [Vision: Image-to-Text](#vision-image-to-text)
 * [DALLE-3 Image Generation](#dalle-3-image-generation)
 * [Audio](#audio)
-  * [Audio Transcription](#audio-transcription)
+  * [Audio Transcription: Whisper](#audio-transcription-whisper)
   * [Audio Generation: OpenAI](#audio-generation-openai)
   * [Audio Generation: ElevenLabs](#audio-generation-elevenlabs)
 * [Text Embeddings](#text-embeddings) 
@@ -300,7 +300,7 @@ if let imageURL = images.first?.url {
 ## Audio
 Adding audio generation and transcription to mobile apps is becoming increasingly important as users grow more comfortable speaking directly to apps for responses or having their audio input transcribed efficiently. Preternatural enables seamless integration with these cutting-edge, continually improving AI technologies.
 
-### Audio Transcription
+### Audio Transcription: Whisper
 [Whisper](https://openai.com/index/whisper/), created and open-sourced by OpenAI, is an Automatic Speech Recognition (ASR) system trained on 680,000 hours of mostly English audio content collected from the web. This makes Whisper particularly impressive at transcribing audio with background noise and varying accents compared to its predecessors. Another notable feature is its ability to transcribe audio with correct sentence punctuation.
 
 ```swift
