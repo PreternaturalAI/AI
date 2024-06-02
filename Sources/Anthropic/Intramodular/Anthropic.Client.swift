@@ -33,6 +33,14 @@ extension Anthropic {
     }
 }
 
+extension Anthropic.Client: CustomStringConvertible {
+    public var description: String {
+        let apiKey: String = self.interface.configuration.apiKey == nil ? "<nil>" : "<some>"
+        
+        return "Anthropic.Client(apiKey: \(apiKey))"
+    }
+}
+
 extension Anthropic.Client: _TaskDependenciesExporting {
     public var _exportedTaskDependencies: Dependencies {
         var result = Dependencies()

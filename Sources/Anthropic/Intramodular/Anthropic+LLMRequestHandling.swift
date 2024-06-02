@@ -130,7 +130,6 @@ extension Anthropic.Client: LLMRequestHandling {
             .header(.contentType(.json))
             .header("X-API-Key", interface.configuration.apiKey.unwrap().value)
             .header("anthropic-version", "2023-06-01")
-            .header("anthropic-beta", "tools-2024-04-04")
         
         let sessionConfiguration = URLSessionConfiguration.default
         
@@ -147,32 +146,52 @@ extension Anthropic.Client: LLMRequestHandling {
                 let (bytes, _) = try await session.bytes(for: URLRequest(request))
                 
                 for try await line in bytes.lines {
-                    if line == "event: message_start" {
-                        continue
-                    } else if line.starts(with: "data: ") {
-                        let rest = line.index(line.startIndex, offsetBy: 6)
-                        let data: Data = line[rest...].data(using: .utf8)!
-                        
-                        let decoder = JSONDecoder(keyDecodingStrategy: .convertFromSnakeCase)
-                        let response = try decoder.decode(Anthropic.API.ResponseBodies.CreateMessageStream.self, from: data)
-                        
-                        if
-                            let content: Anthropic.API.ResponseBodies.CreateMessageStream.Delta = response.delta,
-                            let text: String = content.text
-                        {
-                            let message = AbstractLLM.ChatMessage(
-                                role: .assistant,
-                                content: PromptLiteral(stringLiteral: text)
-                            )
+                    func handleError() throws {
+                        if let error = try? JSON(jsonString: line, using: .convertFromSnakeCase).decode(Anthropic.API.ResponseBodies.ErrorWrapper.self) {
+                            continuation.yield(with: .failure(error.error))
                             
-                            continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
+                            continuation.finish()
+                            
+                            throw error
                         } else {
-                            if let error = try? JSON(jsonString: line, using: .convertFromSnakeCase).decode(Anthropic.API.ResponseBodies.ErrorWrapper.self) {
-                                continuation.yield(with: .failure(error.error))
-                                
-                                return continuation.finish()
-                            }
+                            runtimeIssue(.unexpected)
+                            
+                            throw Never.Reason.unexpected
                         }
+                    }
+                    
+                    print(line)
+                    
+                    do {
+                        if line == "event: message_start" {
+                            continue
+                        } else if line.starts(with: "data: ") {
+                            let rest = line.index(line.startIndex, offsetBy: 6)
+                            let data: Data = line[rest...].data(using: .utf8)!
+                            
+                            let decoder = JSONDecoder(keyDecodingStrategy: .convertFromSnakeCase)
+                            let response = try decoder.decode(Anthropic.API.ResponseBodies.CreateMessageStream.self, from: data)
+                            
+                            if
+                                let content: Anthropic.API.ResponseBodies.CreateMessageStream.Delta = response.delta,
+                                let text: String = content.text
+                            {
+                                let message = AbstractLLM.ChatMessage(
+                                    role: .assistant,
+                                    content: PromptLiteral(stringLiteral: text)
+                                )
+                                
+                                continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
+                            } else {
+                                try handleError()
+                            }
+                        } else {
+                            try handleError()
+                        }
+                    } catch {
+                        runtimeIssue(error)
+                        
+                        try handleError()
                     }
                 }
                 

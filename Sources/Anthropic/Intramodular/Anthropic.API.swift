@@ -128,7 +128,7 @@ extension Anthropic.API {
 
 extension Anthropic.API {    
     public enum ResponseBodies: _StaticNamespaceType {
-        struct ErrorWrapper: Codable, Hashable, Sendable {
+        struct ErrorWrapper: Codable, Swift.Error, Hashable, Sendable {
             enum _Type: String, Codable, Hashable, Sendable {
                 case type = "error"
             }
@@ -138,7 +138,9 @@ extension Anthropic.API {
             
             public struct Error: Swift.Error, Codable, Hashable, Sendable {
                 public enum ErrorType: String, Codable, Hashable, Sendable {
+                    case invalidAPIKey = "authentication_error"
                     case invalidRequestError = "invalid_request_error"
+                    case overloaded = "overloaded_error"
                 }
                 
                 public let type: ErrorType
