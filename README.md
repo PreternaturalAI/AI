@@ -60,6 +60,7 @@ The definitive, open-source Swift framework for interfacing with generative AI.
 * [Completions](#completions)
   * [Basic Completions](#basic-completions)
   * [Vision: Image-to-Text](#vision-image-to-text)
+* [Function Calling](#function-calling)
 * [DALLE-3 Image Generation](#dalle-3-image-generation)
 * [Audio](#audio)
   * [Audio Transcription: Whisper](#audio-transcription-whisper)
@@ -266,6 +267,107 @@ let result: String = try await client.complete(
 )
 
 return result
+```
+
+## Function Calling
+Adding function calling in your completion requests allows your app to receive a structured JSON response from an LLM, ensuring a consistent data format. 
+
+To demonstrate how powerful Function Calling can be, we will use the example of using a screenshot organizing app. The PhotoKit API already has a functionality to identify only photos that are screenshots. So just getting the user’s screenshots and putting them into an app is something that is simple enough to accomplish. 
+
+But now, with the power of LLMs, we can easily organize the screenshots by categories, provide a summary for each one, and add search functionality across all screenshots by having clear detailed text descriptions. In the future, we can add additional information, such as extracting any text or links included in the screenshot to make it easily actionable, and even extract specific elements from the screenshot. 
+
+To make a function call, we must first image an function in our app that would save the screenshot. What parameters does it need? These function parameters is what the LLM Function Calling tool will return for us so that we can call our function:
+
+```swift
+// Note that since LLMs are trained mainly on web APIs, we have to image web API function names for better results
+func addScreenshotAnalysisToDB(
+    with title: String,
+    summary: String,
+    description: String,
+    category: String
+) {
+    // this function does not exist in our app, but we pretend that it does for the purpose of using function calling to get a JSON response of the function parameters.
+}
+```
+
+```swift
+import OpenAI
+import CorePersistence
+
+let client = OpenAI.Client(apiKey: "YOUR_API_KEY")
+
+let systemPrompt: PromptLiteral = """
+You are an AI trained to analyze mobile screenshots and provide detailed information about them. Your task is to examine a given screenshot and generate the following details:
+
+* Title: Create a concise title (3-5 words) that accurately represents the content of the screenshot.
+* Summary: Write a brief, one-sentence summary providing an overview of what is depicted in the screenshot.
+* Description: Compose a comprehensive description that elaborates on the contents of the screenshot. Include key details and keywords to facilitate easy searching.
+* Category: Assign a single-word tag or category that best describes the screenshot. Examples include 'music', 'art', 'movie', 'fashion', etc. Avoid using 'app' as a category since all items are app-related.
+
+Make sure your responses are clear, specific, and relevant to the content of the screenshot.
+"""
+
+let userPrompt: PromptLiteral = "Please analyze the attached screenshot and provide the following details: (1) a concise title (3-5 words) that describes the screenshot, (2) a brief one-sentence summary of the screenshot content, (3) a detailed description including key details and keywords for easy searching, and (4) a single-word category that best describes the screenshot (e.g., music, art, movie, fashion)."
+
+let screenshotImageLiteral = try PromptLiteral(image: screenshot)
+
+let messages: [AbstractLLM.ChatMessage] = [
+    .system(systemPrompt),
+    .user {
+        .concatenate(separator: nil) {
+            userPrompt
+            screenshotImageLiteral
+        }
+    }]
+ 
+struct AddScreenshotFunctionParameters: Codable, Hashable, Sendable {
+    let title: String
+    let summary: String
+    let description: String
+    let category: String
+}
+
+do {
+    let screenshotFunctionParameterSchema: JSONSchema = try JSONSchema(
+        type: AddScreenshotFunctionParameters.self,
+        description: "Detailed information about a mobile screenshot for organizational purposes.",
+        propertyDescriptions: [
+            "title": "A concise title (3-5 words) that accurately represents the content of the screenshot.",
+            "summary": "A brief, one-sentence summary providing an overview of what is depicted in the screenshot.",
+            "description": "A comprehensive description that elaborates on the contents of the screenshot. Include key details and keywords to facilitate easy searching.",
+            "category": "A single-word tag or category that best describes the screenshot. Examples include: 'music', 'art', 'movie', 'fashion', etc. Avoid using 'app' as a category since all items are app-related."
+        ],
+        required: true
+    )
+    
+    let screenshotAnalysisProperties: [String : JSONSchema] = ["screenshot_analysis_parameters" : screenshotFunctionParameterSchema]
+    
+    let addScreenshotAnalysisFunction = AbstractLLM.ChatFunctionDefinition(
+        name: "add_screenshot_analysis_to_db",
+        context: "Adds analysis of a mobile screenshot to the database",
+        parameters: JSONSchema(
+            type: .object,
+            description: "Screenshot Analysis",
+            properties: screenshotAnalysisProperties
+        )
+    )
+
+    let functionCall: AbstractLLM.ChatFunctionCall = try await client.complete(
+        messages,
+        functions: [addScreenshotAnalysisFunction],
+        as: .functionCall
+    )
+    
+    struct ScreenshotAnalysisResult: Codable, Hashable, Sendable {
+        let screenshotAnalysisParameters: AddScreenshotFunctionParameters
+    }
+
+    let result = try functionCall.decode(ScreenshotAnalysisResult.self)
+    print(result.screenshotAnalysisParameters)
+    
+} catch {
+    print(error)
+}
 ```
 
 ## DALLE-3 Image Generation
