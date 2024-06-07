@@ -12,8 +12,8 @@ import CorePersistence
 
 public enum _module {
     public static func initialize() {
-        _UniversalTypeRegistry.register(TextEmbeddings.self)
-        _UniversalTypeRegistry.register(TextEmbeddings.Element.self)
+        _HadeanSwiftTypeRegistry.register(TextEmbeddings.self)
+        _HadeanSwiftTypeRegistry.register(TextEmbeddings.Element.self)
     }
 }
 
