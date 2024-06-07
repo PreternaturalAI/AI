@@ -2,17 +2,19 @@
 // Copyright (c) Vatsal Manot
 //
 
-import Swift
+import CorePersistence
+import Swallow
 
 /// An account used to authenticate access to a service.
-public protocol _MIServiceAccount {
+public protocol _MIServiceAccount: Hashable {
     var serviceIdentifier: _MIServiceTypeIdentifier { get }
     var credential: (any _MIServiceCredential)? { get }
 }
 
 public struct _AnyMIServiceAccount: _MIServiceAccount {
     public let serviceIdentifier: _MIServiceTypeIdentifier
-    public let credential: (any _MIServiceCredential)?
+    @_HashableExistential
+    public var credential: (any _MIServiceCredential)?
     
     public init(
         serviceIdentifier: _MIServiceTypeIdentifier,

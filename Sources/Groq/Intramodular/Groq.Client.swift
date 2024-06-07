@@ -39,10 +39,11 @@ extension Groq.Client: _MIService {
     public convenience init(
         account: (any _MIServiceAccount)?
     ) async throws {
-        let account = try account.unwrap()
-        
-        guard account.serviceIdentifier == _MIServiceTypeIdentifier._Groq else {
-            throw _MIServiceError.serviceTypeIncompatible(account.serviceIdentifier)
+        let account: any _MIServiceAccount = try account.unwrap()
+        let serviceIdentifier: _MIServiceTypeIdentifier = account.serviceIdentifier
+
+        guard serviceIdentifier == _MIServiceTypeIdentifier._Groq else {
+            throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
         }
         
         guard let credential = account.credential as? _MIServiceAPIKeyCredential else {

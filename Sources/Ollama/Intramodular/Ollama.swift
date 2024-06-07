@@ -89,10 +89,11 @@ extension _MIService where Self == Ollama {
     public init(
         account: (any _MIServiceAccount)?
     ) async throws {
-        let account = try account.unwrap()
+        let account: any _MIServiceAccount = try account.unwrap()
+        let serviceIdentifier: _MIServiceTypeIdentifier = account.serviceIdentifier
         
-        guard account.serviceIdentifier == _MIServiceTypeIdentifier._Ollama else {
-            throw _MIServiceError.serviceTypeIncompatible(account.serviceIdentifier)
+        guard serviceIdentifier == _MIServiceTypeIdentifier._Ollama else {
+            throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
         }
         
         self = .shared
