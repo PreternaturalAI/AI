@@ -16,7 +16,9 @@ extension OpenAI {
         case incorrectAPIKeyProvided
         case rateLimitExceeded
         case invalidContentType
+        case maximumContentSizeLimitExceeded
         case badRequest(API.Request.Error)
+        case unknown(message: String)
         case runtime(AnyError)
         
         public var traits: ErrorTraits {
@@ -289,8 +291,10 @@ extension OpenAI.APISpecification {
                             throw Error.incorrectAPIKeyProvided
                         } else if _error.message.contains("Invalid content type.") {
                             throw Error.invalidContentType
+                        } else if _error.message.contains("Maximum content size limit") {
+                            throw Error.maximumContentSizeLimitExceeded
                         } else {
-                            runtimeIssue(_error)
+                            throw Error.unknown(message: _error.message)
                         }
                     }
                     
