@@ -129,9 +129,9 @@ extension AbstractLLM.ChatMessage {
     }
     
     public static func system(
-        _ content: () -> PromptLiteral
-    ) -> Self {
-        Self(role: .system, content: content())
+        _ content: () throws -> PromptLiteral
+    ) rethrows -> Self {
+        Self(role: .system, content: try content())
     }
     
     public static func system(
@@ -141,9 +141,9 @@ extension AbstractLLM.ChatMessage {
     }
     
     public static func system(
-        _ content: () -> String
-    ) -> Self {
-        Self(role: .system, content: content())
+        _ content: () throws -> String
+    ) rethrows -> Self {
+        Self(role: .system, content: try content())
     }
 }
 
@@ -155,9 +155,9 @@ extension AbstractLLM.ChatMessage {
     }
     
     public static func assistant(
-        _ content: () -> PromptLiteral
-    ) -> Self {
-        Self(role: .assistant, content: content())
+        _ content: () throws -> PromptLiteral
+    ) rethrows -> Self {
+        Self(role: .assistant, content: try content())
     }
     
     public static func assistant(
@@ -167,9 +167,9 @@ extension AbstractLLM.ChatMessage {
     }
     
     public static func assistant(
-        _ content: () -> String
-    ) -> Self {
-        Self(role: .assistant, content: content())
+        _ content: () throws -> String
+    ) rethrows -> Self {
+        Self(role: .assistant, content: try content())
     }
     
     /// A function call.
@@ -230,9 +230,9 @@ extension AbstractLLM.ChatMessage {
     }
     
     public static func user(
-        _ content: () -> PromptLiteral
-    ) -> Self {
-        Self(role: .user, content: content())
+        _ content: () throws -> PromptLiteral
+    ) rethrows -> Self {
+        Self(role: .user, content: try content())
     }
     
     public static func user(
@@ -242,8 +242,8 @@ extension AbstractLLM.ChatMessage {
     }
     
     public static func user(
-        _ content: () -> String
-    ) -> Self {
-        Self(role: .user, content: content())
+        _ content: () throws -> String
+    ) rethrows -> Self {
+        Self(role: .user, content: try content())
     }
 }

@@ -15,11 +15,7 @@ public struct _MLModelIdentifier: Hashable, Sendable {
     public let provider: _MLModelIdentifier.Provider
     public let name: String
     public let revision: String?
-    
-    public var description: String {
-        provider.rawValue + "/" + name
-    }
-    
+        
     public init(
         provider: _MLModelIdentifier.Provider,
         name: String,
@@ -145,6 +141,12 @@ extension _MLModelIdentifier: Codable {
         } else {
             try container.encode(description)
         }
+    }
+}
+
+extension _MLModelIdentifier: CustomStringConvertible {
+    public var description: String {
+        provider.rawValue + "/" + name
     }
 }
 
