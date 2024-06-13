@@ -8,7 +8,7 @@ import Merge
 import Swallow
 
 /// A unified interface to a large language model.
-public protocol LLMRequestHandling: _MIRequestHandling {    
+public protocol LLMRequestHandling: CoreMI.RequestHandling {    
     /// Complete a given prompt.
     func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
@@ -55,7 +55,7 @@ extension MIContext {
 // MARK: - Implementation
 
 extension LLMRequestHandling {
-    public var _availableModels: [_MLModelIdentifier]? {
+    public var _availableModels: [ModelIdentifier]? {
         return nil
     }
     
@@ -85,7 +85,7 @@ extension LLMRequestHandling {
     
     public func complete(
         prompt: AbstractLLM.ChatPrompt,
-        model: some _MLModelIdentifierConvertible
+        model: some ModelIdentifierConvertible
     ) async throws -> AbstractLLM.ChatCompletion {
         var prompt = prompt
         
@@ -99,7 +99,7 @@ extension LLMRequestHandling {
 
     public func complete(
         _ messages: [AbstractLLM.ChatMessage],
-        model: some _MLModelIdentifierConvertible
+        model: some ModelIdentifierConvertible
     ) async throws -> AbstractLLM.ChatCompletion {
         let prompt = AbstractLLM.ChatPrompt(
             messages: messages,
@@ -114,7 +114,7 @@ extension LLMRequestHandling {
     
     public func complete(
         messages: [AbstractLLM.ChatMessage],
-        model: some _MLModelIdentifierConvertible
+        model: some ModelIdentifierConvertible
     ) async throws -> AbstractLLM.ChatCompletion {
         let prompt = AbstractLLM.ChatPrompt(
             messages: messages,
@@ -149,7 +149,7 @@ extension LLMRequestHandling {
     
     public func complete(
         _ message: AbstractLLM.ChatMessage,
-        model: some _MLModelIdentifierConvertible
+        model: some ModelIdentifierConvertible
     ) async throws -> AbstractLLM.ChatCompletion {
         try await complete([message], model: model)
     }

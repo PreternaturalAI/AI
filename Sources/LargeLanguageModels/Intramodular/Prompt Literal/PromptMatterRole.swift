@@ -143,12 +143,12 @@ extension PromptLiteralContext {
     @HadeanIdentifier("sugam-bokij-kutur-narim")
     @RuntimeDiscoverable
     struct ModelIdentifierKey: PromptLiteralContextKey {
-        typealias Value = _MLModelIdentifierScope?
+        typealias Value = ModelIdentifierScope?
         
-        static var defaultValue: _MLModelIdentifierScope? = nil
+        static var defaultValue: ModelIdentifierScope? = nil
     }
     
-    public var modelIdentifier: _MLModelIdentifierScope? {
+    public var modelIdentifier: ModelIdentifierScope? {
         get {
             self[ModelIdentifierKey.self]
         } set {

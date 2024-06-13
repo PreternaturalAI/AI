@@ -19,10 +19,10 @@ public struct TextEmbeddings: Codable, HadeanIdentifiable, Hashable, Sendable {
     }
     
     public let data: [SingleTextEmbedding]
-    public let model: _MLModelIdentifier
+    public let model: ModelIdentifier
     
     public init(
-        model: _MLModelIdentifier,
+        model: ModelIdentifier,
         data: [SingleTextEmbedding]
     ) {
         self.model = model

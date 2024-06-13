@@ -19,7 +19,7 @@ extension Ollama: _TaskDependenciesExporting {
 }
 
 extension Ollama: LLMRequestHandling {
-    public var _availableModels: [_MLModelIdentifier]? {
+    public var _availableModels: [ModelIdentifier]? {
         self._allKnownModels?.compactMap({ try? $0.__conversion() })
     }
 
@@ -152,7 +152,7 @@ extension Ollama: LLMRequestHandling {
     func _model(
         for prompt: AbstractLLM.ChatPrompt
     ) async throws -> Ollama.Model {
-        let identifier: _MLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue
+        let identifier: ModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue
         
         return try await models.unwrap().firstAndOnly(where: { try $0.__conversion() == identifier }).unwrap()
     }
@@ -160,7 +160,7 @@ extension Ollama: LLMRequestHandling {
     func _model(
         for prompt: AbstractLLM.TextPrompt
     ) async throws -> Ollama.Model {
-        let identifier: _MLModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue
+        let identifier: ModelIdentifier = try prompt.context.get(\.modelIdentifier).unwrap()._oneValue
         
         return try await models.unwrap().firstAndOnly(where: { try $0.__conversion() == identifier }).unwrap()
     }

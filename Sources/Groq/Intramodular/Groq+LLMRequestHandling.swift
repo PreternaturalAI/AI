@@ -18,7 +18,7 @@ extension Groq.Client: _TaskDependenciesExporting {
 }
 
 extension Groq.Client: LLMRequestHandling {
-    public var _availableModels: [_MLModelIdentifier]? {
+    public var _availableModels: [ModelIdentifier]? {
         Groq.Model.allCases.map({ $0.__conversion() })
     }
 

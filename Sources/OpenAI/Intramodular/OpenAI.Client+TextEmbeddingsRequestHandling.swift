@@ -16,7 +16,7 @@ extension OpenAI.Client: TextEmbeddingsRequestHandling {
             )
         }
         
-        let model: _MLModelIdentifier = request.model ?? _MLModelIdentifier(from: OpenAI.Model.Embedding.ada)
+        let model: ModelIdentifier = request.model ?? ModelIdentifier(from: OpenAI.Model.Embedding.ada)
         let embeddingModel = try OpenAI.Model.Embedding(rawValue: model.name).unwrap()
         
         let embeddings = try await createEmbeddings(

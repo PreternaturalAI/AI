@@ -88,8 +88,8 @@ extension Anthropic.Model: CustomDebugStringConvertible {
     }
 }
 
-extension Anthropic.Model: _MLModelIdentifierRepresentable {
-    public init(from model: _MLModelIdentifier) throws {
+extension Anthropic.Model: ModelIdentifierRepresentable {
+    public init(from model: ModelIdentifier) throws {
         guard model.provider == .anthropic else {
             throw _PlaceholderError()
         }
@@ -97,8 +97,8 @@ extension Anthropic.Model: _MLModelIdentifierRepresentable {
         self = try Self(rawValue: model.name).unwrap()
     }
     
-    public func __conversion() -> _MLModelIdentifier {
-        _MLModelIdentifier(
+    public func __conversion() -> ModelIdentifier {
+        ModelIdentifier(
             provider: .anthropic,
             name: rawValue,
             revision: nil

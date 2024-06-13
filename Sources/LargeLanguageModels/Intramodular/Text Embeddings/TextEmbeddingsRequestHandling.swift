@@ -9,7 +9,7 @@ import Swallow
 
 /// A type that provides text embeddings for text.
 public protocol TextEmbeddingsRequestHandling {
-    var _availableModels: [_MLModelIdentifier]? { get }
+    var _availableModels: [ModelIdentifier]? { get }
     
     func fulfill(
         _ request: TextEmbeddingsRequest
@@ -30,7 +30,7 @@ extension MIContext {
 // MARK: - Extensions
 
 extension TextEmbeddingsRequestHandling {
-    public var _availableModels: [_MLModelIdentifier]? {
+    public var _availableModels: [ModelIdentifier]? {
         nil
     }
     
@@ -49,7 +49,7 @@ extension TextEmbeddingsRequestHandling {
     /// Produce an array of text embeddings for the given array of strings.
     public func textEmbeddings(
         for strings: [String],
-        model: some _MLModelIdentifierConvertible
+        model: some ModelIdentifierConvertible
     ) async throws -> TextEmbeddings {
         try await self.fulfill(
             TextEmbeddingsRequest(
@@ -88,7 +88,7 @@ extension TextEmbeddingsRequestHandling {
     
     public func textEmbedding(
         for string: String,
-        model: some _MLModelIdentifierConvertible
+        model: some ModelIdentifierConvertible
     ) async throws -> _RawTextEmbedding {
         try await self.fulfill(
             TextEmbeddingsRequest(model: model.__conversion(), strings: [string])
@@ -111,11 +111,11 @@ public enum TextEmbeddingsRequestHandlingError: Error {
 /// A request to generate text embeddings.
 public struct TextEmbeddingsRequest {
     public let input: [String]
-    public let model: _MLModelIdentifier?
+    public let model: ModelIdentifier?
     
     public init(
         input: [String],
-        model: _MLModelIdentifier?
+        model: ModelIdentifier?
     ) {
         self.input = input
         self.model = model
@@ -143,7 +143,7 @@ extension TextEmbeddingsRequest {
     }
     
     public init(
-        model: _MLModelIdentifier?,
+        model: ModelIdentifier?,
         strings: [String]
     ) {
         self.input = strings

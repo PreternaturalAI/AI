@@ -15,7 +15,7 @@ public struct _PreternaturalDotFile: Codable, Hashable, Sendable {
     public var TEST_OPENAI_KEY: String?
     
     public func key(
-        for provider: _MLModelIdentifier.Provider
+        for provider: ModelIdentifier.Provider
     ) throws -> String? {
         switch provider {
             case .anthropic:
@@ -29,7 +29,7 @@ public struct _PreternaturalDotFile: Codable, Hashable, Sendable {
     
     @MainActor(unsafe)
     public static func key(
-        for provider: _MLModelIdentifier.Provider
+        for provider: ModelIdentifier.Provider
     ) throws -> String? {
         assert(ProcessInfo.processInfo._isRunningWithinXCTest)
         

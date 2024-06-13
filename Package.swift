@@ -16,7 +16,7 @@ let package = Package(
                 "LargeLanguageModels",
                 "Anthropic",
                 "ElevenLabs",
-                "Gemini",
+                "_Gemini",
                 "Groq",
                 "Mistral",
                 "Ollama",
@@ -89,7 +89,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Gemini",
+            name: "_Gemini",
             dependencies: [
                 "CorePersistence",
                 "CoreMI",
@@ -98,7 +98,7 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/Gemini"
+            path: "Sources/_Gemini"
         ),
         .target(
             name: "Mistral",
@@ -176,8 +176,8 @@ let package = Package(
                 "Anthropic",
                 "ElevenLabs",
                 "Mistral",
+                "_Gemini",
                 "Groq",
-                "Gemini",
                 "Ollama",
                 "OpenAI",
                 "Perplexity",

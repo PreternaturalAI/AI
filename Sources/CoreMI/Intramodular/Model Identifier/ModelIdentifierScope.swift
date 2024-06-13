@@ -7,11 +7,11 @@ import Swallow
 
 @HadeanIdentifier("rajil-pagik-tibah-jibod")
 @RuntimeDiscoverable
-public enum _MLModelIdentifierScope: Codable, Hashable, Sendable {
-    case one(_MLModelIdentifier)
-    case choiceOf(Set<_MLModelIdentifier>)
+public enum ModelIdentifierScope: Codable, Hashable, Sendable {
+    case one(ModelIdentifier)
+    case choiceOf(Set<ModelIdentifier>)
     
-    public var _oneValue: _MLModelIdentifier {
+    public var _oneValue: ModelIdentifier {
         get throws {
             guard case .one(let value) = self else {
                 if case .choiceOf(let set) = self, let value = try set.toCollectionOfOne().first {
@@ -25,11 +25,11 @@ public enum _MLModelIdentifierScope: Codable, Hashable, Sendable {
         }
     }
     
-    public init(_ identifier: _MLModelIdentifier) {
+    public init(_ identifier: ModelIdentifier) {
         self = .one(identifier)
     }
     
-    public func `as`<T: _MLModelIdentifierRepresentable>(
+    public func `as`<T: ModelIdentifierRepresentable>(
         _ type: T.Type
     ) throws -> T {
         switch self {

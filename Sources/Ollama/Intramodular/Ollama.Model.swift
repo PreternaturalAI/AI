@@ -42,9 +42,9 @@ extension Ollama.Model: CustomStringConvertible {
     }
 }
 
-extension Ollama.Model: _MLModelIdentifierConvertible {
-    public func __conversion() throws -> _MLModelIdentifier {
-        _MLModelIdentifier(
+extension Ollama.Model: ModelIdentifierConvertible {
+    public func __conversion() throws -> ModelIdentifier {
+        ModelIdentifier(
             provider: ._Ollama,
             name: self.name,
             revision: nil

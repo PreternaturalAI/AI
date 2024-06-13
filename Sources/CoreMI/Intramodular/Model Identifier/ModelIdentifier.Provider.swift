@@ -6,10 +6,7 @@ import CorePersistence
 import Foundation
 import Swallow
 
-@available(*, deprecated, renamed: "_MLModelIdentifier.Provider")
-public typealias MLModelProvider = _MLModelIdentifier.Provider
-
-extension _MLModelIdentifier {
+extension ModelIdentifier {
     @HadeanIdentifier("bagog-golir-jisap-mozop")
     @RuntimeDiscoverable
     public enum Provider: Hashable, Sendable {
@@ -42,7 +39,7 @@ extension _MLModelIdentifier {
 
 // MARK: - Conformances
 
-extension _MLModelIdentifier.Provider: CustomStringConvertible {
+extension ModelIdentifier.Provider: CustomStringConvertible {
     public var description: String {
         switch self {
             case ._Anthropic:
@@ -63,7 +60,7 @@ extension _MLModelIdentifier.Provider: CustomStringConvertible {
     }
 }
 
-extension _MLModelIdentifier.Provider: RawRepresentable {
+extension ModelIdentifier.Provider: RawRepresentable {
     public var rawValue: String {
         switch self {
             case ._Anthropic:
@@ -101,7 +98,7 @@ extension _MLModelIdentifier.Provider: RawRepresentable {
     }
 }
 
-extension _MLModelIdentifier.Provider: Codable {
+extension ModelIdentifier.Provider: Codable {
     public init(from decoder: Decoder) throws {
         try self.init(rawValue: String(from: decoder))
     }

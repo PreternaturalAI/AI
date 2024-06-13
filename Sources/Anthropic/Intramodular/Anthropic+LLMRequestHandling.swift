@@ -8,7 +8,7 @@ import NetworkKit
 import Swallow
 
 extension Anthropic.Client: LLMRequestHandling {
-    public var _availableModels: [_MLModelIdentifier]? {
+    public var _availableModels: [ModelIdentifier]? {
         Anthropic.Model.allCases.map({ $0.__conversion() })
     }
     
@@ -249,11 +249,11 @@ extension Anthropic.Client: LLMRequestHandling {
         for prompt: any AbstractLLM.Prompt
     ) async throws -> Anthropic.Model {
         do {
-            guard let modelIdentifierScope: _MLModelIdentifierScope = prompt.context.get(\.modelIdentifier) else {
+            guard let modelIdentifierScope: ModelIdentifierScope = prompt.context.get(\.modelIdentifier) else {
                 return Anthropic.Model.claude_3_opus_20240229
             }
             
-            let modelIdentifier: _MLModelIdentifier = try modelIdentifierScope._oneValue
+            let modelIdentifier: ModelIdentifier = try modelIdentifierScope._oneValue
             
             return try Anthropic.Model(from: modelIdentifier)
         } catch {

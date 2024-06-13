@@ -24,7 +24,7 @@ public final class NLEmbeddingProvider: TextEmbeddingsRequestHandling {
         self.language = language
     }
     
-    public var model: _MLModelIdentifier {
+    public var model: ModelIdentifier {
         get throws {
             let languageName = try NLLanguage.Name(language).unwrap().rawValue
             
@@ -48,7 +48,7 @@ public final class NLEmbeddingProvider: TextEmbeddingsRequestHandling {
     public func fulfill(
         _ request: TextEmbeddingsRequest
     ) async throws -> TextEmbeddings {
-        let model: _MLModelIdentifier = try self.model
+        let model: ModelIdentifier = try self.model
         let embedding: NLEmbedding
         
         if let requestedModel = request.model {
@@ -77,7 +77,7 @@ public final class NLEmbeddingProvider: TextEmbeddingsRequestHandling {
     }
 }
 
-extension _MLModelIdentifier {
+extension ModelIdentifier {
     /// The on-device word-embedding model provided by Apple.
     public static func wordEmbedding(
         _ language: NLLanguage.Name

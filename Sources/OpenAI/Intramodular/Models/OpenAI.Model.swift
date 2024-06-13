@@ -371,12 +371,12 @@ extension OpenAI.Model: Codable {
     }
 }
 
-extension OpenAI.Model: _MLModelIdentifierRepresentable {
+extension OpenAI.Model: ModelIdentifierRepresentable {
     private enum _DecodingError: Error {
         case invalidModelProvider
     }
     
-    public init(from model: _MLModelIdentifier) throws {
+    public init(from model: ModelIdentifier) throws {
         guard model.provider == .openAI else {
             throw _DecodingError.invalidModelProvider
         }
@@ -384,8 +384,8 @@ extension OpenAI.Model: _MLModelIdentifierRepresentable {
         self = try Self(rawValue: model.name).unwrap()
     }
     
-    public func __conversion() -> _MLModelIdentifier {
-        _MLModelIdentifier(
+    public func __conversion() -> ModelIdentifier {
+        ModelIdentifier(
             provider: .openAI,
             name: rawValue,
             revision: nil

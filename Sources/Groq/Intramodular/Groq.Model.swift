@@ -40,8 +40,8 @@ extension Groq.Model: CustomStringConvertible {
     }
 }
 
-extension Groq.Model: _MLModelIdentifierRepresentable {
-    public init(from identifier: _MLModelIdentifier) throws {
+extension Groq.Model: ModelIdentifierRepresentable {
+    public init(from identifier: ModelIdentifier) throws {
         guard identifier.provider == ._Groq, identifier.revision == nil else {
             throw Never.Reason.illegal
         }
@@ -53,8 +53,8 @@ extension Groq.Model: _MLModelIdentifierRepresentable {
         self = model
     }
     
-    public func __conversion() -> _MLModelIdentifier {
-        _MLModelIdentifier(
+    public func __conversion() -> ModelIdentifier {
+        ModelIdentifier(
             provider: ._Groq,
             name: rawValue,
             revision: nil

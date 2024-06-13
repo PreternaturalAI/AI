@@ -34,8 +34,8 @@ extension Mistral.Model: CustomStringConvertible {
     }
 }
 
-extension Mistral.Model: _MLModelIdentifierRepresentable {
-    public init(from identifier: _MLModelIdentifier) throws {
+extension Mistral.Model: ModelIdentifierRepresentable {
+    public init(from identifier: ModelIdentifier) throws {
         guard identifier.provider == ._Mistral, identifier.revision == nil else {
             throw Never.Reason.illegal
         }
@@ -47,8 +47,8 @@ extension Mistral.Model: _MLModelIdentifierRepresentable {
         self = model
     }
     
-    public func __conversion() -> _MLModelIdentifier {
-        _MLModelIdentifier(
+    public func __conversion() -> ModelIdentifier {
+        ModelIdentifier(
             provider: ._Mistral,
             name: rawValue,
             revision: nil

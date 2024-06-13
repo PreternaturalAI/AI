@@ -25,7 +25,7 @@ extension OpenAI.Client: LLMRequestHandling {
         false
     }
     
-    public var _availableModels: [_MLModelIdentifier]? {
+    public var _availableModels: [ModelIdentifier]? {
         OpenAI.Model.allCases.map({ $0.__conversion() })
     }
     
@@ -308,7 +308,7 @@ extension OpenAI.Client {
 
 // MARK: - Auxiliary
 
-extension _MLModelIdentifier {
+extension ModelIdentifier {
     public init(
         from model: OpenAI.Model.InstructGPT
     ) {

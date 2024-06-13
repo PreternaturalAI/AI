@@ -6,7 +6,7 @@ import Foundation
 import Merge
 import Swift
 
-public protocol TTSRequest: _MIRequest {
+public protocol TTSRequest: CoreMI.Request {
     
 }
 

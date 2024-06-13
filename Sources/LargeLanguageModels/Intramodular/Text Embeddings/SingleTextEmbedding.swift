@@ -10,12 +10,12 @@ import Swallow
 public struct SingleTextEmbedding: Hashable, Sendable {
     public let text: String
     public let embedding: _RawTextEmbedding
-    public let model: _MLModelIdentifier
+    public let model: ModelIdentifier
     
     public init(
         text: String,
         embedding: _RawTextEmbedding,
-        model: _MLModelIdentifier
+        model: ModelIdentifier
     ) {
         self.text = text
         self.embedding = embedding
@@ -25,7 +25,7 @@ public struct SingleTextEmbedding: Hashable, Sendable {
     public init(
         text: String,
         embedding: _RawTextEmbedding.RawValue,
-        model: _MLModelIdentifier
+        model: ModelIdentifier
     ) {
         self.init(
             text: text,

@@ -101,12 +101,12 @@ extension PromptContextValues {
     @HadeanIdentifier("vipan-nutar-gutah-limin")
     @RuntimeDiscoverable
     package struct ModelIdentifierKey: PromptContextKey {
-        package typealias Value = _MLModelIdentifierScope?
+        package typealias Value = ModelIdentifierScope?
         
-        package static var defaultValue: _MLModelIdentifierScope? = nil
+        package static var defaultValue: ModelIdentifierScope? = nil
     }
     
-    public var modelIdentifier: _MLModelIdentifierScope? {
+    public var modelIdentifier: ModelIdentifierScope? {
         get {
             self[ModelIdentifierKey.self]
         } set {
@@ -114,7 +114,7 @@ extension PromptContextValues {
         }
     }
     
-    public mutating func assign<T: _MLModelIdentifierConvertible>(modelIdentifier: T) {
+    public mutating func assign<T: ModelIdentifierConvertible>(modelIdentifier: T) {
         self.modelIdentifier = .one(try! modelIdentifier.__conversion())
     }
 }

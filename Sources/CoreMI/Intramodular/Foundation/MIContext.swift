@@ -8,9 +8,9 @@ import SwiftDI
 
 /// A context for machine intelligence.
 public final class MIContext: ObservableObject {
-    @Published public var handlers: [any _MIRequestHandling] = []
+    @Published public var handlers: [any CoreMI.RequestHandling] = []
     
-    public func add<T: _MIRequestHandling>(_ x: T) {
+    public func add<T: CoreMI.RequestHandling>(_ x: T) {
         handlers.append(x)
     }
     
@@ -19,10 +19,12 @@ public final class MIContext: ObservableObject {
     }
 }
 
-public protocol _MIRequest {
+public enum CoreMI {
+    public protocol Request {
+        
+    }
     
-}
-
-public protocol _MIResult {
-    
+    public protocol RequestResult {
+        
+    }
 }
