@@ -158,13 +158,15 @@ extension AbstractLLM.ChatCompletionStream {
 
 extension AbstractLLM {
     public final class _AsyncStreamToChatCompletionStreamAdaptor: __AbstractLLM_ChatCompletionStreamProtocol {
-        private let subject = PassthroughSubject<Event, Swift.Error>()
+        public let objectWillChange = _AsyncObjectWillChangePublisher()
+        
+        private let _subject = PassthroughSubject<Event, Swift.Error>()
+        private let _messageSubject = PassthroughSubject<AbstractLLM.ChatMessage, Error>()
+
         private let makeBase: () async throws -> AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error>
         
         private var base: AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error>?
-        
-        private let _messageSubject = PassthroughSubject<AbstractLLM.ChatMessage, Error>()
-        
+            
         @Published private var _message: AbstractLLM.ChatMessage?
         @Published private var _state: State = .waiting
         
@@ -230,10 +232,14 @@ extension AbstractLLM {
                 if stopReason == nil {
                     _setCompleted()
                     
-                    subject.send(.stop)
+                    _subject.send(.stop)
+                    _messageSubject.send(completion: .finished)
                 }
             } catch {
                 _state = .failed(AnyError(erasing: error))
+                
+                _subject.send(completion: .failure(error))
+                _messageSubject.send(completion: .failure(error))
             }
             
             return true
@@ -244,16 +250,16 @@ extension AbstractLLM {
                 return
             }
             
-            subject.send(.stop)
-            subject.send(completion: .finished)
-            
+            _subject.send(.stop)
+            _subject.send(completion: .finished)
+            _messageSubject.send(completion: .finished)
+
             _state = .completed
         }
         
-        @MainActor
         private func _receive(
             event: AbstractLLM.ChatCompletionStream.Event
-        ) throws {
+        ) async throws {
             switch event {
                 case .completion(let completion):
                     if let partial = try AbstractLLM.ChatMessage.Partial.coalesce([currentMessage, completion.message]) {
@@ -263,10 +269,11 @@ extension AbstractLLM {
                             message.id = .init(erasing: UUID())
                         }
                         
-                        self._message = message
-                        
-                        currentMessage = AbstractLLM.ChatMessage.Partial(whole: message)
-                        
+                        await self.objectWillChange.run {
+                            self._message = message
+                            self.currentMessage = AbstractLLM.ChatMessage.Partial(whole: message)
+                        }
+                                                
                         _messageSubject.send(message)
                     } else {
                         assert(self._message == nil && completion.message == nil)
@@ -274,7 +281,7 @@ extension AbstractLLM {
                     
                     stopReason = completion.stopReason
                     
-                    subject.send(event)
+                    _subject.send(event)
                     
                     if stopReason != nil {
                         _setCompleted()
@@ -293,7 +300,7 @@ extension AbstractLLM {
                 return
             }
             
-            subject
+            _subject
                 .prefixUntil(after: { $0 == .stop })
                 .receive(subscriber: subscriber)
             
