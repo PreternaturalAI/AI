@@ -233,6 +233,17 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: "PerplexityTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/Perplexity",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
             name: "ElevenLabsTests",
             dependencies: [
                 "AI",

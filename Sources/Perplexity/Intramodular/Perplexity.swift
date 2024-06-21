@@ -4,6 +4,6 @@
 
 import Swift
 
-public enum Mistral {
+public enum Perplexity {
     
 }
