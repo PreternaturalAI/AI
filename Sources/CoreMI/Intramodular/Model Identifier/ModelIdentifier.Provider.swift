@@ -16,6 +16,7 @@ extension ModelIdentifier {
         case _Groq
         case _Ollama
         case _OpenAI
+        case _Gemini
         
         case unknown(String)
         
@@ -33,6 +34,10 @@ extension ModelIdentifier {
         
         public static var groq: Self {
             Self._Groq
+        }
+        
+        public static var gemini: Self {
+            Self._Gemini
         }
     }
 }
@@ -54,6 +59,8 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
                 return "Ollama"
             case ._OpenAI:
                 return "OpenAI"
+            case ._Gemini:
+                return "Gemini"
             case .unknown(let provider):
                 return provider
         }
@@ -75,6 +82,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 return "ollama"
             case ._OpenAI:
                 return "openai"
+            case ._Gemini:
+                return "gemini"
             case .unknown(let provider):
                 return provider
         }
@@ -92,6 +101,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 self = ._Groq
             case Self._OpenAI.rawValue:
                 self = ._OpenAI
+            case Self._Gemini.rawValue:
+                self = ._Gemini
             default:
                 self = .unknown(rawValue)
         }
