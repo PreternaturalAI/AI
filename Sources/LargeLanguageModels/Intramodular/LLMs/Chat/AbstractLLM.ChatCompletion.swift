@@ -41,6 +41,18 @@ extension AbstractLLM {
             self.message = message
             self.stopReason = stopReason
         }
+        
+        public init(
+            prompt: AbstractLLM.ChatPrompt,
+            message: AbstractLLM.ChatMessage,
+            stopReason: StopReason? = nil
+        ) {
+            self.init(
+                prompt: prompt.messages,
+                message: message,
+                stopReason: stopReason
+            )
+        }
     }
 }
 

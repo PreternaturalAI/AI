@@ -28,6 +28,13 @@ extension LLMRequestHandling {
     }
     
     public func complete(
+        _ userMessage: PromptLiteral,
+        model: some ModelIdentifierConvertible
+    ) async throws -> AbstractLLM.ChatMessage {
+        try await complete([AbstractLLM.ChatMessage.user(userMessage)], model: model).message
+    }
+    
+    public func complete(
         _ messages: [AbstractLLM.ChatMessage],
         parameters: AbstractLLM.ChatCompletionParameters,
         model: some ModelIdentifierConvertible
