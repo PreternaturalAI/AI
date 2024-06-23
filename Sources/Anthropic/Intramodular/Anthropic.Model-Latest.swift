@@ -10,7 +10,7 @@ extension Anthropic.Model {
     }
     
     public static var sonnet: Self {
-        .claude_3_sonnet_20240229
+        .claude_3_5_sonnet_20240620
     }
     
     public static var opus: Self {
