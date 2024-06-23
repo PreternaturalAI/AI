@@ -12,6 +12,7 @@ extension Anthropic {
         public typealias API = Anthropic.API
         
         case apiKeyMissing
+        case imageTooLarge
         case invalidAPIKey
         case rateLimitExceeded
         case badRequest(API.Request.Error)
@@ -103,6 +104,10 @@ extension Anthropic.API {
                             throw Error.apiKeyMissing
                         } else if error.message.contains("invalid x-api-key") {
                             throw Error.invalidAPIKey
+                        }
+                        
+                        if error.message.contains("too many total text bytes") {
+                            throw Error.imageTooLarge
                         }
                     }
                     
