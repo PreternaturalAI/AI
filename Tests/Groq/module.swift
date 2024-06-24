@@ -1,14 +1,11 @@
 //
-//  File.swift
-//  
-//
-//  Created by Natasha Murashev on 5/26/24.
+// Copyright (c) Vatsal Manot
 //
 
 import Groq
 
 public var GROQ_API_KEY: String {
-    "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"
+    ""
 }
 
 public var client: Groq.Client {

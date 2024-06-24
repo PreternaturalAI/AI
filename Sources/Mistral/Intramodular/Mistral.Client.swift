@@ -50,3 +50,11 @@ extension Mistral.Client: _MIService {
         self.init(apiKey: credential.apiKey)
     }
 }
+
+extension Mistral.Client {
+    public func createEmbeddings(
+        for input: [String]
+    ) async throws -> Mistral.Embeddings {
+        try await run(\.createEmbeddings, with: .init(input: input))
+    }
+}

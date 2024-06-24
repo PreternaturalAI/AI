@@ -41,6 +41,10 @@ extension Mistral {
         @POST
         @Path("chat/completions")
         public var chatCompletions = Endpoint<RequestBodies.ChatCompletions, ResponseBodies.ChatCompletion, Void>()
+        
+        @POST
+        @Path("embeddings")
+        public var createEmbeddings = Endpoint<RequestBodies.CreateEmbedding, Mistral.Embeddings, Void>()
     }
 }
 
@@ -121,24 +125,6 @@ extension Mistral.APISpecification {
     }
 }
 
-extension Mistral {
-    public struct ChatMessage: Codable, Hashable, Sendable {
-        public enum Role: String, Codable, Hashable, Sendable {
-            case system
-            case user
-            case assistant
-        }
-        
-        public var role: Role
-        public var content: String
-        
-        public init(role: Role, content: String) {
-            self.role = role
-            self.content = content
-        }
-    }
-}
-
 extension Mistral.APISpecification.RequestBodies {
     /// https://docs.mistral.ai/api#operation/createChatCompletion
     public struct ChatCompletions: Codable, Hashable, Sendable {
@@ -152,31 +138,18 @@ extension Mistral.APISpecification.RequestBodies {
     }
 }
 
-extension Mistral.APISpecification.ResponseBodies {
-    public struct ChatCompletion: Codable, Hashable, Sendable {
-        public struct Choice: Codable, Hashable, Sendable {
-            public enum FinishReason: String, Codable, Hashable, Sendable {
-                case stop = "stop"
-                case length = "length"
-                case modelLength = "model_length"
-            }
-
-            public let index: Int
-            public let message: Mistral.ChatMessage
-            public let finishReason: FinishReason
-        }
+extension Mistral.APISpecification.RequestBodies {
+    public struct CreateEmbedding: Codable, Hashable {
+        public let model: Mistral.Model
+        public let input: [String]
+        public let encodingFormat: String
         
-        public struct Usage: Codable, Hashable, Sendable {
-            public let promptTokens: Int
-            public let completionTokens: Int
-            public let totalTokens: Int
+        init(input: [String]) {
+            self.model = Mistral.Model.mistral_embed
+            self.input = input
+            self.encodingFormat = "Float"
         }
-        
-        public var id: String
-        public var object: String
-        public var created: Date
-        public var model: String
-        public var choices: [Choice]
-        public let usage: Usage
     }
 }
+
+

@@ -12,15 +12,18 @@ extension Mistral {
         case mistral_tiny = "mistral-tiny"
         case mistral_small = "mistral-small"
         case mistral_medium = "mistral-medium"
+        case mistral_embed = "mistral-embed"
         
         public var name: String {
             switch self {
-                case .mistral_tiny:
-                    return "Tiny"
-                case .mistral_small:
-                    return "Small"
-                case .mistral_medium:
-                    return "Medium"
+            case .mistral_tiny:
+                return "Tiny"
+            case .mistral_small:
+                return "Small"
+            case .mistral_medium:
+                return "Medium"
+            case .mistral_embed:
+                return "Embed"
             }
         }
     }

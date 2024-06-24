@@ -211,6 +211,17 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: "MistralTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/Mistral",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
             name: "OpenAITests",
             dependencies: [
                 "AI",

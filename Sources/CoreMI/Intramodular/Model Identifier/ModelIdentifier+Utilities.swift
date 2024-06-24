@@ -49,6 +49,7 @@ extension ModelIdentifier {
         case mistral_tiny = "mistral-tiny"
         case mistral_small = "mistral-small"
         case mistral_medium = "mistral-medium"
+        case mistral_embed = "mistral-embed"
     }
     
     private enum _OpenAI_Model: String, CaseIterable {
