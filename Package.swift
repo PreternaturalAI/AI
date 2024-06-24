@@ -169,6 +169,18 @@ let package = Package(
             ]
         ),
         .target(
+            name: "Jina",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/Jina"
+        ),
+        .target(
             name: "AI",
             dependencies: [
                 "CoreMI",
@@ -182,6 +194,7 @@ let package = Package(
                 "OpenAI",
                 "Perplexity",
                 "Swallow",
+                "Jina"
             ],
             path: "Sources/AI",
             swiftSettings: [
@@ -261,6 +274,17 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/ElevenLabs",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "JinaTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/Jina",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]

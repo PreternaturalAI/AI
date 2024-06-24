@@ -33,4 +33,5 @@ extension _MIServiceTypeIdentifier {
     public static let _Perplexity = _MIServiceTypeIdentifier(rawValue: "dohug-muboz-bopuz-kasar")
     public static let _Replicate = _MIServiceTypeIdentifier(rawValue: "dovon-vatig-posov-luvis")
     public static let _ElevenLabs = _MIServiceTypeIdentifier(rawValue: "jatap-jogaz-ritiz-vibok")
+    public static let _Jina = _MIServiceTypeIdentifier(rawValue: "bozud-sipup-natin-bizif")
 }

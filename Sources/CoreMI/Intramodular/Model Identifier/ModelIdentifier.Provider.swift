@@ -18,6 +18,7 @@ extension ModelIdentifier {
         case _OpenAI
         case _Gemini
         case _Perplexity
+        case _Jina
         
         case unknown(String)
         
@@ -44,6 +45,10 @@ extension ModelIdentifier {
         public static var perplexity: Self {
             Self._Perplexity
         }
+        
+        public static var jina: Self {
+            Self._Jina
+        }
     }
 }
 
@@ -67,6 +72,8 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
             case ._Gemini:
                 return "Gemini"
             case ._Perplexity:
+                return "Perplexity"
+            case ._Jina:
                 return "Perplexity"
             case .unknown(let provider):
                 return provider
@@ -93,6 +100,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 return "gemini"
             case ._Perplexity:
                 return "perplexity"
+            case ._Jina:
+                return "jina"
             case .unknown(let provider):
                 return provider
         }
@@ -114,6 +123,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 self = ._Gemini
             case Self._Perplexity.rawValue:
                 self = ._Perplexity
+            case Self._Jina.rawValue:
+                self = ._Jina
             default:
                 self = .unknown(rawValue)
         }
