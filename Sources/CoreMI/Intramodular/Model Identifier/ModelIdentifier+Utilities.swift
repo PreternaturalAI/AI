@@ -41,6 +41,7 @@ extension ModelIdentifier {
         case claude_v1_3 = "claude-v1.3"
         case claude_3_haiku_20240307 = "claude-3-haiku-20240307"
         case claude_3_sonnet_20240229 = "claude-3-sonnet-20240229"
+        case claude_3_5_sonnet_20240620 = "claude-3-5-sonnet-20240620"
         case claude_3_opus_20240229 = "claude-3-opus-20240229"
     }
     
