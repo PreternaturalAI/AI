@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension Jina {
+extension VoyageAI {
     public struct Embeddings: Codable, Hashable, Sendable {
         public let model: String
         public let object: String
@@ -13,21 +13,16 @@ extension Jina {
     }
 }
 
-extension Jina.Embeddings {
+extension VoyageAI.Embeddings {
     public struct EmbeddingData: Codable, Hashable, Sendable {
         public let object: String
-        public let embedding: Embedding
+        public let embedding: [Float]
         public let index: Int
-    }
-    
-    public struct Embedding: Codable, Hashable, Sendable {
-        public let float: [Float]
     }
 }
 
-extension Jina.Embeddings {
+extension VoyageAI.Embeddings {
     public struct Usage: Codable, Hashable, Sendable {
-        public let promptTokens: Int
         public let totalTokens: Int
     }
 }

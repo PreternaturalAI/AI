@@ -8,11 +8,11 @@ import Merge
 import NetworkKit
 import Swallow
 
-extension Jina {
+extension VoyageAI {
     @RuntimeDiscoverable
     public final class Client: HTTPClient, _StaticSwift.Namespace {
         public static var persistentTypeRepresentation: some IdentityRepresentation {
-            _MIServiceTypeIdentifier._Jina
+            _MIServiceTypeIdentifier._VoyageAI
         }
         
         public let interface: APISpecification
@@ -32,14 +32,14 @@ extension Jina {
     }
 }
 
-extension Jina.Client: _MIService {
+extension VoyageAI.Client: _MIService {
     public convenience init(
         account: (any _MIServiceAccount)?
     ) async throws {
         let account: any _MIServiceAccount = try account.unwrap()
         let serviceIdentifier: _MIServiceTypeIdentifier = account.serviceIdentifier
 
-        guard serviceIdentifier == _MIServiceTypeIdentifier._Jina else {
+        guard serviceIdentifier == _MIServiceTypeIdentifier._VoyageAI else {
             throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
         }
         
@@ -51,12 +51,23 @@ extension Jina.Client: _MIService {
     }
 }
 
-extension Jina.Client {
+extension VoyageAI.Client {
     public func createEmbeddings(
-        for model: Jina.Model,
+        for model: VoyageAI.Model,
         input: [String],
-        encodingFormat: [Jina.APISpecification.RequestBodies.CreateEmbedding.EncodingFormat]?
-    ) async throws -> Jina.Embeddings {
-        try await run(\.createEmbeddings, with: .init(model: model, input: input, encodingFormat: encodingFormat))
+        inputType: String? = nil,
+        truncation: Bool = true,
+        encodingFormat: VoyageAI.APISpecification.RequestBodies.CreateEmbedding.EncodingFormat? = nil
+    ) async throws -> VoyageAI.Embeddings {
+        try await run(
+            \.createEmbeddings,
+             with: .init(
+                model: model,
+                input: input,
+                inputType: inputType,
+                truncation: truncation,
+                encodingFormat: encodingFormat
+             )
+        )
     }
 }

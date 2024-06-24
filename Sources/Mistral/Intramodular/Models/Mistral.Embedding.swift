@@ -24,11 +24,6 @@ extension Mistral.Embeddings {
 
 extension Mistral.Embeddings {
     public struct Usage: Codable, Hashable, Sendable {
-        public enum Role: String, Codable, Hashable, Sendable {
-            case promptTokens = "prompt_tokens"
-            case totalTokens = "total_tokens"
-        }
-        
         public let promptTokens: Int
         public let totalTokens: Int
     }

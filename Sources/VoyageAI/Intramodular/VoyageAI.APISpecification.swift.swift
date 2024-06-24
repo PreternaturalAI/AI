@@ -6,9 +6,9 @@ import NetworkKit
 import FoundationX
 import Swallow
 
-extension Jina {
+extension VoyageAI {
     public enum APIError: APIErrorProtocol {
-        public typealias API = Jina.APISpecification
+        public typealias API = VoyageAI.APISpecification
         
         case apiKeyMissing
         case incorrectAPIKeyProvided
@@ -31,7 +31,7 @@ extension Jina {
         public let configuration: Configuration
         
         public var host: URL  {
-            URL(string: "https://api.jina.ai/v1/")!
+            URL(string: "https://api.voyageai.com/v1/")!
         }
         
         public var id: some Hashable {
@@ -40,12 +40,12 @@ extension Jina {
         
         @POST
         @Path("embeddings")
-        public var createEmbeddings = Endpoint<RequestBodies.CreateEmbedding, Jina.Embeddings, Void>()
+        public var createEmbeddings = Endpoint<RequestBodies.CreateEmbedding, VoyageAI.Embeddings, Void>()
     }
 }
 
-extension Jina.APISpecification {
-    public final class Endpoint<Input, Output, Options>: BaseHTTPEndpoint<Jina.APISpecification, Input, Output, Options> {
+extension VoyageAI.APISpecification {
+    public final class Endpoint<Input, Output, Options>: BaseHTTPEndpoint<VoyageAI.APISpecification, Input, Output, Options> {
         override public func buildRequestBase(
             from input: Input,
             context: BuildRequestContext
@@ -62,13 +62,7 @@ extension Jina.APISpecification {
         
         struct _ErrorWrapper: Codable, Hashable, Sendable {
             struct Error: Codable, Hashable, Sendable {
-                let detail: [ErrorDetail]
-            }
-            
-            struct ErrorDetail: Codable, Hashable, Sendable {
-                let loc: [String]
-                let param: AnyCodable?
-                let msg: String
+                let detail: String
             }
             
             let error: Error
@@ -88,13 +82,12 @@ extension Jina.APISpecification {
                         _ErrorWrapper.self,
                         keyDecodingStrategy: .convertFromSnakeCase
                     ).error {
-                        if let errorMessage = error.detail.first?.msg {
-                            if errorMessage.contains("You didn't provide an API key") {
-                                throw Error.apiKeyMissing
-                            } else if errorMessage.contains("Incorrect API key provided") {
-                                throw Error.incorrectAPIKeyProvided
-                            }
+                        if error.detail.contains("You didn't provide an API key") {
+                            throw Error.apiKeyMissing
+                        } else if error.detail.contains("Incorrect API key provided") {
+                            throw Error.incorrectAPIKeyProvided
                         }
+                        
                     }
                     
                     if response.statusCode.rawValue == 429 {
@@ -117,7 +110,7 @@ extension Jina.APISpecification {
     }
 }
 
-extension Jina.APISpecification {
+extension VoyageAI.APISpecification {
     public enum RequestBodies: _StaticSwift.Namespace {
         
     }
@@ -127,27 +120,46 @@ extension Jina.APISpecification {
     }
 }
 
-extension Jina.APISpecification.RequestBodies {
+extension VoyageAI.APISpecification.RequestBodies {
     public struct CreateEmbedding: Codable, Hashable {
-        public let model: Jina.Model
-        public let input: [String]
-        public let encodingFormat: [EncodingFormat]
         
+        /// Name of the model. Recommended options: voyage-2, voyage-large-2, voyage-finance-2, voyage-multilingual-2, voyage-law-2, voyage-code-2.
+        public let model: VoyageAI.Model
+        
+        /// A single text string, or a list of texts as a list of strings. Currently, we have two constraints on the list:
+        /// The maximum length of the list is 128.
+        /// The total number of tokens in the list is at most 320K for voyage-2, and 120K for voyage-large-2, voyage-finance-2, voyage-multilingual-2, voyage-law-2, and voyage-code-2.
+        public let input: [String]
+        
+        /// Type of the input text. Defaults to nil. Other options: query, document.
+        public let inputType: String?
+        
+        /// Whether to truncate the input texts to fit within the context length. Defaults to true.
+        /// If true, over-length input texts will be truncated to fit within the context length, before vectorized by the embedding model.
+        /// If false, an error will be raised if any given text exceeds the context length.
+        public let truncation: Bool
+        
+        /// Format in which the embeddings are encoded. We support two options:
+        /// If not specified (defaults to null): the embeddings are represented as lists of floating-point numbers;
+        /// base64: the embeddings are compressed to base64 encodings.
+        public let encodingFormat: EncodingFormat?
         public enum EncodingFormat: String, Codable, Hashable, Sendable {
             case float
             case base64
-            case binary
-            case ubinary
         }
         
         init(
-            model: Jina.Model,
+            model: VoyageAI.Model,
             input: [String],
-            encodingFormat: [EncodingFormat]?
+            inputType: String? = nil,
+            truncation: Bool = true,
+            encodingFormat: EncodingFormat? = nil
         ) {
             self.model = model
             self.input = input
-            self.encodingFormat = encodingFormat ?? [.float]
+            self.inputType = inputType
+            self.truncation = truncation
+            self.encodingFormat = encodingFormat == .base64 ? .base64 : nil
         }
     }
 }

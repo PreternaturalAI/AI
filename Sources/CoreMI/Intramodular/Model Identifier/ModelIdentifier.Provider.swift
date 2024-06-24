@@ -19,6 +19,7 @@ extension ModelIdentifier {
         case _Gemini
         case _Perplexity
         case _Jina
+        case _VoyageAI
         
         case unknown(String)
         
@@ -49,6 +50,10 @@ extension ModelIdentifier {
         public static var jina: Self {
             Self._Jina
         }
+        
+        public static var voyageAI: Self {
+            Self._VoyageAI
+        }
     }
 }
 
@@ -75,6 +80,8 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
                 return "Perplexity"
             case ._Jina:
                 return "Perplexity"
+            case ._VoyageAI:
+                return "VoyageAI"
             case .unknown(let provider):
                 return provider
         }
@@ -102,6 +109,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 return "perplexity"
             case ._Jina:
                 return "jina"
+            case ._VoyageAI:
+                return "voyageai"
             case .unknown(let provider):
                 return provider
         }
@@ -125,6 +134,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 self = ._Perplexity
             case Self._Jina.rawValue:
                 self = ._Jina
+            case Self._VoyageAI.rawValue:
+                self = ._VoyageAI
             default:
                 self = .unknown(rawValue)
         }
