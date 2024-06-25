@@ -124,7 +124,14 @@ extension Cohere.APISpecification {
 
 extension Cohere.APISpecification.RequestBodies {
     public struct CreateEmbedding: Codable, Hashable {
-
+        private enum CodingKeys: String, CodingKey {
+            case model
+            case texts
+            case inputType = "input_type"
+            case embeddingTypes = "embedding_types"
+            case truncate
+        }
+        
         public let model: String
         
         /// An array of strings for the model to embed. Maximum number of texts per call is 96. We recommend reducing the length of each text to be under 512 tokens for optimal quality.
@@ -133,6 +140,12 @@ extension Cohere.APISpecification.RequestBodies {
         /// Specifies the type of input passed to the model. Required for embedding models v3 and higher.
         public let inputType: InputType
         public enum InputType: String, Codable, Hashable, Sendable {
+            private enum CodingKeys: String, CodingKey {
+                case searchDocument = "search_document"
+                case searchQuery = "search_query"
+                case classification
+                case clustering
+            }
             
             /// Used for embeddings stored in a vector database for search use-cases.
             case searchDocument
