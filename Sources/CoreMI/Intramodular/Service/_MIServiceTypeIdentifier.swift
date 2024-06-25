@@ -35,4 +35,5 @@ extension _MIServiceTypeIdentifier {
     public static let _ElevenLabs = _MIServiceTypeIdentifier(rawValue: "jatap-jogaz-ritiz-vibok")
     public static let _Jina = _MIServiceTypeIdentifier(rawValue: "bozud-sipup-natin-bizif")
     public static let _VoyageAI = _MIServiceTypeIdentifier(rawValue: "hajat-fufoh-janaf-disam")
+    public static let _Cohere = _MIServiceTypeIdentifier(rawValue: "guzob-fipin-navij-duvon")
 }

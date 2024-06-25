@@ -193,6 +193,18 @@ let package = Package(
             path: "Sources/VoyageAI"
         ),
         .target(
+            name: "Cohere",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/Cohere"
+        ),
+        .target(
             name: "AI",
             dependencies: [
                 "CoreMI",
@@ -207,7 +219,8 @@ let package = Package(
                 "Perplexity",
                 "Swallow",
                 "Jina",
-                "VoyageAI"
+                "VoyageAI",
+                "Cohere"
             ],
             path: "Sources/AI",
             swiftSettings: [
@@ -309,6 +322,17 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/VoyageAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "CohereITests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/Cohere",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]

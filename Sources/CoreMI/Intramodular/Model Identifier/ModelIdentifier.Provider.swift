@@ -20,6 +20,7 @@ extension ModelIdentifier {
         case _Perplexity
         case _Jina
         case _VoyageAI
+        case _Cohere
         
         case unknown(String)
         
@@ -54,6 +55,10 @@ extension ModelIdentifier {
         public static var voyageAI: Self {
             Self._VoyageAI
         }
+        
+        public static var cohere: Self {
+            Self._Cohere
+        }
     }
 }
 
@@ -82,6 +87,8 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
                 return "Perplexity"
             case ._VoyageAI:
                 return "VoyageAI"
+            case ._Cohere:
+                return "Cohere"
             case .unknown(let provider):
                 return provider
         }
@@ -111,6 +118,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 return "jina"
             case ._VoyageAI:
                 return "voyageai"
+            case ._Cohere:
+                return "cohere"
             case .unknown(let provider):
                 return provider
         }
@@ -136,6 +145,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 self = ._Jina
             case Self._VoyageAI.rawValue:
                 self = ._VoyageAI
+            case Self._Cohere.rawValue:
+                self = ._Cohere
             default:
                 self = .unknown(rawValue)
         }
