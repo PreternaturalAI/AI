@@ -22,6 +22,7 @@ extension ModelIdentifier {
         case _VoyageAI
         case _Cohere
         case _ElevenLabs
+        case _TogetherAI
         
         case unknown(String)
         
@@ -64,6 +65,10 @@ extension ModelIdentifier {
         public static var elevenLabs: Self {
             Self._ElevenLabs
         }
+        
+        public static var togetherAI: Self {
+            Self._TogetherAI
+        }
     }
 }
 
@@ -96,6 +101,8 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
             return "Cohere"
         case ._ElevenLabs:
             return "ElevenLabs"
+        case ._TogetherAI:
+            return "TogetherAI"
         case .unknown(let provider):
             return provider
         }
@@ -129,6 +136,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
             return "cohere"
         case ._ElevenLabs:
             return "elevenlabs"
+        case ._TogetherAI:
+            return "togetherai"
         case .unknown(let provider):
             return provider
         }
@@ -158,6 +167,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
             self = ._Cohere
         case Self._ElevenLabs.rawValue:
             self = ._ElevenLabs
+        case Self._TogetherAI.rawValue:
+            self = ._TogetherAI
         default:
             self = .unknown(rawValue)
         }

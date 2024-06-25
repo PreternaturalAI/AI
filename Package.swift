@@ -205,6 +205,18 @@ let package = Package(
             path: "Sources/Cohere"
         ),
         .target(
+            name: "TogetherAI",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/TogetherAI"
+        ),
+        .target(
             name: "AI",
             dependencies: [
                 "CoreMI",
@@ -220,7 +232,8 @@ let package = Package(
                 "Swallow",
                 "Jina",
                 "VoyageAI",
-                "Cohere"
+                "Cohere",
+                "TogetherAI"
             ],
             path: "Sources/AI",
             swiftSettings: [
@@ -327,12 +340,23 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "CohereITests",
+            name: "CohereTests",
             dependencies: [
                 "AI",
                 "Swallow"
             ],
             path: "Tests/Cohere",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "TogehterAITests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/TogetherAI",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
