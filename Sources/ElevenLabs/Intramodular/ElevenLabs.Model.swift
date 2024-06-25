@@ -2,7 +2,10 @@
 // Copyright (c) Vatsal Manot
 //
 
-import Foundation
+import CoreMI
+import CorePersistence
+import LargeLanguageModels
+import Swallow
 
 extension ElevenLabs {
     public enum Model: String, Codable, Sendable {
@@ -15,5 +18,35 @@ extension ElevenLabs {
         case EnglishV1 = "eleven_monolingual_v1"
         /// Taking a step towards global access and usage, we introduced Multilingual v1 as our second offering. Has been an experimental model ever since release. To this day, it still remains in the experimental phase.
         case MultilingualV1 = "eleven_multilingual_v1"
+    }
+}
+
+// MARK: - Conformances
+
+extension ElevenLabs.Model: CustomStringConvertible {
+    public var description: String {
+        rawValue
+    }
+}
+
+extension ElevenLabs.Model: ModelIdentifierRepresentable {
+    public init(from identifier: ModelIdentifier) throws {
+        guard identifier.provider == ._Groq, identifier.revision == nil else {
+            throw Never.Reason.illegal
+        }
+        
+        guard let model = Self(rawValue: identifier.name) else {
+            throw Never.Reason.unexpected
+        }
+        
+        self = model
+    }
+    
+    public func __conversion() -> ModelIdentifier {
+        ModelIdentifier(
+            provider: ._Groq,
+            name: rawValue,
+            revision: nil
+        )
     }
 }
