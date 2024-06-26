@@ -33,7 +33,7 @@ extension OpenAI.Client {
             language: language,
             temperature: temperature,
             timestampGranularities: timestampGranularities,
-            responseFormat: responseFormat ?? (timestampGranularities == nil ? .text : .verboseJSON)
+            responseFormat: timestampGranularities != nil ? .verboseJSON : responseFormat
         )
         
         let response: OpenAI.APISpecification.ResponseBodies.CreateTranscription 
@@ -70,7 +70,7 @@ extension OpenAI.Client {
             model: model,
             temperature: temperature,
             timestampGranularities: timestampGranularities,
-            responseFormat: responseFormat
+            responseFormat: timestampGranularities != nil ? .verboseJSON : responseFormat
         )
     }
     
@@ -89,7 +89,7 @@ extension OpenAI.Client {
             model: model,
             temperature: temperature,
             timestampGranularities: timestampGranularities,
-            responseFormat: responseFormat
+            responseFormat: timestampGranularities != nil ? .verboseJSON : responseFormat
         )
     }
 }

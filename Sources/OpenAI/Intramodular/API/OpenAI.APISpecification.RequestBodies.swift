@@ -587,10 +587,8 @@ extension OpenAI.APISpecification.RequestBodies {
             
             if let timestampGranularities = timestampGranularities {
                 let granularities: String = timestampGranularities
-                    .map({ "\"\($0.rawValue)\"" })
+                    .map({ ($0.rawValue) })
                     .joined(separator: ", ")
-                    .addingPrefixIfMissing("[")
-                    .addingSuffixIfMissing("]")
                 
                 result.append(
                     .string(
