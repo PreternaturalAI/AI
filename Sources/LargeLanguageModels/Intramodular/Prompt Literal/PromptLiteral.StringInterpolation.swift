@@ -124,6 +124,7 @@ extension PromptLiteral.StringInterpolation: _MaybeAsyncProtocol {
 }
 
 extension PromptLiteral: _MaybeAsyncProtocol {
+    /// Attempts to resolve all maybe-async components to non-async.
     public func _resolveToNonAsync() async throws -> PromptLiteral {
         try await .init(stringInterpolation: stringInterpolation._resolveToNonAsync())
     }
