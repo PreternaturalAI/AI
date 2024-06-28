@@ -79,6 +79,7 @@ let package = Package(
             dependencies: [
                 "CorePersistence",
                 "CoreMI",
+                "LargeLanguageModels",
                 "Merge",
                 "NetworkKit",
                 "Swallow"

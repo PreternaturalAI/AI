@@ -23,7 +23,9 @@ public protocol __AbstractLLM_ChatCompletionStreamProtocol: ObservableObject, Pu
 extension AbstractLLM {
     public typealias ChatCompletionStreamProtocol = __AbstractLLM_ChatCompletionStreamProtocol
     
-    /// An object that represents a live chat-completion stream from an LLM.
+    /// The stream of a single chat-completion from an LLM provider.
+    ///
+    /// It's a stream of the partial pieces of an `AbstractLLM.ChatCompletion` until the stream either finishes or is interrupted.
     public final class ChatCompletionStream: __AbstractLLM_ChatCompletionStreamProtocol, ObservableObject {
         private var objectWillChangeRelay: ObjectWillChangePublisherRelay<any ChatCompletionStreamProtocol, ChatCompletionStream>!
         private let base: any ChatCompletionStreamProtocol
