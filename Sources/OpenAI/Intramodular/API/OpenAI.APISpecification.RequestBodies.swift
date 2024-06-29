@@ -590,12 +590,12 @@ extension OpenAI.APISpecification.RequestBodies {
                     .map({ ($0.rawValue) })
                     .joined(separator: ", ")
                 
-                result.append(
-                    .string(
-                        named: "timestamp_granularities[]",
-                        value: granularities
-                    )
+                let attribute = HTTPRequest.Multipart.HeaderField.Attribute(
+                    value: "timestamp_granularities[]",
+                    options: []
                 )
+                
+                result.append(.string(granularities, forAttribute: attribute))
             }
             
             return result
