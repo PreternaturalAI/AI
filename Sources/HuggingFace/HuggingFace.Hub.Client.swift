@@ -17,7 +17,12 @@ extension HuggingFace.Hub {
         public typealias RepoType = HuggingFace.Hub.RepoType
         public typealias Repo = HuggingFace.Hub.Repo
         
-        public init(downloadBase: URL? = nil, hfToken: String? = nil, endpoint: String = "https://huggingface.co", useBackgroundSession: Bool = false) {
+        public init(
+            downloadBase: URL? = nil,
+            hfToken: String? = nil,
+            endpoint: String = "https://huggingface.co",
+            useBackgroundSession: Bool = false
+        ) {
             self.hfToken = hfToken
             if let downloadBase {
                 self.downloadBase = downloadBase
@@ -45,7 +50,12 @@ public extension HuggingFace.Hub.Client {
     }
         
     /// Throws error if the response code is not 20X
-    func httpGet(for url: URL) async throws -> (Data, HTTPURLResponse) {
+    func httpGet(
+        for url: URL
+    ) async throws -> (
+        Data,
+        HTTPURLResponse
+    ) {
         var request = URLRequest(url: url)
         if let hfToken = hfToken {
             request.setValue("Bearer \(hfToken)", forHTTPHeaderField: "Authorization")
@@ -62,7 +72,10 @@ public extension HuggingFace.Hub.Client {
         return (data, response)
     }
     
-    func getFilenames(from repo: Repo, matching globs: [String] = []) async throws -> [String] {
+    func getFilenames(
+        from repo: Repo,
+        matching globs: [String] = []
+    ) async throws -> [String] {
         // Read repo info and only parse "siblings"
         let url = URL(string: "\(endpoint)/api/\(repo.type)/\(repo.id)")!
         let (data, _) = try await httpGet(for: url)
@@ -77,15 +90,24 @@ public extension HuggingFace.Hub.Client {
         return Array(selected)
     }
     
-    func getFilenames(from repoId: String, matching globs: [String] = []) async throws -> [String] {
+    func getFilenames(
+        from repoId: String,
+        matching globs: [String] = []
+    ) async throws -> [String] {
         return try await getFilenames(from: Repo(id: repoId), matching: globs)
     }
     
-    func getFilenames(from repo: Repo, matching glob: String) async throws -> [String] {
+    func getFilenames(
+        from repo: Repo,
+        matching glob: String
+    ) async throws -> [String] {
         return try await getFilenames(from: repo, matching: [glob])
     }
     
-    func getFilenames(from repoId: String, matching glob: String) async throws -> [String] {
+    func getFilenames(
+        from repoId: String,
+        matching glob: String
+    ) async throws -> [String] {
         return try await getFilenames(from: Repo(id: repoId), matching: [glob])
     }
 }
@@ -184,7 +206,15 @@ public extension HuggingFace.Hub.Client {
     }
 
     @discardableResult
-    func snapshot(from repo: Repo, matching globs: [String] = [], progressHandler: @escaping (Progress) -> Void = { _ in }) async throws -> URL {
+    func snapshot(
+        from repo: Repo,
+        matching globs: [String] = [],
+        progressHandler: @escaping (
+            Progress
+        ) -> Void = {
+            _ in
+        }
+    ) async throws -> URL {
         let filenames = try await getFilenames(from: repo, matching: globs)
         let progress = Progress(totalUnitCount: Int64(filenames.count))
         let repoDestination = localRepoLocation(repo)
@@ -209,52 +239,99 @@ public extension HuggingFace.Hub.Client {
     }
     
     @discardableResult
-    func snapshot(from repoId: String, matching globs: [String] = [], progressHandler: @escaping (Progress) -> Void = { _ in }) async throws -> URL {
-        return try await snapshot(from: Repo(id: repoId), matching: globs, progressHandler: progressHandler)
+    func snapshot(
+        from repoId: String,
+        matching globs: [String] = [],
+        progressHandler: @escaping (Progress) -> Void = { _ in }
+    ) async throws -> URL {
+        return try await snapshot(
+            from: Repo(id: repoId),
+            matching: globs,
+            progressHandler: progressHandler
+        )
     }
     
     @discardableResult
-    func snapshot(from repo: Repo, matching glob: String, progressHandler: @escaping (Progress) -> Void = { _ in }) async throws -> URL {
+    func snapshot(
+        from repo: Repo,
+        matching glob: String,
+        progressHandler: @escaping (Progress) -> Void = { _ in }
+    ) async throws -> URL {
         return try await snapshot(from: repo, matching: [glob], progressHandler: progressHandler)
     }
     
     @discardableResult
-    func snapshot(from repoId: String, matching glob: String, progressHandler: @escaping (Progress) -> Void = { _ in }) async throws -> URL {
+    func snapshot(
+        from repoId: String,
+        matching glob: String,
+        progressHandler: @escaping (Progress) -> Void = {_ in }
+    ) async throws -> URL {
         return try await snapshot(from: Repo(id: repoId), matching: [glob], progressHandler: progressHandler)
     }
 }
 
 /// Stateless wrappers that use `HubApi` instances
 public extension HuggingFace.Hub {
-    static func getFilenames(from repo: HuggingFace.Hub.Repo, matching globs: [String] = []) async throws -> [String] {
+    static func getFilenames(
+        from repo: HuggingFace.Hub.Repo,
+        matching globs: [String] = []
+    ) async throws -> [String] {
         return try await HuggingFace.Hub.Client.shared.getFilenames(from: repo, matching: globs)
     }
     
-    static func getFilenames(from repoId: String, matching globs: [String] = []) async throws -> [String] {
+    static func getFilenames(
+        from repoId: String,
+        matching globs: [String] = []
+    ) async throws -> [String] {
         return try await HuggingFace.Hub.Client.shared.getFilenames(from: Repo(id: repoId), matching: globs)
     }
     
-    static func getFilenames(from repo: Repo, matching glob: String) async throws -> [String] {
+    static func getFilenames(
+        from repo: Repo,
+        matching glob: String
+    ) async throws -> [String] {
         return try await HuggingFace.Hub.Client.shared.getFilenames(from: repo, matching: glob)
     }
     
-    static func getFilenames(from repoId: String, matching glob: String) async throws -> [String] {
-        return try await HuggingFace.Hub.Client.shared.getFilenames(from: Repo(id: repoId), matching: glob)
+    static func getFilenames(
+        from repoId: String,
+        matching glob: String
+    ) async throws -> [String] {
+        return try await HuggingFace.Hub.Client.shared.getFilenames(
+            from: Repo(id: repoId),
+            matching: glob
+        )
     }
     
-    static func snapshot(from repo: Repo, matching globs: [String] = [], progressHandler: @escaping (Progress) -> Void = { _ in }) async throws -> URL {
+    static func snapshot(
+        from repo: Repo,
+        matching globs: [String] = [],
+        progressHandler: @escaping (Progress) -> Void = { _ in }
+    ) async throws -> URL {
         return try await HuggingFace.Hub.Client.shared.snapshot(from: repo, matching: globs, progressHandler: progressHandler)
     }
     
-    static func snapshot(from repoId: String, matching globs: [String] = [], progressHandler: @escaping (Progress) -> Void = { _ in }) async throws -> URL {
+    static func snapshot(
+        from repoId: String,
+        matching globs: [String] = [],
+        progressHandler: @escaping (Progress) -> Void = { _ in }
+    ) async throws -> URL {
         return try await HuggingFace.Hub.Client.shared.snapshot(from: Repo(id: repoId), matching: globs, progressHandler: progressHandler)
     }
     
-    static func snapshot(from repo: Repo, matching glob: String, progressHandler: @escaping (Progress) -> Void = { _ in }) async throws -> URL {
+    static func snapshot(
+        from repo: Repo,
+        matching glob: String,
+        progressHandler: @escaping (Progress) -> Void = { _ in }
+    ) async throws -> URL {
         return try await HuggingFace.Hub.Client.shared.snapshot(from: repo, matching: glob, progressHandler: progressHandler)
     }
     
-    static func snapshot(from repoId: String, matching glob: String, progressHandler: @escaping (Progress) -> Void = { _ in }) async throws -> URL {
+    static func snapshot(
+        from repoId: String,
+        matching glob: String,
+        progressHandler: @escaping (Progress) -> Void = { _ in }
+    ) async throws -> URL {
         return try await HuggingFace.Hub.Client.shared.snapshot(from: Repo(id: repoId), matching: glob, progressHandler: progressHandler)
     }
     

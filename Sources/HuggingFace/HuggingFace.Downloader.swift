@@ -86,17 +86,23 @@ extension HuggingFace {
             let semaphore = DispatchSemaphore(value: 0)
             stateSubscriber = downloadState.sink { state in
                 switch state {
-                case .completed: semaphore.signal()
-                case .failed:    semaphore.signal()
-                default:         break
+                case .completed: 
+                    semaphore.signal()
+                case .failed:    
+                    semaphore.signal()
+                default:         
+                    break
                 }
             }
             semaphore.wait()
             
             switch downloadState.value {
-            case .completed(let url): return url
-            case .failed(let error):  throw error
-            default:                  throw DownloadError.unexpectedError
+            case .completed(let url): 
+                return url
+            case .failed(let error):  
+                throw error
+            default:                  
+                throw DownloadError.unexpectedError
             }
         }
         
@@ -107,11 +113,21 @@ extension HuggingFace {
 }
 
 extension HuggingFace.Downloader: URLSessionDownloadDelegate {
-    func urlSession(_: URLSession, downloadTask: URLSessionDownloadTask, didWriteData _: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+    func urlSession(
+        _: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didWriteData _: Int64,
+        totalBytesWritten: Int64,
+        totalBytesExpectedToWrite: Int64
+    ) {
         downloadState.value = .downloading(Double(totalBytesWritten) / Double(totalBytesExpectedToWrite))
     }
 
-    func urlSession(_: URLSession, downloadTask _: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+    func urlSession(
+        _: URLSession,
+        downloadTask _: URLSessionDownloadTask,
+        didFinishDownloadingTo location: URL
+    ) {
         do {
             // If the downloaded file already exists on the filesystem, overwrite it
             try FileManager.default.moveDownloadedFile(from: location, to: self.destination)
@@ -121,7 +137,11 @@ extension HuggingFace.Downloader: URLSessionDownloadDelegate {
         }
     }
 
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didCompleteWithError error: Error?
+    ) {
         if let error = error {
             downloadState.value = .failed(error)
 //        } else if let response = task.response as? HTTPURLResponse {
