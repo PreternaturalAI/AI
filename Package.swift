@@ -218,6 +218,13 @@ let package = Package(
             path: "Sources/TogetherAI"
         ),
         .target(
+            name: "HuggingFace",
+            dependencies: [
+                
+            ],
+            path: "Sources/HuggingFace"
+        ),
+        .target(
             name: "AI",
             dependencies: [
                 "CoreMI",
@@ -234,7 +241,8 @@ let package = Package(
                 "Jina",
                 "VoyageAI",
                 "Cohere",
-                "TogetherAI"
+                "TogetherAI",
+                "HuggingFace"
             ],
             path: "Sources/AI",
             swiftSettings: [
@@ -352,12 +360,12 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "TogehterAITests",
+            name: "HuggingFaceTests",
             dependencies: [
                 "AI",
                 "Swallow"
             ],
-            path: "Tests/TogetherAI",
+            path: "Tests/HuggingFace",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
