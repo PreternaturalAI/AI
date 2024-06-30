@@ -46,23 +46,35 @@ extension Jina {
         
         public var size: Int {
             switch self {
-            case .embeddingsV2BaseEn: return 137_000_000
-            case .embeddingsV2SmallEn: return 33_000_000
-            case .embeddingsV2BaseDe: return 161_000_000
-            case .embeddingsV2BaseEs: return 161_000_000
-            case .embeddingsV2BaseZh: return 161_000_000
-            case .embeddingsV2BaseCode: return 137_000_000
+            case .embeddingsV2BaseEn: 
+                return 137_000_000
+            case .embeddingsV2SmallEn: 
+                return 33_000_000
+            case .embeddingsV2BaseDe: 
+                return 161_000_000
+            case .embeddingsV2BaseEs: 
+                return 161_000_000
+            case .embeddingsV2BaseZh: 
+                return 161_000_000
+            case .embeddingsV2BaseCode: 
+                return 137_000_000
             }
         }
         
         public var dimensions: Int {
             switch self {
-            case .embeddingsV2BaseEn: return 768
-            case .embeddingsV2SmallEn: return 512
-            case .embeddingsV2BaseDe: return 768
-            case .embeddingsV2BaseEs: return 768
-            case .embeddingsV2BaseZh: return 768
-            case .embeddingsV2BaseCode: return 768
+            case .embeddingsV2BaseEn: 
+                return 768
+            case .embeddingsV2SmallEn: 
+                return 512
+            case .embeddingsV2BaseDe: 
+                return 768
+            case .embeddingsV2BaseEs: 
+                return 768
+            case .embeddingsV2BaseZh: 
+                return 768
+            case .embeddingsV2BaseCode: 
+                return 768
             }
         }
     }

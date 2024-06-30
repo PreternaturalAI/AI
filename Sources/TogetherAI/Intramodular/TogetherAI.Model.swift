@@ -29,14 +29,22 @@ extension TogetherAI {
         
         public var name: String {
             switch self {
-            case .togetherM2Bert80M2KRetrieval: return "M2-BERT-80M-2K-Retrieval"
-            case .togetherM2Bert80M8KRetrieval: return "M2-BERT-80M-8K-Retrieval"
-            case .togetherM2Bert80M32KRetrieval: return "M2-BERT-80M-32K-Retrieval"
-            case .whereIsAIUAELargeV1: return "UAE-Large-v1"
-            case .baaiLargeENV15: return "BGE-Large-EN-v1.5"
-            case .baaiBaseENV15: return "BGE-Base-EN-v1.5"
-            case .sentenceBERT: return "Sentence-BERT"
-            case .googleBERTBaseUncased: return "BERT"
+            case .togetherM2Bert80M2KRetrieval: 
+                return "M2-BERT-80M-2K-Retrieval"
+            case .togetherM2Bert80M8KRetrieval: 
+                return "M2-BERT-80M-8K-Retrieval"
+            case .togetherM2Bert80M32KRetrieval: 
+                return "M2-BERT-80M-32K-Retrieval"
+            case .whereIsAIUAELargeV1: 
+                return "UAE-Large-v1"
+            case .baaiLargeENV15: 
+                return "BGE-Large-EN-v1.5"
+            case .baaiBaseENV15: 
+                return "BGE-Base-EN-v1.5"
+            case .sentenceBERT: 
+                return "Sentence-BERT"
+            case .googleBERTBaseUncased: 
+                return "BERT"
             }
         }
         
@@ -66,9 +74,12 @@ extension TogetherAI {
         
         public var contextWindow: Int {
             switch self {
-            case .togetherM2Bert80M2KRetrieval: return 2048
-            case .togetherM2Bert80M8KRetrieval: return 8192
-            case .togetherM2Bert80M32KRetrieval: return 32768
+            case .togetherM2Bert80M2KRetrieval: 
+                return 2048
+            case .togetherM2Bert80M8KRetrieval: 
+                return 8192
+            case .togetherM2Bert80M32KRetrieval: 
+                return 32768
             case .whereIsAIUAELargeV1, .baaiLargeENV15, .baaiBaseENV15, .sentenceBERT, .googleBERTBaseUncased:
                 return 512
             }

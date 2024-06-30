@@ -24,40 +24,64 @@ extension Cohere {
         
         public var rawValue: String {
             switch self {
-            case .embedEnglishV3: return "embed-english-v3.0"
-            case .embedMultilingualV3: return "embed-multilingual-v3.0"
-            case .embedEnglishLightV3: return "embed-english-light-v3.0"
-            case .embedMultilingualLightV3: return "embed-multilingual-light-v3.0"
-            case .embedEnglishV2: return "embed-english-v2.0"
-            case .embedEnglishLightV2: return "embed-english-light-v2.0"
-            case .embedMultilingualV2: return "embed-multilingual-v2.0"
-            case .custom(let modelID): return modelID
+            case .embedEnglishV3: 
+                return "embed-english-v3.0"
+            case .embedMultilingualV3: 
+                return "embed-multilingual-v3.0"
+            case .embedEnglishLightV3: 
+                return "embed-english-light-v3.0"
+            case .embedMultilingualLightV3: 
+                return "embed-multilingual-light-v3.0"
+            case .embedEnglishV2: 
+                return "embed-english-v2.0"
+            case .embedEnglishLightV2: 
+                return "embed-english-light-v2.0"
+            case .embedMultilingualV2: 
+                return "embed-multilingual-v2.0"
+            case .custom(let modelID): 
+                return modelID
             }
         }
         
         public init(rawValue: String) {
             switch rawValue {
-            case "embed-english-v3.0": self = .embedEnglishV3
-            case "embed-multilingual-v3.0": self = .embedMultilingualV3
-            case "embed-english-light-v3.0": self = .embedEnglishLightV3
-            case "embed-multilingual-light-v3.0": self = .embedMultilingualLightV3
-            case "embed-english-v2.0": self = .embedEnglishV2
-            case "embed-english-light-v2.0": self = .embedEnglishLightV2
-            case "embed-multilingual-v2.0": self = .embedMultilingualV2
-            default: self = .custom(rawValue)
+            case "embed-english-v3.0": 
+                self = .embedEnglishV3
+            case "embed-multilingual-v3.0": 
+                self = .embedMultilingualV3
+            case "embed-english-light-v3.0": 
+                self = .embedEnglishLightV3
+            case "embed-multilingual-light-v3.0": 
+                self = .embedMultilingualLightV3
+            case "embed-english-v2.0": 
+                self = .embedEnglishV2
+            case "embed-english-light-v2.0": 
+                self = .embedEnglishLightV2
+            case "embed-multilingual-v2.0": 
+                self = .embedMultilingualV2
+            default: 
+                self = .custom(rawValue)
             }
         }
 
         public var name: String {
             switch self {
-            case .embedEnglishV3: return "English Embedding v3.0"
-            case .embedMultilingualV3: return "Multilingual Embedding v3.0"
-            case .embedEnglishLightV3: return "English Light Embedding v3.0"
-            case .embedMultilingualLightV3: return "Multilingual Light Embedding v3.0"
-            case .embedEnglishV2: return "English Embedding v2.0"
-            case .embedEnglishLightV2: return "English Light Embedding v2.0"
-            case .embedMultilingualV2: return "Multilingual Embedding v2.0"
-            case .custom(let modelID): return "Custom Model: \(modelID)"
+            case .embedEnglishV3: 
+                return "English Embedding v3.0"
+            case .embedMultilingualV3: 
+                return "Multilingual Embedding v3.0"
+            case .embedEnglishLightV3: 
+                return "English Light Embedding v3.0"
+            case .embedMultilingualLightV3: 
+                return "Multilingual Light Embedding v3.0"
+            case .embedEnglishV2: 
+                return "English Embedding v2.0"
+            case .embedEnglishLightV2: 
+                return "English Light Embedding v2.0"
+            case .embedMultilingualV2: 
+                return "Multilingual Embedding v2.0"
+            case .custom(let modelID): 
+                return "Custom Model: \(modelID)"
             }
         }
         

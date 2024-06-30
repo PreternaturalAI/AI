@@ -45,25 +45,39 @@ extension VoyageAI {
 
         public var contextLength: Int {
             switch self {
-            case .voyageLarge2Instruct: return 16000
-            case .voyageFinance2: return 32000
-            case .voyageMultilingual2: return 32000
-            case .voyageLaw2: return 16000
-            case .voyageCode2: return 16000
-            case .voyageLarge2: return 16000
-            case .voyage2: return 4000
+            case .voyageLarge2Instruct: 
+                return 16000
+            case .voyageFinance2: 
+                return 32000
+            case .voyageMultilingual2: 
+                return 32000
+            case .voyageLaw2: 
+                return 16000
+            case .voyageCode2: 
+                return 16000
+            case .voyageLarge2: 
+                return 16000
+            case .voyage2: 
+                return 4000
             }
         }
 
         public var embeddingDimension: Int {
             switch self {
-            case .voyageLarge2Instruct: return 1024
-            case .voyageFinance2: return 1024
-            case .voyageMultilingual2: return 1024
-            case .voyageLaw2: return 1024
-            case .voyageCode2: return 1536
-            case .voyageLarge2: return 1536
-            case .voyage2: return 1024
+            case .voyageLarge2Instruct: 
+                return 1024
+            case .voyageFinance2: 
+                return 1024
+            case .voyageMultilingual2: 
+                return 1024
+            case .voyageLaw2: 
+                return 1024
+            case .voyageCode2: 
+                return 1536
+            case .voyageLarge2: 
+                return 1536
+            case .voyage2: 
+                return 1024
             }
         }
     }
