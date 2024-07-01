@@ -4,8 +4,24 @@
 
 import NetworkKit
 import Swift
+import Swallow
+import CorePersistence
 
 extension OpenAI.Client {
+    
+    public func uploadFineTuningJSONLFile(_ url: URL) async throws -> OpenAI.File {
+        
+        guard url.pathExtension.lowercased() == "jsonl" else {
+            runtimeIssue("File extension must be jsonl")
+            throw Never.Reason.unexpected
+        }
+        
+        return try await self.uploadFile(url,
+            preferredMIMEType: "application/jsonl",
+            purpose: .fineTune
+        )
+    }
+    
     
     /// Creates a job that fine-tunes a specified model.
     /// - Parameters:

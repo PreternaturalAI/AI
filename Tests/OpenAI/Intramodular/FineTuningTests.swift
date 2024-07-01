@@ -9,6 +9,38 @@ import XCTest
 
 final class FineTuningTests: XCTestCase {
     
+    func createTestFile(
+        named filename: String?,
+        jsonl: JSONL
+    ) throws -> URL {
+        let fileExtension = "jsonl"
+        let fileName = filename ?? UUID().uuidString
+        
+        let url = URL.temporaryDirectory
+            .appending(.directory("OpenAI-Tests"))
+            .appending(fileName)
+            .appendingPathExtension(fileExtension)
+        
+        try FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        
+        try jsonl.data().write(to: url)
+        
+        return url
+    }
+    
+    func testUploadJSONLFile() async throws {
+        let json = JSON.string("Hello, World!")
+        let jsonl = JSONL(storage: [json])
+        let jsonlFile = try createTestFile(named: "foo", jsonl: jsonl)
+        
+        let file = try await client.uploadFineTuningJSONLFile(jsonlFile)
+        
+        print(file)
+    }
+    
     func testCreateFineTuningJob() async throws {
         // note: add your own training file id here
         let trainingFileID = "file-Ja8LgV6NTfusyMlNWPQYSMXb"
