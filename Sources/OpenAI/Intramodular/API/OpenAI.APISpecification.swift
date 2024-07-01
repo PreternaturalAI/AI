@@ -230,6 +230,79 @@ extension OpenAI {
             "/v1/vector_stores/\(context.input.vector_store_id)"
         })
         var deleteVectorStore = Endpoint<OpenAI.APISpecification.RequestBodies.DeleteVectorStore, OpenAI.VectorStore, Void>()
+        
+        //Fine-Tuning
+        @POST
+        @Path("/v1/fine_tuning/jobs")
+        @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
+        var createFineTuningJob = Endpoint<RequestBodies.CreateFineTuningJob, OpenAI.FineTuning.Job, Void>()
+        
+        @GET
+        @Path("/v1/fine_tuning/jobs")
+        @Query({ context -> [String : String] in
+            var parameters: [String : String] = [:]
+            
+            if let after = context.input.after {
+                parameters["after"] = after
+            }
+            
+            if let limit = context.input.limit {
+                parameters["limit"] = String(limit)
+            }
+            
+            return parameters
+        })
+        var getFineTuningJobs = Endpoint<RequestBodies.GetFineTuningJobs, OpenAI.FineTuning.Jobs, Void>()
+        
+        @GET
+        @Path({ context -> String in
+            "/v1/fine_tuning/jobs/\(context.input.jobID)/events"
+        })
+        @Query({ context -> [String : String] in
+            var parameters: [String : String] = [:]
+            
+            if let after = context.input.after {
+                parameters["after"] = after
+            }
+            
+            if let limit = context.input.limit {
+                parameters["limit"] = String(limit)
+            }
+            
+            return parameters
+        })
+        var getFineTuningJobEvents = Endpoint<RequestBodies.GetFineTuningJobEvents, OpenAI.FineTuning.Job.Events, Void>()
+        
+        @GET
+        @Path({ context -> String in
+            "/v1/fine_tuning/jobs/\(context.input.jobID)/checkpoints"
+        })
+        @Query({ context -> [String : String] in
+            var parameters: [String : String] = [:]
+            
+            if let after = context.input.after {
+                parameters["after"] = after
+            }
+            
+            if let limit = context.input.limit {
+                parameters["limit"] = String(limit)
+            }
+            
+            return parameters
+        })
+        var getFineTuningJobCheckpoints = Endpoint<RequestBodies.GetFineTuningJobCheckpoints, OpenAI.FineTuning.Job.Checkpoints, Void>()
+        
+        @GET
+        @Path({ context -> String in
+            "/v1/fine_tuning/jobs/\(context.input)"
+        })
+        var getFineTuningJob = Endpoint<String, OpenAI.FineTuning.Job, Void>()
+        
+        @POST
+        @Path({ context -> String in
+            "/v1/fine_tuning/jobs/\(context.input)/cancel"
+        })
+        var cancelFineTuningJob = Endpoint<String, OpenAI.FineTuning.Job, Void>()
     }
 }
 

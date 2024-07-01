@@ -787,6 +787,58 @@ extension OpenAI.APISpecification.RequestBodies {
     }
 }
 
+extension OpenAI.APISpecification.RequestBodies {
+    struct CreateFineTuningJob: Codable {
+        enum CodingKeys: String, CodingKey {
+            case model
+            case trainingFileID = "training_file"
+            case hyperparameters
+            case suffix
+            case validationFileID = "validation_file"
+            case integrations
+            case seed
+        }
+        
+        /// The name of the model to fine-tune.
+        let model: OpenAI.Model.Chat
+        /// The ID of an uploaded file that contains training data.
+        let trainingFileID: String
+        /// The hyperparameters used for the fine-tuning job.
+        let hyperparameters: OpenAI.FineTuning.Hyperparameters?
+        /// A string of up to 18 characters that will be added to your fine-tuned model name.
+        /// For example, a suffix of "custom-model-name" would produce a model name like ft:gpt-3.5-turbo:openai:custom-model-name:7p4lURel.
+        let suffix: String?
+        /// The ID of an uploaded file that contains validation data.
+        /// If you provide this file, the data is used to generate validation metrics periodically during fine-tuning. These metrics can be viewed in the fine-tuning results file. The same data should not be present in both train and validation files.
+        /// Your dataset must be formatted as a JSONL file. You must upload your file with the purpose fine-tune.
+        let validationFileID: String?
+        /// A list of integrations to enable for your fine-tuning job.
+        let integrations: [OpenAI.FineTuning.Integration]?
+        /// The seed controls the reproducibility of the job. Passing in the same seed and job parameters should produce the same results, but may differ in rare cases. If a seed is not specified, one will be generated for you.
+        let seed: Int?
+    }
+
+}
+
+extension OpenAI.APISpecification.RequestBodies {
+    struct GetFineTuningJobs: Codable {
+        let after: String?
+        let limit: Int?
+    }
+    
+    struct GetFineTuningJobEvents: Codable {
+        let jobID: String
+        let after: String?
+        let limit: Int?
+    }
+    
+    struct GetFineTuningJobCheckpoints: Codable {
+        let jobID: String
+        let after: String?
+        let limit: Int?
+    }
+}
+
 // MARK: - Auxiliary
 
 extension OpenAI.APISpecification.RequestBodies.CreateChatCompletion {

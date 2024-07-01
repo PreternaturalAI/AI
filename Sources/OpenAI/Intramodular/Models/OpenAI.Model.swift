@@ -198,6 +198,7 @@ extension OpenAI.Model {
         case gpt_4_0125_preview = "gpt-4-0125-preview"
         case gpt_4_vision_preview = "gpt-4-vision-preview"
         
+        case gpt_3_5_turbo_1106 = "gpt-3.5-turbo-1106"
         case gpt_3_5_turbo_0301 = "gpt-3.5-turbo-0301"
         case gpt_3_5_turbo_0613 = "gpt-3.5-turbo-0613"
         case gpt_3_5_turbo_0125 = "gpt-3.5-turbo-0125"
@@ -230,6 +231,8 @@ extension OpenAI.Model {
                     return "GPT-4 Turbo"
                 case .gpt_4_vision_preview:
                     return "GPT-4V"
+                case .gpt_3_5_turbo_1106:
+                    return "GPT-3.5"
                 case .gpt_3_5_turbo_0301:
                     return "GPT-3.5"
                 case .gpt_3_5_turbo_0613:
@@ -272,7 +275,7 @@ extension OpenAI.Model {
                     return _8k
                 case .gpt_4_32k:
                     return _32k
-                case .gpt_3_5_turbo_0301, .gpt_3_5_turbo_0613, .gpt_3_5_turbo_0125:
+            case .gpt_3_5_turbo_0301, .gpt_3_5_turbo_0613, .gpt_3_5_turbo_0125, .gpt_3_5_turbo_1106:
                     return _4k
                 case .gpt_3_5_turbo_16k_0613:
                     return _16k
