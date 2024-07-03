@@ -27,6 +27,7 @@ extension OpenAI.Client {
     public func uploadFile(
         _ file: URL,
         named filename: String? = nil,
+        preferredMIMEType: String? = nil,
         purpose: OpenAI.File.Purpose = .assistants
     ) async throws -> OpenAI.File {
         let data = try Data(contentsOf: file)
@@ -34,7 +35,7 @@ extension OpenAI.Client {
         let request = OpenAI.APISpecification.RequestBodies.UploadFile(
             file: data,
             filename: try (filename ?? file._fileNameWithExtension).unwrap(),
-            preferredMIMEType: try file._preferredMIMEType.unwrap(),
+            preferredMIMEType: try (preferredMIMEType ?? file._preferredMIMEType.unwrap()),
             purpose: purpose
         )
         
