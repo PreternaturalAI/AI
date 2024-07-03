@@ -6,20 +6,46 @@ import NetworkKit
 import Swift
 import Swallow
 import CorePersistence
+import Diagnostics
 
 extension OpenAI.Client {
-    
-    public func uploadFineTuningJSONLFile(_ url: URL) async throws -> OpenAI.File {
+    public func uploadFineTuningJSONLFile(
+        _ url: URL
+    ) async throws -> OpenAI.File {
         
         guard url.pathExtension.lowercased() == "jsonl" else {
-            runtimeIssue("File extension must be jsonl")
-            throw Never.Reason.unexpected
+            throw CustomStringError("File extension must be jsonl")
         }
         
         return try await self.uploadFile(url,
             preferredMIMEType: "application/jsonl",
             purpose: .fineTune
         )
+    }
+    
+    public func uploadFineTuningMessages(
+        _ messages: [[OpenAI.ChatMessage]],
+        to filename: String?
+    ) async throws -> OpenAI.File {
+        
+        let jsonMessages: [JSON] = try messages.map { try convertToJSON($0) }
+        let jsonlMessages = JSONL(storage: jsonMessages)
+        
+        let fileExtension = "jsonl"
+        let fileName = filename ?? UUID().uuidString
+        
+        let url = URL.temporaryDirectory
+            .appending(.directory("OpenAI-FineTuning"))
+            .appending(fileName)
+            .appendingPathExtension(fileExtension)
+        
+        try FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try jsonlMessages.data().write(to: url)
+        
+        return try await uploadFineTuningJSONLFile(url)
     }
     
     
@@ -139,5 +165,15 @@ extension OpenAI.Client {
         let checkpoints = try await run(\.getFineTuningJobCheckpoints, with: request)
         
         return checkpoints
+    }
+}
+
+extension OpenAI.Client {
+    private func convertToJSON(_ messages: [OpenAI.ChatMessage]) throws -> JSON {
+        struct Line: Codable, Hashable, Sendable {
+            let messages: [OpenAI.ChatMessage]
+        }
+        
+        return try JSON.encode(Line(messages: messages))
     }
 }
