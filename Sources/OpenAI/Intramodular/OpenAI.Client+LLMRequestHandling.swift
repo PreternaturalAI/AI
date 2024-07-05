@@ -88,7 +88,7 @@ extension OpenAI.Client: LLMRequestHandling {
         
         return .init(prefix: promptText, text: text)
     }
-        
+    
     private func _complete(
         prompt: AbstractLLM.ChatPrompt,
         parameters: AbstractLLM.ChatCompletionParameters
@@ -112,7 +112,7 @@ extension OpenAI.Client: LLMRequestHandling {
         }
         
         let completion = try await self.createChatCompletion(
-            messages: prompt.messages.map({ try OpenAI.ChatMessage(from: $0) }),
+            messages: prompt.messages.asyncMap({ try await OpenAI.ChatMessage(from: $0) }),
             model: model,
             parameters: .init(
                 from: parameters,
@@ -162,8 +162,8 @@ extension OpenAI.Client: LLMRequestHandling {
     ) async throws -> AnyPublisher<AbstractLLM.ChatCompletionStream.Event, Error> {
         var session: OpenAI.ChatCompletionSession! = OpenAI.ChatCompletionSession(client: self)
         
-        let messages: [OpenAI.ChatMessage] = try prompt.messages.map {
-            try OpenAI.ChatMessage(from: $0)
+        let messages: [OpenAI.ChatMessage] = try await prompt.messages.asyncMap {
+            try await OpenAI.ChatMessage(from: $0)
         }
         let model: OpenAI.Model = try self._model(for: prompt, parameters: nil)
         let parameters: OpenAI.Client.ChatCompletionParameters = try await self._chatCompletionParameters(
@@ -367,7 +367,7 @@ extension OpenAI.ChatFunctionDefinition {
         from function: AbstractLLM.ChatFunctionDefinition
     ) {
         self.init(
-            name: function.name,
+            name: function.name.rawValue,
             description: function.context,
             parameters: function.parameters
         )

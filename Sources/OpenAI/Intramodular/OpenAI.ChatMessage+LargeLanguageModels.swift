@@ -8,12 +8,12 @@ import CorePersistence
 extension OpenAI.ChatMessage: _PromptLiteralEncodingContainer {
     public mutating func encode(
         _ component: PromptLiteral._Degenerate.Component
-    ) throws {        
-        var content: [OpenAI.ChatMessageBody._Content] = try self.body._coerceToContentArray()
+    ) throws {
+        var content: [OpenAI.ChatMessageBody._Content]
         
         switch self.body {
             case .text(let _content):
-                content.append(.text(_content))
+                content = [.text(_content)]
             case .content(let _content):
                 content = _content
             case .functionCall(_):
@@ -40,7 +40,7 @@ extension OpenAI.ChatMessage: _PromptLiteralEncodingContainer {
                 }
             case .functionCall:
                 throw Never.Reason.unsupported
-            case .functionInvocation:
+            case .resultOfFunctionCall:
                 throw Never.Reason.unsupported
         }
         
@@ -55,7 +55,7 @@ extension OpenAI.ChatMessage: _PromptLiteralEncodingContainer {
 extension OpenAI.ChatMessage {
     public init(
         from message: AbstractLLM.ChatMessage
-    ) throws {
+    ) async throws {
         let role: OpenAI.ChatRole
         
         switch message.role {
@@ -81,15 +81,20 @@ extension OpenAI.ChatMessage {
                         body: .functionCall(
                             OpenAI.ChatMessageBody.FunctionCall(
                                 name: call.name.rawValue,
-                                arguments: call.arguments
+                                arguments: try call.arguments.__conversion()
                             )
                         )
                     )
-                case .functionInvocation(let invocation):
+                case .resultOfFunctionCall(let result):
                     self.init(
                         id: nil, // FIXME: !!!
                         role: role,
-                        body: .functionInvocation(.init(name: invocation.name, response: invocation.result.rawValue))
+                        body: .functionInvocation(
+                            .init(
+                                name: result.name.rawValue,
+                                response: try result.result.__conversion() as String
+                            )
+                        )
                     )
                 default:
                     assertionFailure("Unsupported prompt literal.")
@@ -103,7 +108,7 @@ extension OpenAI.ChatMessage {
                 body: .content([])
             )
             
-            try message.content._encode(to: &_temp)
+            try await message.content._encode(to: &_temp)
             
             self = _temp
         }
@@ -153,8 +158,9 @@ extension AbstractLLM.ChatMessage {
                     role: role,
                     content: try PromptLiteral(
                         functionCall: .init(
-                            name: call.name,
-                            arguments: call.arguments,
+                            functionID: nil,
+                            name: AbstractLLM.ChatFunction.Name(rawValue: call.name),
+                            arguments: AbstractLLM.ChatFunctionCall.Arguments(unencoded: call.arguments),
                             context: .init()
                         ),
                         role: .chat(role)
@@ -166,7 +172,8 @@ extension AbstractLLM.ChatMessage {
                     role: role,
                     content: try .init(
                         functionInvocation: .init(
-                            name: invocation.name,
+                            functionID: nil,
+                            name: AbstractLLM.ChatFunction.Name(rawValue: invocation.name),
                             result: .init(rawValue: invocation.response)
                         ),
                         role: .chat(role)
@@ -208,7 +215,7 @@ extension PromptLiteral {
         role: PromptMatterRole
     ) {
         var components: [PromptLiteral.StringInterpolation.Component] = []
-                
+        
         for content in contents {
             switch content {
                 case .text(let content):

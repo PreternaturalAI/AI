@@ -18,7 +18,7 @@ extension Anthropic {
 extension Anthropic.Tool {
     package init(_from function: AbstractLLM.ChatFunctionDefinition) throws {
         self.init(
-            name: function.name,
+            name: function.name.rawValue,
             description: function.context,
             inputSchema: function.parameters
         )

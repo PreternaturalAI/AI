@@ -38,7 +38,7 @@ extension AbstractLLM {
                 if let functionCallOrInvocation = try content._degenerate()._getFunctionCallOrInvocation() {
                     if functionCallOrInvocation is ChatFunctionCall {
                         assert(role == .assistant)
-                    } else if functionCallOrInvocation is AbstractLLM.ChatFunctionInvocation {
+                    } else if functionCallOrInvocation is AbstractLLM.ResultOfFunctionCall {
                         assert(role == .other(.function))
                     }
                 }
@@ -188,8 +188,9 @@ extension AbstractLLM.ChatMessage {
             role: .assistant,
             content: try! PromptLiteral(
                 functionCall: AbstractLLM.ChatFunctionCall(
+                    functionID: nil, // FIXME: !!!
                     name: function.name,
-                    arguments: arguments.prettyPrintedDescription,
+                    arguments: .init(unencoded: arguments.prettyPrintedDescription),
                     context: .init()
                 )
             )
@@ -204,7 +205,7 @@ extension AbstractLLM.ChatMessage {
     ///
     /// This is **not** the same thing as just a 'function call'. A function call is **only** the function name + the parameters that the LLM generates to invoke it, _without_ the actual result of the function.
     public static func functionInvocation(
-        _ functionInvocation: AbstractLLM.ChatFunctionInvocation
+        _ functionInvocation: AbstractLLM.ResultOfFunctionCall
     ) -> Self {
         Self(
             role: .other(.function),

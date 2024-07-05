@@ -13,7 +13,7 @@ import Swallow
 public protocol _PromptLiteralEncodingContainer {
     mutating func encode(
         _ degenerate: PromptLiteral._Degenerate.Component
-    ) throws
+    ) async throws
 }
 
 // MARK: - Supplementary
@@ -22,11 +22,11 @@ extension PromptLiteral {
     /// Encode this literal into an encoding container.
     public func _encode<Container: _PromptLiteralEncodingContainer>(
         to container: inout Container
-    ) throws {
+    ) async throws {
         let degenerate = try _degenerate()
         
         for component in degenerate.components {
-            try container.encode(component)
+            try await container.encode(component)
         }
     }
 }

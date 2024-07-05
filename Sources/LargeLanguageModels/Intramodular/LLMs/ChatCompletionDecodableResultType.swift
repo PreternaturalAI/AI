@@ -36,13 +36,13 @@ extension ChatCompletionDecodableResultType where T == Array<AbstractLLM.ChatFun
     }
 }
 
-extension ChatCompletionDecodableResultType where T == AbstractLLM.ChatFunctionInvocation {
+extension ChatCompletionDecodableResultType where T == AbstractLLM.ResultOfFunctionCall {
     public static var functionInvocation: Self {
         .init()
     }
 }
 
-extension ChatCompletionDecodableResultType where T == Array<AbstractLLM.ChatFunctionInvocation> {
+extension ChatCompletionDecodableResultType where T == Array<AbstractLLM.ResultOfFunctionCall> {
     public static var functionInvocations: Self {
         .init()
     }

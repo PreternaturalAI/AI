@@ -34,17 +34,6 @@ extension OpenAI {
         case functionCall(FunctionCall)
         /// The result of a function call of a function that was provided to the LLM.
         case functionInvocation(FunctionInvocation)
-        
-        func _coerceToContentArray() throws -> [_Content] {
-            switch self {
-                case .text(let text):
-                    return [.text(text)]
-                case .content(let content):
-                    return content
-                case .functionCall, .functionInvocation:
-                    throw Never.Reason.unsupported
-            }
-        }
     }
 }
 

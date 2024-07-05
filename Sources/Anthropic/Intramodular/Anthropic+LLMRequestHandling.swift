@@ -170,21 +170,21 @@ extension Anthropic.Client: LLMRequestHandling {
                             let data: Data = line[rest...].data(using: .utf8)!
                             
                             let decoder = JSONDecoder(keyDecodingStrategy: .convertFromSnakeCase)
-                            let response = try decoder.decode(Anthropic.API.ResponseBodies.CreateMessageStream.self, from: data)
+                            let response = try decoder.decode(Anthropic.API.ResponseBodies.CreateMessageStreamEvent.self, from: data)
                             
-                            if
-                                let content: Anthropic.API.ResponseBodies.CreateMessageStream.Delta = response.delta,
+                            guard
+                                let content: Anthropic.API.ResponseBodies.CreateMessageStreamEvent.Delta = response.delta,
                                 let text: String = content.text
-                            {
-                                let message = AbstractLLM.ChatMessage(
-                                    role: .assistant,
-                                    content: PromptLiteral(stringLiteral: text)
-                                )
-                                
-                                continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
-                            } else {
-                                try handleError()
+                            else {
+                                continue
                             }
+                            
+                            let message = AbstractLLM.ChatMessage(
+                                role: .assistant,
+                                content: PromptLiteral(stringLiteral: text)
+                            )
+                            
+                            continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
                         } else {
                             try handleError()
                         }
@@ -222,8 +222,8 @@ extension Anthropic.Client: LLMRequestHandling {
             .removeFirst(byUnwrapping: { $0.role == .system ? $0.content : nil })
             .map({ try $0._stripToText() })
         
-        let messages = try prompt.messages.map { (message: AbstractLLM.ChatMessage) in
-            try Anthropic.ChatMessage(from: message)
+        let messages = try await prompt.messages.concurrentMap { (message: AbstractLLM.ChatMessage) in
+            try await Anthropic.ChatMessage(from: message)
         }
         
         let requestBody = Anthropic.API.RequestBodies.CreateMessage(
@@ -300,3 +300,64 @@ extension AbstractLLM.ChatRole {
         }
     }
 }
+
+
+/*extension Anthropic.API.ResponseBodies.CreateMessageStreamEvent {
+    public func apply(to response: Anthropic.ChatMessage?) -> Anthropic.ChatMessage? {
+        var existing = response
+        switch type {
+            case .ping:
+                break
+            case .error:
+                existing?.error = error
+            case .message_start:
+                if let message {
+                    existing = message
+                }
+            case .message_delta:
+                existing?.stopReason = message?.stopReason
+                existing?.stopSequence = message?.stopSequence
+                if let outputTokens = message?.usage?.outputTokens {
+                    existing?.usage?.outputTokens = outputTokens
+                }
+            case .message_stop:
+                break
+            case .content_block_start:
+                if existing?.content == nil {
+                    existing?.content = []
+                }
+                if let content = contentBlock {
+                    existing?.content?.append(content)
+                }
+            case .content_block_delta:
+                if let index, let existingContent = existing?.content?[index] {
+                    let newContent = existingContent.apply(content: delta)
+                    existing?.content?[index] = newContent
+                }
+            case .content_block_stop:
+                if let index, var existingContent = existing?.content?[index] {
+                    if existingContent.type == .tool_use, let data = existingContent.partialJSON?.data(using: .utf8) {
+                        existingContent.input = try? JSONDecoder().decode([String: AnyValue].self, from: data)
+                    }
+                    existing?.content?[index] = existingContent
+                }
+        }
+        return existing
+    }
+}
+
+extension ChatResponse.Content {
+    
+    public func apply(content: ChatResponse.Content?) -> ChatResponse.Content {
+        guard let content else { return self }
+        var out = self
+        if let text = out.text, let delta = content.text {
+            out.text = text + delta
+        }
+        if let json = out.partialJSON, let delta = content.partialJSON {
+            out.partialJSON = json + delta
+        }
+        return out
+    }
+}
+*/

@@ -9,6 +9,8 @@ import NetworkKit
 import Swift
 
 public final class _OpenAI_Client: HTTPClient, _StaticSwift.Namespace {
+    public typealias APISpecification = OpenAI.APISpecification
+    
     public let interface: OpenAI.APISpecification
     public let session: HTTPSession
     
@@ -18,7 +20,7 @@ public final class _OpenAI_Client: HTTPClient, _StaticSwift.Namespace {
     }
     
     public convenience init(apiKey: String?) {
-        var apiKey = apiKey
+        var apiKey: String? = apiKey
         
         if apiKey == nil, ProcessInfo.processInfo._isRunningWithinXCTest {
             #try(.optimistic) {
@@ -27,7 +29,7 @@ public final class _OpenAI_Client: HTTPClient, _StaticSwift.Namespace {
         }
         
         self.init(
-            interface: .init(configuration: .init(apiKey: apiKey)),
+            interface: OpenAI.APISpecification(configuration: .init(apiKey: apiKey)),
             session: .shared
         )
     }

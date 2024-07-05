@@ -12,5 +12,5 @@ import Swallow
 public protocol __AbstractLLM_ChatFunctionExecuting {
     func execute(
         _ call: AbstractLLM.ChatFunctionCall
-    ) async throws -> AbstractLLM.ChatFunctionInvocation
+    ) async throws -> AbstractLLM.ResultOfFunctionCall
 }

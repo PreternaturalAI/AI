@@ -10,25 +10,59 @@ extension AbstractLLM {
     /// The developer-supplied result of a function that you passed to an LLM.
     ///
     /// This is distinct from a _function call_.
-    public struct ChatFunctionInvocation: Codable, Hashable, Sendable {
-        public struct FunctionResult: Codable, Hashable, Sendable {
-            public let rawValue: String
-            
-            public init(rawValue: String) {
-                self.rawValue = rawValue
-            }
-        }
-        
-        public let name: String
+    public struct ResultOfFunctionCall: Codable, Hashable, Sendable {
+        public let functionID: AnyPersistentIdentifier?
+        public let name: AbstractLLM.ChatFunction.Name
         public let result: FunctionResult
         
         public var debugDescription: String {
-            "<function invocation: \(name)>"
+            "<function invocation of \"\(name)\": \(result)>"
         }
         
-        public init(name: String, result: FunctionResult) {
+        public init(
+            functionID: AnyPersistentIdentifier?,
+            name: AbstractLLM.ChatFunction.Name,
+            result: FunctionResult
+        ) {
+            self.functionID = functionID
             self.name = name
             self.result = result
         }
     }
+}
+
+// MARK: - Auxiliary
+
+extension AbstractLLM.ResultOfFunctionCall {
+    public struct FunctionResult: Codable, CustomStringConvertible, Hashable, Sendable {
+        public let rawValue: String
+        
+        public var description: String {
+            rawValue
+        }
+        
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
+        
+        public func __conversion<T>() throws -> T {
+            let result: Any
+            
+            switch T.self {
+                case String.self:
+                    result = rawValue
+                default:
+                    TODO.unimplemented
+            }
+            
+            return try cast(result)
+        }
+    }
+}
+
+// MARK: - Deprecated
+
+extension AbstractLLM {
+    @available(*, deprecated, renamed: "AbstractLLM.ResultOfFunctionCall")
+    public typealias ChatFunctionInvocation = ResultOfFunctionCall
 }

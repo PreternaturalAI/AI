@@ -47,7 +47,7 @@ extension LLMRequestHandling {
         
         return completion
     }
-
+    
     public func _completeAllowingEarlyExit(
         prompt: AbstractLLM.ChatPrompt,
         parameters: AbstractLLM.ChatCompletionParameters,
@@ -62,37 +62,40 @@ extension LLMRequestHandling {
         let lastMessage = try completion.message.content._degenerate()
         
         if lastMessage.components.contains(where: { $0.payload.type == .functionCall }) {
-            guard case let .functionCall(call) = try lastMessage.components.toCollectionOfOne().value.payload else {
+            let lastMessagePayload: PromptLiteral._Degenerate.Component.Payload? = try lastMessage.components.toCollectionOfOne().value.payload
+            
+            guard case let .functionCall(call) = lastMessagePayload else {
                 throw Never.Reason.unexpected
             }
             
             let function: AbstractLLM.ChatFunction = try functions
                 .firstAndOnly(where: { (function) in
-                    function.definition.name == call.name.rawValue
+                    function.definition.name == call.name
                 })
                 .unwrap()
             
-            let result = try await function.body(call)
+            let result: AbstractLLM.ResultOfFunctionCall.FunctionResult = try await function.body(call)
             
             if await shouldExitEarly() {
                 return completion
             }
             
-            let invocation = AbstractLLM.ChatFunctionInvocation(
+            let functionCallResult = AbstractLLM.ResultOfFunctionCall(
+                functionID: nil,
                 name: function.definition.name,
                 result: result
             )
             
-            let functionInvocationMessage = AbstractLLM.ChatMessage(
+            let functionCallResultMessage = AbstractLLM.ChatMessage(
                 role: .other(.function),
-                content: try PromptLiteral(functionInvocation: invocation, role: .chat(.other(.function)))
+                content: try PromptLiteral(functionInvocation: functionCallResult, role: .chat(.other(.function)))
             )
             
-            var newPrompt = prompt
+            var newPrompt: AbstractLLM.ChatPrompt = prompt
             
-            newPrompt.messages.append(contentsOf: [completion.message, functionInvocationMessage])
+            newPrompt.messages.append(contentsOf: [completion.message, functionCallResultMessage])
             
-            let newCompletion = try await complete(
+            let newCompletion: AbstractLLM.ChatPrompt.Completion = try await complete(
                 prompt: newPrompt,
                 parameters: parameters
             )

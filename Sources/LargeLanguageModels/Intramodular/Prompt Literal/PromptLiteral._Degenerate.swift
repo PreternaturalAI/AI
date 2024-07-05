@@ -92,10 +92,10 @@ extension PromptLiteral {
                                     context: component.context
                                 )
                             )
-                        case .functionInvocation(let invocation):
+                        case .functionInvocation(let result):
                             try append(
                                 _Degenerate.Component(
-                                    payload: .functionInvocation(invocation),
+                                    payload: .resultOfFunctionCall(result),
                                     context: component.context
                                 )
                             )
@@ -114,8 +114,8 @@ extension PromptLiteral._Degenerate {
             switch try components.toCollectionOfOne().value.payload {
                 case .functionCall(let call):
                     return call
-                case .functionInvocation(let invocation):
-                    return invocation
+                case .resultOfFunctionCall(let result):
+                    return result
                 default:
                     throw Never.Reason.illegal
             }
@@ -141,7 +141,7 @@ extension PromptLiteral._Degenerate.Component {
         case string(String)
         case image(Image)
         case functionCall(AbstractLLM.ChatFunctionCall)
-        case functionInvocation(AbstractLLM.ChatFunctionInvocation)
+        case resultOfFunctionCall(AbstractLLM.ResultOfFunctionCall)
         
         public var type: PayloadType {
             switch self {
@@ -151,7 +151,7 @@ extension PromptLiteral._Degenerate.Component {
                     return .image
                 case .functionCall:
                     return .functionCall
-                case .functionInvocation:
+                case .resultOfFunctionCall:
                     return .functionCall
             }
         }
@@ -170,7 +170,7 @@ extension PromptLiteral._Degenerate.Component {
                 self = .init(payload: .string(lhs + rhs), context: self.context)
             case (.functionCall, .functionCall):
                 throw Never.Reason.illegal
-            case (.functionInvocation, .functionInvocation):
+            case (.resultOfFunctionCall, .resultOfFunctionCall):
                 throw Never.Reason.illegal
             default:
                 assertionFailure()

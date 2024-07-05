@@ -15,16 +15,25 @@ let package = Package(
                 "CoreMI",
                 "LargeLanguageModels",
                 "Anthropic",
+                "Cohere",
                 "ElevenLabs",
                 "_Gemini",
                 "Groq",
+                "HuggingFace",
+                "Jina",
                 "Mistral",
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
+                "TogetherAI",
+                "VoyageAI",
                 "AI",
             ]
         ),
+        .library(
+            name: "OpenAI",
+            targets: ["OpenAI"]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/vmanot/CorePersistence.git", branch: "main"),

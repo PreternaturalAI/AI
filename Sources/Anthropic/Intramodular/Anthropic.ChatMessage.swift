@@ -2,6 +2,8 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CorePersistence
+import Foundation
 import LargeLanguageModels
 import Swallow
 
@@ -12,41 +14,46 @@ extension Anthropic {
             case user
         }
         
+        public var id: String?
         public var role: Role
-        public var content: String
+        public var content: Content
         
-        public init(role: Role, content: String) {
+        public init(
+            id: String? = nil,
+            role: Role,
+            content: Content
+        ) throws {
+            self.id = id ?? UUID().uuidString
             self.role = role
             self.content = content
+        }
+        
+        public init(
+            id: String? = nil,
+            role: Role,
+            content: String
+        ) throws {
+            try self.init(id: id, role: role, content: .text(content))
+        }
+        
+        public init(
+            id: String? = nil,
+            role: Role,
+            content: [Content.ContentObject]
+        ) throws {
+            try self.init(id: id, role: role, content: .list(content))
         }
     }
 }
 
-extension Anthropic.ChatMessage {
-    public init(
-        role: Role,
-        content: [Anthropic.API.ResponseBodies.CreateMessage.Content]
-    ) throws {
-        assert(content.allSatisfy({ $0.type == .text }))
-        
-        self.role = role
-        self.content = content.map({ $0.text }).joined()
-    }
-    
-    public init(
-        from message: AbstractLLM.ChatMessage
-    ) throws {
-        self.init(
-            role: try .init(from: message.role),
-            content: try message.content._stripToText()
-        )
-    }
-    
+// MARK: - Conformances
+
+extension Anthropic.ChatMessage: AbstractLLM.ChatMessageConvertible {
     public func __conversion() throws -> AbstractLLM.ChatMessage {
-        AbstractLLM.ChatMessage(
-            id: nil,
+        .init(
+            id: AnyPersistentIdentifier(rawValue: id),
             role: try AbstractLLM.ChatRole(from: role),
-            content: content
+            content: try PromptLiteral(from: self)
         )
     }
 }

@@ -17,14 +17,19 @@ extension Anthropic {
         public let interface: API
         public let session: HTTPSession
         
-        public init(interface: API, session: HTTPSession) {
+        public init(
+            interface: API,
+            session: HTTPSession
+        ) {
             self.interface = interface
             self.session = session
             
             session.disableTimeouts()
         }
         
-        public convenience init(apiKey: String?) {
+        public convenience init(
+            apiKey: String?
+        ) {
             self.init(
                 interface: API(configuration: .init(apiKey: apiKey)),
                 session: .shared

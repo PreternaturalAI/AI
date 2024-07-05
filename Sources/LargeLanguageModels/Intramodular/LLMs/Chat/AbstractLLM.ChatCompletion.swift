@@ -155,7 +155,7 @@ extension AbstractLLM.ChatCompletion {
         }
     }
     
-    public var _allChatFunctionInvocations: [AbstractLLM.ChatFunctionInvocation] {
+    public var _allChatFunctionInvocations: [AbstractLLM.ResultOfFunctionCall] {
         self.message.content.stringInterpolation.components.compactMap {
             $0.payload.functionInvocation
         }

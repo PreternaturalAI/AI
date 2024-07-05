@@ -54,7 +54,7 @@ extension PromptLiteral.StringInterpolation.Component.Payload {
         }
     }
     
-    public var functionInvocation: AbstractLLM.ChatFunctionInvocation? {
+    public var functionInvocation: AbstractLLM.ResultOfFunctionCall? {
         get {
             self[casePath: /Self.other]?[casePath: /Other.functionInvocation]
         } set {
@@ -179,11 +179,15 @@ extension PromptLiteral.StringInterpolation.Component.Payload: ThrowingRawValueC
 extension PromptLiteral.StringInterpolation.Component.Payload {
     public enum Image: Hashable, Sendable {
         case url(URL)
+        
+        init(data: Data) throws {
+            TODO.unimplemented
+        }
     }
 
     public enum Other: _CasePathExtracting, Hashable, Sendable {
         case functionCall(AbstractLLM.ChatFunctionCall)
-        case functionInvocation(AbstractLLM.ChatFunctionInvocation)
+        case functionInvocation(AbstractLLM.ResultOfFunctionCall)
         
         var rawValue: any Hashable {
             switch self {

@@ -63,7 +63,7 @@ extension AbstractLLM.ChatFunctionCall: AbstractLLM.ChatCompletionDecodable {
     }
 }
 
-extension AbstractLLM.ChatFunctionInvocation: AbstractLLM.ChatCompletionDecodable {
+extension AbstractLLM.ResultOfFunctionCall: AbstractLLM.ChatCompletionDecodable {
     public static func decode(
         _ type: Self.Type,
         from completion: AbstractLLM.ChatCompletion

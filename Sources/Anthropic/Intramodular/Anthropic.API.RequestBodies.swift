@@ -155,7 +155,7 @@ extension Anthropic.API.ResponseBodies {
         public let model: Anthropic.Model
         public let type: String?
         public let role: Anthropic.ChatMessage.Role
-        public let content: [Content]
+        public let content: Anthropic.ChatMessage.Content
         public let stopReason: StopReason?
         public let stopSequence: String?
         public let usage: Usage
@@ -176,7 +176,18 @@ extension Anthropic.API.ResponseBodies {
         }
     }
     
-    public struct CreateMessageStream: Codable, Hashable, Sendable {
+    public struct CreateMessageStreamEvent: Codable, Hashable, Sendable {
+        public enum EventType: String, Codable, Hashable, Sendable {
+            case ping
+            case error
+            case message_start
+            case message_delta
+            case message_stop
+            case content_block_start
+            case content_block_delta
+            case content_block_stop
+            
+        }
         public enum CodingKeys: String, CodingKey {
             case type
             case index
@@ -192,7 +203,7 @@ extension Anthropic.API.ResponseBodies {
             public let stopSequence: String?
         }
         
-        public let type: String
+        public let type: EventType
         public let index: Int?
         public let message: CreateMessage?
         public let delta: Delta?
