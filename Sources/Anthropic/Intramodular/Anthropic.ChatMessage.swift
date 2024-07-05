@@ -23,7 +23,7 @@ extension Anthropic {
             role: Role,
             content: Content
         ) throws {
-            self.id = id ?? UUID().uuidString
+            self.id = id
             self.role = role
             self.content = content
         }

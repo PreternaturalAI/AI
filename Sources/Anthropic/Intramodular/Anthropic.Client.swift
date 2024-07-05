@@ -31,7 +31,7 @@ extension Anthropic {
             apiKey: String?
         ) {
             self.init(
-                interface: API(configuration: .init(apiKey: apiKey)),
+                interface: API(configuration: Anthropic.API.Configuration(apiKey: apiKey)),
                 session: .shared
             )
         }

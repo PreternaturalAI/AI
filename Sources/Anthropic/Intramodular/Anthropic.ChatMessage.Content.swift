@@ -168,19 +168,10 @@ extension Anthropic.ChatMessage.Content {
             case gif = "image/gif"
             case webp = "image/webp"
             
-            init(from type: UTType) throws {
-                switch type {
-                    case .jpeg:
-                        self = .jpeg
-                    case .png:
-                        self = .png
-                    case .gif:
-                        self = .gif
-                    case .webP:
-                        self = .webp
-                    default:
-                        throw Never.Reason.unsupported
-                }
+            init(from string: String) throws {
+                let fileType: _MediaAssetFileType = try _MediaAssetFileType(rawValue: string).unwrap()
+                
+                self = try (Self(rawValue: fileType.mimeType) ?? Self(rawValue: fileType.mimeType.lowercased())).unwrap()
             }
         }
         
@@ -193,10 +184,26 @@ extension Anthropic.ChatMessage.Content {
             type: ImageSourceType,
             mediaType: MediaType,
             data: Data
-        ) {
+        ) throws {
             self.type = type
             self.mediaType = mediaType
             self.data = data
+        }
+        
+        public init(
+            type: ImageSourceType,
+            mediaType: String,
+            data: Data
+        ) throws {
+            try self.init(type: type, mediaType: try MediaType(from: mediaType), data: data)
+        }
+        
+        public init(url: Base64DataURL) throws {
+            try self.init(
+                type: .base64,
+                mediaType: url.mimeType,
+                data: url.data
+            )
         }
         
         public init(url: URL) async throws {
@@ -209,11 +216,7 @@ extension Anthropic.ChatMessage.Content {
                     dataURL = try Base64DataURL(url: url)
                 }
                 
-                self.init(
-                    type: .base64,
-                    mediaType: try MediaType(from: try UTType(dataURL.mimeType).unwrap()),
-                    data: dataURL.data
-                )
+                try self.init(url: dataURL)
             } catch {
                 throw error
             }

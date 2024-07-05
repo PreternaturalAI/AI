@@ -15,12 +15,9 @@ extension Anthropic.ChatMessage: _PromptLiteralEncodingContainer {
             case .string(let string):
                 content.append(.text(string))
             case .image(let image):
-                switch image {
-                    case .url(let url):
-                        let image = try await Anthropic.ChatMessage.Content.ImageSource(url: url)
-                        
-                        content.append(.image(image))
-                }
+                let image = try Anthropic.ChatMessage.Content.ImageSource(url: try await image.toBase64DataURL())
+                
+                content.append(.image(image))
             case .functionCall(let call):
                 content.append(
                     .toolUse(

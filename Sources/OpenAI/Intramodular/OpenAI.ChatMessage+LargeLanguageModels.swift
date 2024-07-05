@@ -8,7 +8,7 @@ import CorePersistence
 extension OpenAI.ChatMessage: _PromptLiteralEncodingContainer {
     public mutating func encode(
         _ component: PromptLiteral._Degenerate.Component
-    ) throws {
+    ) async throws {
         var content: [OpenAI.ChatMessageBody._Content]
         
         switch self.body {
@@ -26,18 +26,9 @@ extension OpenAI.ChatMessage: _PromptLiteralEncodingContainer {
             case .string(let string):
                 content.append(.text(string))
             case .image(let image):
-                switch image {
-                    case .url(let url):
-                        content.append(
-                            .imageURL(
-                                .init(
-                                    url: url,
-                                    detail: .auto // FIXME
-                                )
-                            )
-                        )
-                        
-                }
+                let imageURL: Base64DataURL = try await image.toBase64DataURL()
+                
+                content.append(.imageURL(OpenAI.ChatMessageBody._Content.ImageURL(url: imageURL.url, detail: .auto)))
             case .functionCall:
                 throw Never.Reason.unsupported
             case .resultOfFunctionCall:

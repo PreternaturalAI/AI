@@ -26,7 +26,7 @@ extension PromptLiteral.StringInterpolation.Component {
         switch payload {
             case .stringLiteral(let value):
                 return value
-            case .image(let image):
+            case .image:
                 throw Never.Reason.illegal
             case .localizedStringResource(let value):
                 return try value._toNSLocalizedString()

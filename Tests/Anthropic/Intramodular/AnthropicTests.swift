@@ -7,7 +7,7 @@ import LargeLanguageModels
 import XCTest
 import SwiftUIX
 
-final class AnthropicTests: XCTestCase {    
+final class AnthropicTests: XCTestCase {
     func test() async throws {
         let completion = try await client.complete(
             prompt: .chat([
@@ -31,39 +31,24 @@ final class AnthropicTests: XCTestCase {
     }
     
     func testVision() async throws {
-       let imageData = try await downloadAndEncodeImage(from: "https://upload.wikimedia.org/wikipedia/en/7/77/EricCartman.png")
-        let image = AppKitOrUIKitImage(data: imageData)!
+        let messages: [AbstractLLM.ChatMessage] = [
+            .system("You are a South Park Character experct. Your job is to analyze the given image of a South Park Character and identify which character it is. Make sure to provide the full name of the character."),
+            .user {
+                .concatenate(separator: nil) {
+                    PromptLiteral("Which character is this?")
+                    try PromptLiteral(imageURL: "https://upload.wikimedia.org/wikipedia/en/7/77/EricCartman.png")
+                }
+            }]
         
-        let model = Anthropic.Model.sonnet
+        let result: String = try await client.complete(
+            messages,
+            model: Anthropic.Model.sonnet,
+            as: .string
+        )
         
-        let systemPrompt: PromptLiteral = "You are a South Park Character experct. Your job is to analyze the given image of a South Park Character and identify which character it is. Make sure to provide the full name of the character."
-
-        let userPrompt: PromptLiteral = "Which character is this?"
-
-        do {
-            let imageLiteral = try PromptLiteral(image: image)
-            
-            let messages: [AbstractLLM.ChatMessage] = [
-                .system(systemPrompt),
-                .user {
-                    .concatenate(separator: nil) {
-                        userPrompt
-                        imageLiteral
-                    }
-                }]
-            
-            let result: String = try await client.complete(
-                messages,
-                model: model,
-                as: .string
-            )
-            
-            print(result)
-            XCTAssertTrue(result.contains("Eric Cartman"))
-        } catch {
-            print(error)
-            XCTFail(error.localizedDescription)
-        }
+        print(result)
+        
+        XCTAssertTrue(result.contains("Eric Cartman"))
     }
 }
 
@@ -98,19 +83,3 @@ func generateSwiftUICode(requirement: PromptLiteral) -> [AbstractLLM.ChatMessage
         )
     ]
 }
-
-fileprivate func downloadAndEncodeImage(
-    from urlString: String
-) async throws -> Data {
-    guard let url = URL(string: urlString) else {
-        throw URLError(.badURL)
-    }
-    
-    // Using async/await to download data
-    let (data, _) = try await URLSession.shared.data(from: url)
-    
-    return data
-}
-
-
-

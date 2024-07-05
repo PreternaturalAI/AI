@@ -139,7 +139,7 @@ extension PromptLiteral._Degenerate.Component {
         public typealias Image = PromptLiteral.StringInterpolation.Component.Payload.Image
         
         case string(String)
-        case image(Image)
+        case image(PromptLiteral.StringInterpolation.Component.Payload.Image)
         case functionCall(AbstractLLM.ChatFunctionCall)
         case resultOfFunctionCall(AbstractLLM.ResultOfFunctionCall)
         

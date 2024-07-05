@@ -31,6 +31,10 @@ let package = Package(
             ]
         ),
         .library(
+            name: "Anthropic",
+            targets: ["Anthropic"]
+        ),
+        .library(
             name: "OpenAI",
             targets: ["OpenAI"]
         )

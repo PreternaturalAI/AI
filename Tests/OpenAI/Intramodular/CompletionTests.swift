@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import FoundationX
 import LargeLanguageModels
 import OpenAI
 import XCTest
@@ -54,7 +55,7 @@ She no went to the market.
     }
     
     func testGPTVisionTurbo() async throws {
-        let url = try await downloadAndEncodeImage(from: "https://upload.wikimedia.org/wikipedia/en/7/77/EricCartman.png")
+        let url: URL = try await Base64DataURL(imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/7/77/EricCartman.png")!).url
         
         let result = try await client.createChatCompletion(
             messages: [

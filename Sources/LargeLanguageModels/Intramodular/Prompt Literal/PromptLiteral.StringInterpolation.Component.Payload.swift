@@ -178,13 +178,11 @@ extension PromptLiteral.StringInterpolation.Component.Payload: ThrowingRawValueC
 
 extension PromptLiteral.StringInterpolation.Component.Payload {
     public enum Image: Hashable, Sendable {
+        case image(_AnyImage)
+        case base64DataURL(Base64DataURL)
         case url(URL)
-        
-        init(data: Data) throws {
-            TODO.unimplemented
-        }
     }
-
+    
     public enum Other: _CasePathExtracting, Hashable, Sendable {
         case functionCall(AbstractLLM.ChatFunctionCall)
         case functionInvocation(AbstractLLM.ResultOfFunctionCall)
@@ -205,13 +203,21 @@ extension PromptLiteral.StringInterpolation.Component.Payload {
 }
 
 extension PromptLiteral.StringInterpolation.Component.Payload.Image {
+    public func toBase64DataURL() async throws -> Base64DataURL {
+        switch self {
+            case .image(let image):
+                return try Base64DataURL(image: image.jpegData.unwrap())
+            case .base64DataURL(let url):
+                return url
+            case .url(let url):
+                return try await Base64DataURL(imageURL: url)
+        }
+    }
+    
     @MainActor
     public func _toAppKitOrUIKitImage() async throws -> SwiftUIX._AnyImage {
-        switch self {
-            case .url(let url):
-                let data: Data = try await URLSession.shared.data(from: url).0
-
-                return try _AnyImage(AppKitOrUIKitImage(data: data).unwrap())
-        }
+        let data: Data = try await toBase64DataURL().data
+        
+        return try _AnyImage(AppKitOrUIKitImage(data: data).unwrap())
     }
 }
