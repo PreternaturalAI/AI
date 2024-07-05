@@ -58,8 +58,8 @@ extension OpenAI.Client {
         timestampGranularities: [OpenAI.AudioTranscription.TimestampGranularity]? = nil,
         responseFormat: OpenAI.AudioTranscription.ResponseFormat? = nil
     ) async throws -> OpenAI.AudioTranscription {
-        let filename = try audioFile._fileNameWithExtension.unwrap()
-        let preferredMIMEType = try audioFile._preferredMIMEType.unwrap()
+        let filename: String = try audioFile._fileNameWithExtension.unwrap()
+        let preferredMIMEType: String = try audioFile._detectPreferredMIMEType().unwrap()
         let file: Data = try await audioFile._asynchronouslyDownloadContentsOfFile()
 
         return try await createTranscription(

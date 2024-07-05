@@ -77,19 +77,3 @@ She no went to the market.
         print(result.choices)
     }
 }
-
-fileprivate func downloadAndEncodeImage(
-    from urlString: String
-) async throws -> URL {
-    guard let url = URL(string: urlString) else {
-        throw URLError(.badURL)
-    }
-    
-    // Using async/await to download data
-    let (data, _) = try await URLSession.shared.data(from: url)
-    
-    let base64String = data.base64EncodedString()
-    let result = URL(string: "data:image/jpeg;base64,\(base64String)")!
-    
-    return result
-}

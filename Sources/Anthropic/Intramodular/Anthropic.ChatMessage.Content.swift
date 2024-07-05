@@ -5,6 +5,7 @@
 import CorePersistence
 import LargeLanguageModels
 import Swallow
+import UniformTypeIdentifiers
 
 extension Anthropic.ChatMessage {
     public enum Content: Codable, Hashable, Sequence, Sendable {
@@ -53,7 +54,7 @@ extension Anthropic.ChatMessage.Content {
         public typealias ContentObjectType = Anthropic.ChatMessage.Content.ContentObjectType
         public typealias ImageSourceType = Anthropic.ChatMessage.Content.ImageSourceType
         public typealias ImageSource = Anthropic.ChatMessage.Content.ImageSource
-
+        
         case text(String)
         case image(ImageSource)
         case toolUse(ToolUse)
@@ -103,7 +104,7 @@ extension Anthropic.ChatMessage.Content.ContentObject {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
+        
         switch self {
             case .text(let text):
                 try container.encode(ContentObjectType.text, forKey: .type)
@@ -113,7 +114,7 @@ extension Anthropic.ChatMessage.Content.ContentObject {
                 try container.encode(source, forKey: .source)
             case .toolUse(let use):
                 try container.encode(ContentObjectType.toolUse, forKey: .type)
-
+                
                 try use.encode(to: encoder)
             case .toolResult(let result):
                 try container.encode(ContentObjectType.toolResult, forKey: .type)
@@ -166,16 +167,32 @@ extension Anthropic.ChatMessage.Content {
             case png = "image/png"
             case gif = "image/gif"
             case webp = "image/webp"
+            
+            init(from type: UTType) throws {
+                switch type {
+                    case .jpeg:
+                        self = .jpeg
+                    case .png:
+                        self = .png
+                    case .gif:
+                        self = .gif
+                    case .webP:
+                        self = .webp
+                    default:
+                        throw Never.Reason.unsupported
+                }
+            }
         }
         
         public let type: ImageSourceType
         public let mediaType: MediaType
-        public let data: String
+        @Base64EncodedData
+        public var data: Data
         
         public init(
             type: ImageSourceType,
             mediaType: MediaType,
-            data: String
+            data: Data
         ) {
             self.type = type
             self.mediaType = mediaType
@@ -183,7 +200,23 @@ extension Anthropic.ChatMessage.Content {
         }
         
         public init(url: URL) async throws {
-            TODO.unimplemented
+            do {
+                let dataURL: Base64DataURL
+                
+                if url.isWebURL {
+                    TODO.unimplemented
+                } else {
+                    dataURL = try Base64DataURL(url: url)
+                }
+                
+                self.init(
+                    type: .base64,
+                    mediaType: try MediaType(from: try UTType(dataURL.mimeType).unwrap()),
+                    data: dataURL.data
+                )
+            } catch {
+                throw error
+            }
         }
     }
 }

@@ -7,10 +7,10 @@ import Swallow
 extension AbstractLLM.ChatOrTextCompletion {
     public func _stripToText() throws -> String {
         switch self {
-        case .text(let completion):
-            return completion.text
-        case .chat(let completion):
-            return try completion._stripToText()
+            case .text(let completion):
+                return completion.text
+            case .chat(let completion):
+                return try completion._stripToText()
         }
     }
 }
@@ -24,27 +24,23 @@ extension PromptLiteral {
 extension PromptLiteral.StringInterpolation.Component {
     public func _stripToText() throws -> String {
         switch payload {
-        case .stringLiteral(let value):
-            return value
-        case .image(let image):
-            if case .url(let url) = image {
-                return url.absoluteString
-            } else {
+            case .stringLiteral(let value):
+                return value
+            case .image(let image):
                 throw Never.Reason.illegal
-            }
-        case .localizedStringResource(let value):
-            return try value._toNSLocalizedString()
-        case .promptLiteralConvertible(let value):
-            return try value.promptLiteral.merging(context)._stripToText()
-        case .dynamicVariable(let variable):
-            return try variable.promptLiteral._stripToText()
-        case .other(let other):
-            switch other {
-            case .functionCall:
-                throw Never.Reason.illegal
-            case .functionInvocation:
-                throw Never.Reason.illegal
-            }
+            case .localizedStringResource(let value):
+                return try value._toNSLocalizedString()
+            case .promptLiteralConvertible(let value):
+                return try value.promptLiteral.merging(context)._stripToText()
+            case .dynamicVariable(let variable):
+                return try variable.promptLiteral._stripToText()
+            case .other(let other):
+                switch other {
+                    case .functionCall:
+                        throw Never.Reason.illegal
+                    case .functionInvocation:
+                        throw Never.Reason.illegal
+                }
         }
     }
 }

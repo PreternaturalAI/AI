@@ -35,7 +35,7 @@ extension OpenAI.Client {
         let request = OpenAI.APISpecification.RequestBodies.UploadFile(
             file: data,
             filename: try (filename ?? file._fileNameWithExtension).unwrap(),
-            preferredMIMEType: try (preferredMIMEType ?? file._preferredMIMEType.unwrap()),
+            preferredMIMEType: try (preferredMIMEType ?? file._detectPreferredMIMEType().unwrap()),
             purpose: purpose
         )
         

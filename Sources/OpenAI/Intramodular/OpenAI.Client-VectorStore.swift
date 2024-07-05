@@ -62,7 +62,6 @@ extension OpenAI.Client {
         expiresAfter: OpenAI.VectorStore.ExpiresAfter?,
         metadata: [String: String]?
     ) async throws -> OpenAI.VectorStore {
-
         let requestBody = OpenAI.APISpecification.RequestBodies.UpdateVectorStore(
             vectorStoreID: vectorStoreID,
             name: name,
