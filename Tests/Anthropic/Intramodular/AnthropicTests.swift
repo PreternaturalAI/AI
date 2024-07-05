@@ -31,10 +31,10 @@ final class AnthropicTests: XCTestCase {
     }
     
     func testVision() async throws {
-        let messages: [AbstractLLM.ChatMessage] = [
+        let messages: [AbstractLLM.ChatMessage] = try [
             .system("You are a South Park Character experct. Your job is to analyze the given image of a South Park Character and identify which character it is. Make sure to provide the full name of the character."),
             .user {
-                .concatenate(separator: nil) {
+                try .concatenate(separator: nil) {
                     PromptLiteral("Which character is this?")
                     try PromptLiteral(imageURL: "https://upload.wikimedia.org/wikipedia/en/7/77/EricCartman.png")
                 }
@@ -45,9 +45,7 @@ final class AnthropicTests: XCTestCase {
             model: Anthropic.Model.sonnet,
             as: .string
         )
-        
-        print(result)
-        
+                
         XCTAssertTrue(result.contains("Eric Cartman"))
     }
 }
