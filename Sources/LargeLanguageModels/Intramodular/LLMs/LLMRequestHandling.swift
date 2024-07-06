@@ -62,11 +62,15 @@ extension LLMRequestHandling {
     public func completion(
         for prompt: AbstractLLM.ChatPrompt
     ) async throws -> AbstractLLM.ChatCompletionStream {
-        AbstractLLM.ChatCompletionStream {
-            try await self.complete(
+        AbstractLLM.ChatCompletionStream { () -> AbstractLLM.ChatCompletion in
+            runtimeIssue("streaming completion(for:) is not implemented for \(Self.self), defaulting to using non-streaming `complete`")
+            
+            let completion = try await self.complete(
                 prompt: prompt,
                 parameters: try prompt.context.completionParameters.map({ try cast($0) }) ?? nil
             )
+            
+            return completion
         }
     }
 }

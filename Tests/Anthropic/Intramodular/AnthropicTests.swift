@@ -21,6 +21,22 @@ final class AnthropicTests: XCTestCase {
         print(completion)
     }
     
+    func testStreaming() async throws {
+        let completion = try await client.completion(
+            for: AbstractLLM.ChatPrompt(messages: [
+                .user("What's up?"),
+                .assistant("Not much, just chatting with you!"),
+                .user("That's cool"),
+            ])
+        )
+        
+        let message = try await completion.complete()
+        
+        print(message)
+
+        _ = message
+    }
+    
     func testSwiftUICodeGen() async throws {
         let completion = try await client.complete(
             generateSwiftUICode(requirement: "a message list view styled like Apple's iMessages"),

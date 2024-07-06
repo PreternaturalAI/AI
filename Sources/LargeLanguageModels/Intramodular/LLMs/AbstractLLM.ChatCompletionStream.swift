@@ -51,6 +51,23 @@ extension AbstractLLM {
             
             self.objectWillChangeRelay = .init(source: base, destination: self)
         }
+        
+        public func complete() async throws -> AbstractLLM.ChatMessage {
+            _ = try await messagePublisher.values.collect()
+            
+            switch state {
+                case .waiting:
+                    throw Never.Reason.illegal
+                case .streaming:
+                    throw Never.Reason.illegal
+                case .canceled:
+                    throw CancellationError()
+                case .failed(let error):
+                    throw error
+                case .completed:
+                    return try fullyStreamedMessage.unwrap()
+            }
+        }
     }
 }
 

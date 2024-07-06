@@ -113,8 +113,8 @@ extension Anthropic.Client: LLMRequestHandling {
     
     public func completion(
         for prompt: AbstractLLM.ChatPrompt
-    ) throws -> AbstractLLM.ChatCompletionStream {
-        AbstractLLM.ChatCompletionStream.init {
+    ) async throws -> AbstractLLM.ChatCompletionStream {        
+        return AbstractLLM.ChatCompletionStream.init {
             try await self._completion(for: prompt)
         }
     }
@@ -141,57 +141,52 @@ extension Anthropic.Client: LLMRequestHandling {
         
         let session = URLSession(configuration: sessionConfiguration)
         
+        let events = ServerSentEvents.EventSource(request: try URLRequest(request), session: session)
+        
         let result = AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error> { (continuation: AsyncThrowingStream<AbstractLLM.ChatCompletionStream.Event, Error>.Continuation) in
-            let task = Task<Void, Swift.Error>(priority: .userInitiated) {
-                let (bytes, _) = try await session.bytes(for: URLRequest(request))
-                
-                for try await line in bytes.lines {
-                    func handleError() throws {
-                        if let error = try? JSON(jsonString: line, using: .convertFromSnakeCase).decode(Anthropic.API.ResponseBodies.ErrorWrapper.self) {
-                            continuation.yield(with: .failure(error.error))
-                            
-                            continuation.finish()
-                            
-                            throw error
-                        } else {
-                            runtimeIssue(.unexpected)
-                            
-                            throw Never.Reason.unexpected
-                        }
-                    }
-                    
-                    print(line)
+            let task = Task<Void, Swift.Error>(priority: .userInitiated) { () -> Void in
+                for await sseEvent in events.values {
+                    try Task.checkCancellation()
                     
                     do {
-                        if line == "event: message_start" {
+                        guard let eventMessage = try sseEvent.message else {
                             continue
-                        } else if line.starts(with: "data: ") {
-                            let rest = line.index(line.startIndex, offsetBy: 6)
-                            let data: Data = line[rest...].data(using: .utf8)!
-                            
-                            let decoder = JSONDecoder(keyDecodingStrategy: .convertFromSnakeCase)
-                            let response = try decoder.decode(Anthropic.API.ResponseBodies.CreateMessageStreamEvent.self, from: data)
-                            
-                            guard
-                                let content: Anthropic.API.ResponseBodies.CreateMessageStreamEvent.Delta = response.delta,
-                                let text: String = content.text
-                            else {
-                                continue
-                            }
-                            
-                            let message = AbstractLLM.ChatMessage(
-                                role: .assistant,
-                                content: PromptLiteral(stringLiteral: text)
-                            )
-                            
-                            continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
-                        } else {
-                            try handleError()
                         }
-                    } catch {
-                        runtimeIssue(error)
+
+                        let event: Anthropic.API.ResponseBodies.CreateMessageStreamEvent = try eventMessage.decode(Anthropic.API.ResponseBodies.CreateMessageStreamEvent.self)
+
+                        guard event.type != .message_start && event.type != .message_stop else {
+                            continue
+                        }
                         
-                        try handleError()
+                        guard
+                            let content: Anthropic.API.ResponseBodies.CreateMessageStreamEvent.Delta = event.delta,
+                            let text: String = content.text
+                        else {
+                            continue
+                        }
+                        
+                        let message = AbstractLLM.ChatMessage(
+                            role: .assistant,
+                            content: PromptLiteral(stringLiteral: text)
+                        )
+                        
+                        continuation.yield(.completion(AbstractLLM.ChatCompletion.Partial(delta: message)))
+                    } catch {
+                        let streamError: Error
+                        
+                        if let apiError = try? sseEvent.message?.decode(Anthropic.API.ResponseBodies.ErrorWrapper.self).error {
+                            streamError = apiError
+                        } else {
+                            streamError = error
+                        }
+                        
+                        continuation.yield(with: .failure(streamError))
+                        continuation.finish()
+                        
+                        runtimeIssue(streamError)
+                    
+                        return
                     }
                 }
                 
@@ -201,10 +196,16 @@ extension Anthropic.Client: LLMRequestHandling {
             }
             
             continuation.onTermination = { _ in
+                Task.detached {
+                    await events.close()
+                }
+                
                 task.cancel()
             }
+            
+            return
         }
-        
+               
         return result
     }
     
@@ -213,7 +214,7 @@ extension Anthropic.Client: LLMRequestHandling {
         parameters: AbstractLLM.ChatCompletionParameters? = nil,
         stream: Bool
     ) async throws -> Anthropic.API.RequestBodies.CreateMessage {
-        var prompt = prompt
+        var prompt: AbstractLLM.ChatPrompt = prompt
         let parameters: AbstractLLM.ChatCompletionParameters? = try parameters ?? cast(prompt.context.completionParameters)
         let model: Anthropic.Model = try await _model(for: prompt)
         
@@ -300,64 +301,3 @@ extension AbstractLLM.ChatRole {
         }
     }
 }
-
-
-/*extension Anthropic.API.ResponseBodies.CreateMessageStreamEvent {
-    public func apply(to response: Anthropic.ChatMessage?) -> Anthropic.ChatMessage? {
-        var existing = response
-        switch type {
-            case .ping:
-                break
-            case .error:
-                existing?.error = error
-            case .message_start:
-                if let message {
-                    existing = message
-                }
-            case .message_delta:
-                existing?.stopReason = message?.stopReason
-                existing?.stopSequence = message?.stopSequence
-                if let outputTokens = message?.usage?.outputTokens {
-                    existing?.usage?.outputTokens = outputTokens
-                }
-            case .message_stop:
-                break
-            case .content_block_start:
-                if existing?.content == nil {
-                    existing?.content = []
-                }
-                if let content = contentBlock {
-                    existing?.content?.append(content)
-                }
-            case .content_block_delta:
-                if let index, let existingContent = existing?.content?[index] {
-                    let newContent = existingContent.apply(content: delta)
-                    existing?.content?[index] = newContent
-                }
-            case .content_block_stop:
-                if let index, var existingContent = existing?.content?[index] {
-                    if existingContent.type == .tool_use, let data = existingContent.partialJSON?.data(using: .utf8) {
-                        existingContent.input = try? JSONDecoder().decode([String: AnyValue].self, from: data)
-                    }
-                    existing?.content?[index] = existingContent
-                }
-        }
-        return existing
-    }
-}
-
-extension ChatResponse.Content {
-    
-    public func apply(content: ChatResponse.Content?) -> ChatResponse.Content {
-        guard let content else { return self }
-        var out = self
-        if let text = out.text, let delta = content.text {
-            out.text = text + delta
-        }
-        if let json = out.partialJSON, let delta = content.partialJSON {
-            out.partialJSON = json + delta
-        }
-        return out
-    }
-}
-*/
