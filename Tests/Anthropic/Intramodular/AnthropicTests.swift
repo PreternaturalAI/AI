@@ -22,7 +22,7 @@ final class AnthropicTests: XCTestCase {
     }
     
     func testStreaming() async throws {
-        let completion = try await client.completion(
+        let completion: AbstractLLM.ChatCompletionStream = try await client.completion(
             for: AbstractLLM.ChatPrompt(messages: [
                 .user("What's up?"),
                 .assistant("Not much, just chatting with you!"),
@@ -30,7 +30,7 @@ final class AnthropicTests: XCTestCase {
             ])
         )
         
-        let message = try await completion.complete()
+        let message: AbstractLLM.ChatMessage = try await completion.complete()
         
         print(message)
 
