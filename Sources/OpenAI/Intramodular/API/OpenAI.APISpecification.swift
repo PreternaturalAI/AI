@@ -56,6 +56,13 @@ extension OpenAI {
             self.configuration = configuration
         }
         
+        // MARK: Models
+        
+        @GET
+        @Path("/v1/models")
+        @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
+        var listModels = Endpoint<Void, OpenAI.List<OpenAI.ModelObject>, Void>()
+
         // MARK: Embeddings
         
         @POST

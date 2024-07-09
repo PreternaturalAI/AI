@@ -14,6 +14,9 @@ public final class _OpenAI_Client: HTTPClient, _StaticSwift.Namespace {
     public let interface: OpenAI.APISpecification
     public let session: HTTPSession
     
+    @Resource(get: \.listModels, \.data)
+    var __cached_models: [OpenAI.ModelObject]?
+    
     public init(interface: OpenAI.APISpecification, session: HTTPSession) {
         self.interface = interface
         self.session = session
@@ -34,8 +37,21 @@ public final class _OpenAI_Client: HTTPClient, _StaticSwift.Namespace {
         )
     }
     
-    public convenience init(configuration: OpenAI.APISpecification.Configuration) {
-        self.init(interface: .init(configuration: configuration), session: .shared)
+    public convenience init(
+        configuration: OpenAI.APISpecification.Configuration,
+        session: HTTPSession = .shared
+    ) {
+        self.init(
+            interface: APISpecification(configuration: configuration),
+            session: session
+        )
+    }
+    
+    public convenience init(host: URL) {
+        self.init(
+            configuration: APISpecification.Configuration(host: host),
+            session: HTTPSession(host: host)
+        ) 
     }
 }
 
@@ -47,6 +63,12 @@ extension OpenAI {
 }
 
 extension OpenAI.Client {
+    public var models: [OpenAI.ModelObject] {
+        get async throws {
+            try await run(\.listModels).data // FIXME: Auto-paginate
+        }
+    }
+    
     public func createCompletion(
         model: OpenAI.Model,
         prompt: String,

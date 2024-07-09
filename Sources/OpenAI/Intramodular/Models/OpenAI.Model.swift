@@ -16,6 +16,51 @@ extension OpenAI {
 }
 
 extension OpenAI {
+    public struct ModelObject: Codable, CustomStringConvertible, Hashable, Sendable {
+        public struct Permission: Codable, Hashable, Sendable {
+            public let id: String?
+            public let object: String?
+            public let created: Date?
+            public let allowCreateEngine: Bool?
+            public let allowSampling: Bool?
+            public let allowLogprobs: Bool?
+            public let allowSearchIndices: Bool?
+            public let allowView: Bool?
+            public let allowFineTuning: Bool?
+            public let organization: String?
+            public let group: String?
+            public let isBlocking: Bool?
+        }
+
+        public let id: String
+        public let object: OpenAI.ObjectType
+        public var created: Date?
+        public var ownedBy: String?
+        public var permission: [Permission] = []
+        public var root: String?
+        public var parent: String?
+        
+        public var description: String {
+            id
+        }
+    }
+}
+
+extension OpenAI.ModelObject: ModelIdentifierRepresentable {
+    public init(from modelIdentifier: ModelIdentifier) throws {
+        self.init(id: modelIdentifier.name, object: .model)
+    }
+
+    public func __conversion() throws -> ModelIdentifier {
+        ModelIdentifier(
+            provider: .openAI,
+            name: self.id,
+            revision: nil
+        )
+    }
+}
+
+extension OpenAI {
     public enum Model: CaseIterable, OpenAI._ModelType, Hashable {
         public private(set) static var allCases: [Model] = {
             var result: [Model] = []

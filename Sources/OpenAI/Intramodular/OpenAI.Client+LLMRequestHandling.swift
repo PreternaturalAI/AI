@@ -26,7 +26,15 @@ extension OpenAI.Client: LLMRequestHandling {
     }
     
     public var _availableModels: [ModelIdentifier]? {
-        OpenAI.Model.allCases.map({ $0.__conversion() })
+        if let __cached_models {
+            do {
+                return try __cached_models.map({ try $0.__conversion() })
+            } catch {
+                runtimeIssue(error)
+            }
+        }
+        
+        return OpenAI.Model.allCases.map({ $0.__conversion() })
     }
     
     public func complete<Prompt: AbstractLLM.Prompt>(

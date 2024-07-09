@@ -22,7 +22,7 @@ extension OpenAI {
             client: OpenAI.Client
         ) {
             self.client = client
-            
+                        
             session = URLSession(
                 configuration: URLSessionConfiguration.default,
                 delegate: sessionDelegate,
@@ -36,21 +36,28 @@ extension OpenAI.ChatCompletionSession {
     private static let encoder = JSONEncoder(keyEncodingStrategy: .convertToSnakeCase)
     private static let decoder = JSONDecoder(keyDecodingStrategy: .convertFromSnakeCase)._polymorphic()
     
-    private var key: String {
+    private var host: URL {
+        client.interface.configuration.host
+    }
+
+    private var key: String? {
         get throws {
-            try client.interface.configuration.apiKey.unwrap()
+            client.interface.configuration.apiKey
         }
     }
     
     private func makeURLRequest(
         data: Data
     ) throws -> URLRequest {
-        var request = URLRequest(url: URL(string: "https://api.openai.com/v1/chat/completions")!)
+        var request = URLRequest(url: host.appending("/v1/chat/completions"))
         
         request.httpMethod = "POST"
         
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        try request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        
+        if let key: String = try key {
+            request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        }
         
         request.httpBody = data
         
@@ -265,6 +272,13 @@ extension OpenAI.ChatCompletionSession {
 
 extension OpenAI.ChatCompletionSession {
     fileprivate class _URLSessionDataDelegate: NSObject, Foundation.URLSessionDataDelegate {
+        public func urlSession(
+            _ session: URLSession,
+            didCreateTask task: URLSessionTask
+        ) {
+
+        }
+        
         public func urlSession(
             _ session: URLSession,
             dataTask: URLSessionDataTask,

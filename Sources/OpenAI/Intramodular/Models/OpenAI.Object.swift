@@ -7,20 +7,21 @@ import Swift
 
 extension OpenAI {
     public enum ObjectType: String, CaseIterable, Codable, TypeDiscriminator, Sendable {
-        case list
-        case embedding
-        case textCompletion = "text_completion"
-        case chatCompletion = "chat.completion"
-        case chatCompletionChunk = "chat.completion.chunk"
-        case speech = "speech"
-        case transcription = "transcription"
-        case file = "file"
-        case thread = "thread"
-        case message = "thread.message"
         case assistant = "assistant"
         case assistantFile = "assistant.file"
+        case chatCompletion = "chat.completion"
+        case chatCompletionChunk = "chat.completion.chunk"
+        case embedding = "embedding"
+        case file = "file"
+        case image = "image"
+        case list
+        case message = "thread.message"
+        case model = "model"
         case run = "thread.run"
-        case image
+        case speech = "speech"
+        case thread = "thread"
+        case textCompletion = "text_completion"
+        case transcription = "transcription"
         case vectorStore = "vector_store"
         case vectorStoreDeleted = "vector_store.deleted"
         
@@ -30,34 +31,36 @@ extension OpenAI {
         
         public func resolveType() -> Any.Type {
             switch self {
-                case .list:
-                    return OpenAI.List<Object>.self
-                case .embedding:
-                    return OpenAI.Embedding.self
-                case .textCompletion:
-                    return OpenAI.TextCompletion.self
-                case .chatCompletion:
-                    return OpenAI.ChatCompletion.self
-                case .chatCompletionChunk:
-                    return OpenAI.ChatCompletionChunk.self
-                case .speech:
-                    return OpenAI.Speech.self
-                case .transcription:
-                    return OpenAI.AudioTranscription.self
-                case .image:
-                    return OpenAI.Image.self
-                case .file:
-                    return OpenAI.File.self
-                case .thread:
-                    return OpenAI.Thread.self
-                case .message:
-                    return OpenAI.Message.self
                 case .assistant:
                     return OpenAI.Assistant.self
                 case .assistantFile:
                     return OpenAI.AssistantFile.self
+                case .embedding:
+                    return OpenAI.Embedding.self
+                case .file:
+                    return OpenAI.File.self
+                case .chatCompletion:
+                    return OpenAI.ChatCompletion.self
+                case .chatCompletionChunk:
+                    return OpenAI.ChatCompletionChunk.self
+                case .image:
+                    return OpenAI.Image.self
+                case .list:
+                    return OpenAI.List<Object>.self
+                case .message:
+                    return OpenAI.Message.self
+                case .model:
+                    return OpenAI.ModelObject.self
                 case .run:
                     return OpenAI.Run.self
+                case .speech:
+                    return OpenAI.Speech.self
+                case .textCompletion:
+                    return OpenAI.TextCompletion.self
+                case .thread:
+                    return OpenAI.Thread.self
+                case .transcription:
+                    return OpenAI.AudioTranscription.self
                 case .vectorStore:
                     return OpenAI.VectorStore.self
                 case .vectorStoreDeleted:
