@@ -1,8 +1,5 @@
 //
-//  File.swift
-//  
-//
-//  Created by Natasha Murashev on 5/16/24.
+// Copyright (c) Vatsal Manot
 //
 
 import LargeLanguageModels
@@ -10,7 +7,7 @@ import Swallow
 import Foundation
 
 extension OpenAI {
-    public class VectorStore: OpenAI.Object {
+    public class VectorStore: OpenAI.Object, @unchecked Sendable {
         private enum CodingKeys: String, CodingKey {
             case id
             case object

@@ -2,15 +2,16 @@
 // Copyright (c) Vatsal Manot
 //
 
+import Merge
 import NetworkKit
 import Swift
 
 extension OpenAI {
-    public class AnyList: Object {
+    public class AnyList: Object, @unchecked Sendable {
         
     }
     
-    public class List<Element: Codable>: AnyList {
+    public class List<Element: Codable & Sendable>: AnyList, @unchecked Sendable {
         private enum CodingKeys: String, CodingKey {
             case data
             case hasMore
@@ -18,6 +19,7 @@ extension OpenAI {
             case lastID = "lastId"
         }
         
+        @_OSUnfairLocked
         public package(set) var data: [Element]
         
         public let hasMore: Bool?

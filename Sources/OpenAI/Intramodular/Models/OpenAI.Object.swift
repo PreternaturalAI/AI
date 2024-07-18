@@ -71,7 +71,7 @@ extension OpenAI {
 }
 
 extension OpenAI {
-    public class Object: Codable, PolymorphicDecodable, TypeDiscriminable, @unchecked Sendable {
+    public class Object: Codable, PolymorphicDecodable, TypeDiscriminable {
         private enum CodingKeys: String, CodingKey {
             case type = "object"
         }

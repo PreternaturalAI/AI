@@ -6,7 +6,7 @@ import NetworkKit
 import Swift
 
 extension OpenAI {
-    public final class Embedding: OpenAI.Object, Sendable {
+    public final class Embedding: OpenAI.Object, @unchecked Sendable {
         private enum CodingKeys: String, CodingKey {
             case embedding
             case index

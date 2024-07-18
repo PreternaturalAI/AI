@@ -108,7 +108,10 @@ extension AbstractLLM.ChatCompletionStream {
 // MARK: - Conformances
 
 extension AbstractLLM.ChatCompletionStream: Publisher {
-    public func receive<S: Subscriber<Event, Error>>(
+    public typealias Output = Event
+    public typealias Failure = Swift.Error
+    
+    public func receive<S: Subscriber<Output, Failure>>(
         subscriber: S
     ) {
         base.receive(subscriber: subscriber)

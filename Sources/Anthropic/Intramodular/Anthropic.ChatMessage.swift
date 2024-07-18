@@ -51,7 +51,7 @@ extension Anthropic {
 extension Anthropic.ChatMessage: AbstractLLM.ChatMessageConvertible {
     public func __conversion() throws -> AbstractLLM.ChatMessage {
         .init(
-            id: AnyPersistentIdentifier(rawValue: id),
+            id: AnyPersistentIdentifier(rawValue: id ?? UUID().uuidString),
             role: try AbstractLLM.ChatRole(from: role),
             content: try PromptLiteral(from: self)
         )

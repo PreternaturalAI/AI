@@ -8,7 +8,7 @@ import NetworkKit
 import Swift
 
 public protocol _OpenAI_ModelType: Codable, Hashable, RawRepresentable, Sendable where RawValue == String {
-    var contextSize: Int { get throws }
+    var contextSize: Int? { get throws }
 }
 
 extension OpenAI {
@@ -119,7 +119,7 @@ extension OpenAI {
             }
         }
         
-        public var contextSize: Int {
+        public var contextSize: Int? {
             get throws {
                 try base.contextSize
             }
@@ -138,7 +138,7 @@ extension OpenAI.Model {
             rawValue
         }
         
-        public var contextSize: Int {
+        public var contextSize: Int? {
             get throws {
                 switch self {
                     case .ada:
@@ -160,7 +160,7 @@ extension OpenAI.Model {
         case davinci = "code-davinci-002"
         case cushman = "code-cushman-001"
         
-        public var contextSize: Int {
+        public var contextSize: Int? {
             switch self {
                 case .davinci:
                     return 8000
@@ -175,7 +175,7 @@ extension OpenAI.Model {
     public enum Feature: String, OpenAI._ModelType, CaseIterable {
         case davinci = "text-davinci-edit-001"
         
-        public var contextSize: Int {
+        public var contextSize: Int? {
             switch self {
                 case .davinci:
                     return 2048
@@ -206,7 +206,7 @@ extension OpenAI.Model {
             }
         }
         
-        public var contextSize: Int {
+        public var contextSize: Int? {
             switch self {
                 case .text_embedding_ada_002:
                     return 8192
@@ -257,6 +257,7 @@ extension OpenAI.Model {
         case gpt_4_turbo = "gpt-4-turbo"
         
         case gpt_4o = "gpt-4o"
+        case gpt_4o_mini = "gpt-4o-mini"
 
         case __deprecated_gpt_4_turbo_preview = "gpt-4-turbo-preview"
 
@@ -298,17 +299,19 @@ extension OpenAI.Model {
                     return "GPT-4 Turbo"
                 case .gpt_4o:
                     return "GPT-4o"
+                case .gpt_4o_mini:
+                    return "GPT-4o mini"
                 case .__deprecated_gpt_4_turbo_preview:
                     return "GPT-4 Turbo (Preview)"
             }
         }
         
-        public var contextSize: Int {
+        public var contextSize: Int? {
             let _4k = 4096
             let _8k = 8192
             let _16k = 16384
             let _32k = 16384
-            
+                        
             // let _128k = 131072
             
             switch self {
@@ -342,6 +345,8 @@ extension OpenAI.Model {
                     return 4096 // FIXME: !!!
                 case .gpt_4o:
                     return 4096 * 4
+                case .gpt_4o_mini:
+                    return nil
             }
         }
     }
@@ -354,7 +359,9 @@ extension OpenAI.Model {
         /// The tts-1-hd is the latest text to speech model, optimized for quality.
         case tts_1_hd = "tts-1-hd"
         
-        public var contextSize: Int { return 4096 }
+        public var contextSize: Int? {
+            4096
+        }
         
         public var name: String {
             switch self {
@@ -373,7 +380,7 @@ extension OpenAI.Model {
         
         case whisper_1 = "whisper-1"
         
-        public var contextSize: Int {
+        public var contextSize: Int? {
             return 4096
         }
         
@@ -394,8 +401,8 @@ extension OpenAI.Model {
         
         case dalle3 = "dall-e-3"
         
-        public var contextSize: Int {
-            return 4000
+        public var contextSize: Int? {
+            4000
         }
         
         public var name: String {

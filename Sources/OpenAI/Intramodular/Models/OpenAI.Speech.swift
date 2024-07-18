@@ -6,7 +6,7 @@ import NetworkKit
 import Swift
 
 extension OpenAI {
-    public final class Speech: OpenAI.Object {
+    public final class Speech: OpenAI.Object, @unchecked Sendable {
         public let data: Data
         
         public required init(from decoder: Decoder) throws {

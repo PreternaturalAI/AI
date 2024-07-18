@@ -7,7 +7,7 @@ import Diagnostics
 import Swift
 
 extension OpenAI {
-    public final class Image: OpenAI.Object {
+    public final class Image: OpenAI.Object, @unchecked Sendable {
         enum CodingKeys: String, CodingKey {
             case url
             case revisedPrompt

@@ -6,7 +6,7 @@ import NetworkKit
 import Swift
 
 extension OpenAI {
-    public final class Thread: OpenAI.Object {
+    public final class Thread: OpenAI.Object, @unchecked Sendable {
         public typealias ID = _TypeAssociatedID<Thread, String>
         
         private enum CodingKeys: String, CodingKey {

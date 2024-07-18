@@ -6,7 +6,7 @@ import NetworkKit
 import Swift
 
 extension OpenAI {
-    public final class TextCompletion: OpenAI.Object {
+    public final class TextCompletion: OpenAI.Object, @unchecked Sendable {
         private enum CodingKeys: String, CodingKey {
             case id
             case model
