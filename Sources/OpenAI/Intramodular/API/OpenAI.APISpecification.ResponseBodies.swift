@@ -12,7 +12,7 @@ extension OpenAI.APISpecification {
 }
 
 extension OpenAI.APISpecification.ResponseBodies {
-    public final class CreateEmbedding: OpenAI.List<OpenAI.Embedding> {
+    public final class CreateEmbedding: OpenAI.List<OpenAI.Embedding>, @unchecked Sendable {
         private enum CodingKeys: String, CodingKey {
             case model
             case usage
