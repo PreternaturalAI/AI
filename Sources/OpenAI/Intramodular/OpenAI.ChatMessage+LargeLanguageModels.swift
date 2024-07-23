@@ -3,6 +3,7 @@
 //
 
 import CorePersistence
+import FoundationX
 @_spi(Internal) import LargeLanguageModels
 
 extension OpenAI.ChatMessage: _PromptLiteralEncodingContainer {

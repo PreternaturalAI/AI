@@ -3,6 +3,7 @@
 //
 
 import CorePersistence
+import FoundationX
 import LargeLanguageModels
 import Swallow
 import UniformTypeIdentifiers

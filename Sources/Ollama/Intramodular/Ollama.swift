@@ -3,6 +3,7 @@
 //
 
 import CorePersistence
+import FoundationX
 import LargeLanguageModels
 import Merge
 import NetworkKit

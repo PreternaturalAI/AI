@@ -36,7 +36,7 @@ extension OpenAI {
         public let object: OpenAI.ObjectType
         public var created: Date?
         public var ownedBy: String?
-        public var permission: [Permission] = []
+        public var permission: [Permission]? = []
         public var root: String?
         public var parent: String?
         

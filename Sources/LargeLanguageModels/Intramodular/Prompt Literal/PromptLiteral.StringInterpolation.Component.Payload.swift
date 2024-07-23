@@ -3,7 +3,7 @@
 //
 
 import CorePersistence
-import Foundation
+import FoundationX
 import Swallow
 import SwiftUIX
 
