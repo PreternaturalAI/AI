@@ -13,7 +13,7 @@ extension Jina {
         case apiKeyMissing
         case incorrectAPIKeyProvided
         case rateLimitExceeded
-        case badRequest(API.Request.Error)
+        case badRequest(request: API.Request?, error: API.Request.Error)
         case runtime(AnyError)
         
         public var traits: ErrorTraits {

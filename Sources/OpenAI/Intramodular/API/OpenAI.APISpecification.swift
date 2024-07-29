@@ -17,7 +17,7 @@ extension OpenAI {
         case rateLimitExceeded
         case invalidContentType
         case maximumContentSizeLimitExceeded
-        case badRequest(API.Request.Error)
+        case badRequest(request: API.Request?, error: API.Request.Error)
         case unknown(message: String)
         case runtime(AnyError)
         
