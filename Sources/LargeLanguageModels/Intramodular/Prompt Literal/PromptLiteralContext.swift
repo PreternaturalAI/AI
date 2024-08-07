@@ -30,7 +30,9 @@ public struct PromptLiteralContext: Codable, HashEquatable, @unchecked Sendable 
         self.init(storage: .init())
     }
     
-    public subscript<Key: PromptLiteralContextKey>(key: Key.Type) -> Key.Value {
+    public subscript<Key: PromptLiteralContextKey>(
+        key: Key.Type
+    ) -> Key.Value {
         get {
             storage[key] ?? key.defaultValue
         } set {
@@ -38,7 +40,9 @@ public struct PromptLiteralContext: Codable, HashEquatable, @unchecked Sendable 
         }
     }
     
-    public func hash(into hasher: inout Hasher) {
+    public func hash(
+        into hasher: inout Hasher
+    ) {
         storage.forEach {
             let pair = Hashable2ple(($0.key, _HashableExistential(wrappedValue: $0.value)))
             
@@ -46,7 +50,9 @@ public struct PromptLiteralContext: Codable, HashEquatable, @unchecked Sendable 
         }
     }
     
-    func removingValues(_ keys: some Sequence<any PromptLiteralContextKey.Type>) -> Self {
+    func removingValues(
+        _ keys: some Sequence<any PromptLiteralContextKey.Type>
+    ) -> Self {
         Self(storage: storage.removingValues(forKeys: keys.map({ $0 as Any.Type })))
     }
 }

@@ -22,23 +22,25 @@ extension PromptLiteral.StringInterpolation {
                 assert(!(value is any _opaque_DynamicPromptVariable))
             }
         }
+    }
+}
+
+extension PromptLiteral.StringInterpolation.Component {
+    @_spi(Internal)
+    public init(
+        payload: Payload,
+        role: PromptMatterRole? = nil
+    ) {
+        var context = PromptLiteralContext()
         
-        @_spi(Internal)
-        public init(
-            payload: Payload,
-            role: PromptMatterRole? = nil
-        ) {
-            var context = PromptLiteralContext()
-            
-            if let role {
-                context.role = .selected(role)
-            }
-            
-            self.init(
-                payload: payload,
-                context: context
-            )
+        if let role {
+            context.role = .selected(role)
         }
+        
+        self.init(
+            payload: payload,
+            context: context
+        )
     }
 }
 
