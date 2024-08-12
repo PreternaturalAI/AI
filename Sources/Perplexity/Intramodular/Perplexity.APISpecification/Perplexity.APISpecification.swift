@@ -2,10 +2,10 @@
 // Copyright (c) Vatsal Manot
 //
 
-import NetworkKit
-import FoundationX
-import Swallow
 import CorePersistence
+import FoundationX
+import NetworkKit
+import Swallow
 
 extension Perplexity {
     public enum APIError: APIErrorProtocol {
@@ -148,4 +148,3 @@ extension Perplexity.APISpecification {
         
     }
 }
-
