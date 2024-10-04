@@ -25,6 +25,7 @@ extension _MIServiceTypeIdentifier: PersistentIdentifier {
 
 extension _MIServiceTypeIdentifier {
     public static let _Anthropic = _MIServiceTypeIdentifier(rawValue: "puhif-pudav-gujir-nubup")
+    public static let _Fal = _MIServiceTypeIdentifier(rawValue: "ashdo-irtol-phono-resed")
     public static let _HuggingFace = _MIServiceTypeIdentifier(rawValue: "jutot-gugal-luzoh-vorig")
     public static let _Mistral = _MIServiceTypeIdentifier(rawValue: "vogas-fohig-mokij-titun")
     public static let _Groq = _MIServiceTypeIdentifier(rawValue: "jabub-potuv-juniv-nodik")
