@@ -258,6 +258,7 @@ extension OpenAI.Model {
         
         case gpt_4o = "gpt-4o"
         case gpt_4o_mini = "gpt-4o-mini"
+        case gpt_4o_2024_08_06 = "gpt-4o-2024-08-06"
 
         case __deprecated_gpt_4_turbo_preview = "gpt-4-turbo-preview"
 
@@ -301,6 +302,8 @@ extension OpenAI.Model {
                     return "GPT-4o"
                 case .gpt_4o_mini:
                     return "GPT-4o mini"
+                case .gpt_4o_2024_08_06:
+                    return "GPT-4o 2024-08-06"
                 case .__deprecated_gpt_4_turbo_preview:
                     return "GPT-4 Turbo (Preview)"
             }
@@ -346,6 +349,8 @@ extension OpenAI.Model {
                 case .gpt_4o:
                     return 4096 * 4
                 case .gpt_4o_mini:
+                    return nil
+                case .gpt_4o_2024_08_06:
                     return nil
             }
         }

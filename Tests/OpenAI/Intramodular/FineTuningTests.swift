@@ -27,6 +27,14 @@ final class FineTuningTests: XCTestCase {
         print(file)
     }
     
+    func testUploadJSONLMessagesWithImages() async throws {
+        let file = try await client.uploadFineTuningMessages(fineTuningMessagesWithImages,
+            to: "myTestMessagesWithImages"
+        )
+        
+        print(file)
+    }
+    
     func testCreateFineTuningJob() async throws {
         // note: add your own training file id here
         let trainingFileID = "file-ykcD31d40g67NKVFmQ5E3vA9"
@@ -40,6 +48,34 @@ final class FineTuningTests: XCTestCase {
         do {
             let job: OpenAI.FineTuning.Job = try await client.createFineTuningJob(
                 model: .gpt_3_5_turbo,
+                trainingFileID: trainingFileID,
+                hyperparameters: hyperparameters,
+                suffix: suffix,
+                validationFileID: nil,
+                integrations: nil,
+                seed: nil
+            )
+            print(job)
+            // cancel job
+            let _ = try await client.cancelFineTuningJob(job.id.rawValue)
+        } catch {
+            XCTFail(String(describing: error))
+        }
+    }
+    
+    func testCreateFineTuningJobWithImages() async throws {
+        // note: add your own training file id here
+        let trainingFileID = "file-kjUfgkIYVIUBrcGB0VQprf5K"
+        let hyperparameters = OpenAI.FineTuning.Hyperparameters(
+            batchSize: .auto,
+            learningRateMultiplier: .auto,
+            nEpochs: .auto
+        )
+        let suffix = "myTestJobWithImages"
+        
+        do {
+            let job: OpenAI.FineTuning.Job = try await client.createFineTuningJob(
+                model: .gpt_4o_2024_08_06,
                 trainingFileID: trainingFileID,
                 hyperparameters: hyperparameters,
                 suffix: suffix,
@@ -280,6 +316,309 @@ final class FineTuningTests: XCTestCase {
             OpenAI.ChatMessage(
                 role: .assistant,
                 content: "The Earth's tilt and its orbit around the Sun. Didn't you learn this in school?"
+            )
+        ]
+    ]
+    
+    private let fineTuningMessagesWithImages: [[OpenAI.ChatMessage]] = [
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "What is this cheese?"
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/3/36/Danbo_Cheese.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Danbo"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "What cheese is this?"
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/4/48/Mimolette_Rinde.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Mimolette"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "Can you identify this cheese?"
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/d/d7/Cabrales.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Cabrales"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "What's this cheese called?"
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/8/83/%C3%89poisses_de_Bourgogne.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Epoisses"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "Identify this cheese please."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/a/a8/Oscypki.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Oscypek"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "What kind of cheese is shown here?"
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/3/39/Wikicheese_-_Roquefort_-_20150417_-_002.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Roquefort"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "Can you name this cheese?"
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Taleggio_Cheese.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Taleggio"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "What's the name of this cheese variety?"
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Flickr_-_cyclonebill_-_Manchego.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Manchego"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "Which cheese is this?"
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/0/03/Blue_Stilton_08.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Stilton"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "Tell me the name of this cheese."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/e/ee/Pecorino_romano_cheese.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Pecorino Romano"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "Identify this cheese for me, please."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/1/1d/20150125_Le_Gruy%C3%A8re_AOP_R%C3%A9serve_-_Der_Schweizer_-_WikiLovesCheese_Vienna_8830.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Gruyère"
+            )
+        ],
+        [
+            OpenAI.ChatMessage(
+                role: .system,
+                content: "You are an assistant that identifies uncommon cheeses."
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                content: "What's the name of this unique cheese?"
+            ),
+            OpenAI.ChatMessage(
+                role: .user,
+                body: .content([
+                    .imageURL(
+                        OpenAI.ChatMessageBody._Content.ImageURL(
+                            url: URL(string: "https://upload.wikimedia.org/wikipedia/commons/d/df/Gorgonzola_3.jpg")!,
+                            detail: .auto
+                        )
+                    )
+                ])
+            ),
+            OpenAI.ChatMessage(
+                role: .assistant,
+                content: "Gorgonzola"
             )
         ]
     ]
