@@ -115,5 +115,15 @@ extension OpenAI {
         public let promptTokens: Int
         public let completionTokens: Int?
         public let totalTokens: Int
+        public let promptTokensDetails: PromptTokensDetails?
+        public let completionTokensDetails: CompletionTokensDetails?
+    }
+    
+    public struct PromptTokensDetails: Codable, Hashable, Sendable {
+        public let cachedTokens: Int?
+    }
+    
+    public struct CompletionTokensDetails: Codable, Hashable, Sendable {
+        public let reasoningTokens: Int?
     }
 }
