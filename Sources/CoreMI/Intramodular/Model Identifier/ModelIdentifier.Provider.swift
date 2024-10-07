@@ -12,6 +12,7 @@ extension ModelIdentifier {
     public enum Provider: Hashable, Sendable {
         case _Anthropic
         case _Apple
+        case _Fal
         case _Mistral
         case _Groq
         case _Ollama
@@ -28,6 +29,10 @@ extension ModelIdentifier {
         
         public static var apple: Self {
             Self._Apple
+        }
+        
+        public static var fal: Self {
+            self._Fal
         }
         
         public static var openAI: Self {
@@ -81,6 +86,8 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
             return "Anthropic"
         case ._Apple:
             return "Apple"
+        case ._Fal:
+            return "Fal"
         case ._Mistral:
             return "Mistral"
         case ._Groq:
@@ -116,6 +123,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
             return "anthropic"
         case ._Apple:
             return "apple"
+        case ._Fal:
+            return "fal"
         case ._Mistral:
             return "mistral"
         case ._Groq:
@@ -149,6 +158,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
             self = ._Anthropic
         case Self._Apple.rawValue:
             self = ._Apple
+        case Self._Fal.rawValue:
+            self = ._Fal
         case Self._Mistral.rawValue:
             self = ._Mistral
         case Self._Groq.rawValue:
