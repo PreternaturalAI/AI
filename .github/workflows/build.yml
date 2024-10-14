@@ -1,0 +1,22 @@
+name: Preternatural Build
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Run Preternatural Build (Xcode 16)
+      uses: PreternaturalAI/github-action/preternatural-build@main
+      with:
+        xcode-version: '16'
+        configuration: 'debug'
