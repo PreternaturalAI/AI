@@ -18,8 +18,9 @@ jobs:
       uses: actions/checkout@v3
     
     - name: Run Preternatural Build (Xcode 16)
-      uses: PreternaturalAI/github-action/preternatural-build@main
+      uses: PreternaturalAI/github-action/preternatural-build@f114df9b2374663bbb27d853a0d5363fa8cb332d
       with:
         xcode-version: '16'
         platforms: 'all'
-        configurations: 'debug'
+        configurations: 'debug,release'
+        preternaturalSource: 'sourcecode'
