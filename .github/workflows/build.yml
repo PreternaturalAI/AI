@@ -22,4 +22,4 @@ jobs:
       with:
         xcode-version: '16'
         platforms: 'all'
-        configuration: 'debug'
+        configurations: 'debug'
