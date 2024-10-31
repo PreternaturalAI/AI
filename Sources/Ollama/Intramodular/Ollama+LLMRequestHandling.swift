@@ -9,8 +9,8 @@ import NetworkKit
 import Swallow
 
 extension Ollama: _TaskDependenciesExporting {
-    public var _exportedTaskDependencies: Dependencies {
-        var result = Dependencies()
+    public var _exportedTaskDependencies: TaskDependencies {
+        var result = TaskDependencies()
         
         result[\.llm] = self
         

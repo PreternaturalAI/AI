@@ -55,7 +55,7 @@ extension ElevenLabs.Client: _MIService {
 
 extension ElevenLabs.Client {
     public func availableVoices() async throws -> [ElevenLabs.Voice] {
-        let request = HTTPRequest(url: URL(string: "\(apiSpecification)/v1/voices")!)
+        let request = HTTPRequest(url: URL(string: "\(apiSpecification.host)/v1/voices")!)
             .method(.get)
             .header("xi-api-key", configuration.apiKey)
             .header(.contentType(.json))
@@ -141,12 +141,12 @@ extension ElevenLabs.Client {
                 } else if let data = data {
                     if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
                         do {
-                            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String] {
-                                continuation.resume(returning: json["voice_id"])
+                            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                                guard let voiceID: String = json["voice_id"] as? String else { return }
+                                continuation.resume(returning: voiceID)
                             } else {
                                 continuation.resume(returning: nil)
                             }
-                            
                         } catch {
                             continuation.resume(throwing: _PlaceholderError())
                         }
