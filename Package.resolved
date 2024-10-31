@@ -1,5 +1,5 @@
 {
-  "originHash" : "760d6443404d98dbde014ca45c328e9e24e77cabbfb796fa872e45f50f7d0bf7",
+  "originHash" : "94d68f4c7f8e06c92fb72c9430ccbe45fc7aac41e85ef6a5f0167a5e6e16e62f",
   "pins" : [
     {
       "identity" : "corepersistence",
@@ -25,7 +25,7 @@
       "location" : "https://github.com/vmanot/NetworkKit.git",
       "state" : {
         "branch" : "master",
-        "revision" : "5eb6e13df2298423b10dd70109ede58cbce6dde3"
+        "revision" : "8daa1ba22e5d18e1b8e469d5a0dd0c58b675eb87"
       }
     },
     {
