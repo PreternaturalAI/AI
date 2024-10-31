@@ -6,7 +6,7 @@ import FoundationX
 import Swallow
 @_spi(Internal) import SwiftUIX
 
-#if os(iOS) || os(macOS) || os(tvOS) || os(visionOS)
+#if os(iOS) || os(macOS) || os(tvOS) || os(visionOS) || os(watchOS)
 extension PromptLiteral {
     init(
         _imageOrImageURL image: Either<SwiftUIX._AnyImage, URL>
