@@ -18,6 +18,8 @@ extension ElevenLabs {
         case EnglishV1 = "eleven_monolingual_v1"
         /// Taking a step towards global access and usage, we introduced Multilingual v1 as our second offering. Has been an experimental model ever since release. To this day, it still remains in the experimental phase.
         case MultilingualV1 = "eleven_multilingual_v1"
+        
+        case EnglishSTSV2 = "eleven_english_sts_v2"
     }
 }
 

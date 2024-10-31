@@ -16,36 +16,42 @@ extension ElevenLabs {
         
         /// Increasing stability will make the voice more consistent between re-generations, but it can also make it sounds a bit monotone. On longer text fragments it is recommended to lower this value.
         /// This is a double between 0 (more variable) and 1 (more stable).
-        public let stability: Double
+        public var stability: Double
         
         /// Increasing the Similarity Boost setting enhances the overall voice clarity and targets speaker similarity. However, very high values can cause artifacts, so it is recommended to adjust this setting to find the optimal value.
         /// This is a double between 0 (Low) and 1 (High).
-        public let similarityBoost: Double
+        public var similarityBoost: Double
         
         /// High values are recommended if the style of the speech should be exaggerated compared to the selected voice. Higher values can lead to more instability in the generated speech. Setting this to 0 will greatly increase generation speed and is the default setting.
-        public let styleExaggeration: Double
+        public var styleExaggeration: Double
         
         /// Boost the similarity of the synthesized speech and the voice at the cost of some generation speed.
-        public let speakerBoost: Bool
+        public var speakerBoost: Bool
+        
+        public var removeBackgroundNoise: Bool
         
         public init(stability: Double,
                     similarityBoost: Double,
                     styleExaggeration: Double,
-                    speakerBoost: Bool) {
+                    speakerBoost: Bool,
+                    removeBackgroundNoise: Bool) {
             self.stability = max(0, min(1, stability))
             self.similarityBoost = max(0, min(1, similarityBoost))
             self.styleExaggeration = max(0, min(1, styleExaggeration))
             self.speakerBoost = speakerBoost
+            self.removeBackgroundNoise = removeBackgroundNoise
         }
         
         public init(stability: Double? = nil,
                     similarityBoost: Double? = nil,
                     styleExaggeration: Double? = nil,
-                    speakerBoost: Bool? = nil) {
+                    speakerBoost: Bool? = nil,
+                    removeBackgroundNoise: Bool? = nil) {
             self.stability = stability.map { max(0, min(1, $0)) } ?? 0.5
             self.similarityBoost = similarityBoost.map { max(0, min(1, $0)) } ?? 0.75
             self.styleExaggeration = styleExaggeration.map { max(0, min(1, $0)) } ?? 0
             self.speakerBoost = speakerBoost ?? true
+            self.removeBackgroundNoise = removeBackgroundNoise ?? false
         }
         
         public convenience init(stability: Double) {
@@ -53,7 +59,8 @@ extension ElevenLabs {
                 stability: stability,
                 similarityBoost: 0.75,
                 styleExaggeration: 0,
-                speakerBoost: true
+                speakerBoost: true,
+                removeBackgroundNoise: false
             )
         }
         
@@ -62,7 +69,8 @@ extension ElevenLabs {
                 stability: 0.5,
                 similarityBoost: similarityBoost,
                 styleExaggeration: 0,
-                speakerBoost: true
+                speakerBoost: true,
+                removeBackgroundNoise: false
             )
         }
         
@@ -71,7 +79,8 @@ extension ElevenLabs {
                 stability: 0.5,
                 similarityBoost: 0.75,
                 styleExaggeration: styleExaggeration,
-                speakerBoost: true
+                speakerBoost: true,
+                removeBackgroundNoise: false
             )
         }
         
@@ -80,7 +89,8 @@ extension ElevenLabs {
                 stability: 0.5,
                 similarityBoost: 0.75,
                 styleExaggeration: 0,
-                speakerBoost: speakerBoost
+                speakerBoost: speakerBoost,
+                removeBackgroundNoise: false
             )
         }
         
@@ -91,6 +101,7 @@ extension ElevenLabs {
             try container.encode(similarityBoost, forKey: .similarityBoost)
             try container.encode(styleExaggeration, forKey: .styleExaggeration)
             try container.encode(speakerBoost, forKey: .speakerBoost)
+            try container.encode(removeBackgroundNoise, forKey: .removeBackgroundNoise)
         }
     }
 }

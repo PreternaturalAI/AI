@@ -95,8 +95,66 @@ extension ElevenLabs.Client {
         let response = try await HTTPSession.shared.data(for: request)
         
         try response.validate()
-
+        
         return response.data
+    }
+    
+    public func speechToSpeech(
+        inputAudioURL: URL,
+        voiceID: String,
+        voiceSettings: ElevenLabs.VoiceSettings,
+        model: ElevenLabs.Model
+    ) async throws -> Data {
+        let boundary = UUID().uuidString
+        
+        var request = try URLRequest(url: URL(string: "\(apiSpecification.host)/v1/speech-to-speech/\(voiceID)/stream").unwrap())
+        
+        request.httpMethod = "POST"
+        request.setValue("audio/mpeg", forHTTPHeaderField: "accept")
+        request.setValue(configuration.apiKey, forHTTPHeaderField: "xi-api-key")
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var data = Data()
+        
+        // Add model_id
+        data.append("--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"model_id\"\r\n\r\n".data(using: .utf8)!)
+        data.append("\(model.rawValue)\r\n".data(using: .utf8)!)
+        
+        // Add voice settings
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        let voiceSettingsData = try encoder.encode(voiceSettings)
+        let voiceSettingsString = String(data: voiceSettingsData, encoding: .utf8)!
+        
+        data.append("--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"voice_settings\"\r\n\r\n".data(using: .utf8)!)
+        data.append("\(voiceSettingsString)\r\n".data(using: .utf8)!)
+        
+        // Add audio file
+        if let fileData = createMultipartData(boundary: boundary, name: "audio", fileURL: inputAudioURL, fileType: "audio/mpeg") {
+            data.append(fileData)
+        }
+        
+        data.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        request.httpBody = data
+        
+        return try await withUnsafeThrowingContinuation { continuation in
+            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let data = data {
+                    if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                        continuation.resume(returning: data)
+                    } else {
+                        continuation.resume(throwing: _PlaceholderError())
+                    }
+                }
+            }
+            
+            task.resume()
+        }
     }
     
     public func upload(
