@@ -14,12 +14,9 @@ jobs:
   build:
     runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - run: echo pwd
     
-    - name: Run Preternatural Build (Xcode 16)
-      uses: PreternaturalAI/github-action/preternatural-build@main
+    - name: Run Preternatural Modify and Commit
+      uses: PreternaturalAI/github-action/preternatural-modify-and-commit@2576cd382532c81507adc7d2f0ba128726cfca01
       with:
-        xcode-version: '16'
-        platforms: 'all'
-        configurations: 'debug'
+        file-path: "build.yml"
