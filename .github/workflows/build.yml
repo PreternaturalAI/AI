@@ -14,12 +14,33 @@ jobs:
   build:
     runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    
-    - name: Run Preternatural Build (Xcode 16)
-      uses: PreternaturalAI/github-action/preternatural-build@main
+    - name: Setup SSH key
+      shell: bash
+      run: |
+        echo "==== Setup SSH Key ===="
+        mkdir -p ~/.ssh
+        echo "LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjNCbGJuTnphQzFyWlhrdGRqRUFBQUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUFNd0FBQUF0emMyZ3RaVwpReU5UVXhPUUFBQUNDTmM2ZzBsdyt6WFBqR0c0MCsyR1NTTk95b0ZGY0RqaEs5aHN4ODB4dlNIZ0FBQUtnTy9KOUZEdnlmClJRQUFBQXR6YzJndFpXUXlOVFV4T1FBQUFDQ05jNmcwbHcrelhQakdHNDArMkdTU05PeW9GRmNEamhLOWhzeDgweHZTSGcKQUFBRUNTdjkwSXJXbEhOcnNqVHVmZ2tEdWdtSUoyQncxNFVJdzVOMTZwenlmOE5ZMXpxRFNYRDdOYytNWWJqVDdZWkpJMAo3S2dVVndPT0VyMkd6SHpURzlJZUFBQUFJWFJoYUdGaVpXSmxhMEJVWVdoaGN5MU5ZV05DYjI5ckxWQnlieTVzYjJOaGJBCkVDQXdRPQotLS0tLUVORCBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0K" | base64 -d  > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        # Configure git to use SSH instead of HTTPS for GitHub
+        git config --global url."git@github.com:".insteadOf "https://github.com/"
+        # Set the GIT_SSH_COMMAND for all git operations
+        export GIT_SSH_COMMAND='ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes'
+        echo "export GIT_SSH_COMMAND='ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes'" >> ~/.bashrc
+        echo "=================================="
+
+    - name: Check out to internal-github-action
+      uses: actions/checkout@v4
+      with:
+        repository: PreternaturalAI/internal-github-action
+        ref: main
+        path: ./.github/actions/internal-github-action
+
+    - name: Run internal-github-action build 
+      uses: ./.github/actions/internal-github-action/preternatural-build
       with:
         xcode-version: '16'
+        repo_url: git@github.com:PreternaturalAI/AI.git
+        repo_commit_hash_or_branch_name: main
+        configurations: '["debug", "release"]'
         platforms: '["all"]'
-        configurations: '["debug"]'
