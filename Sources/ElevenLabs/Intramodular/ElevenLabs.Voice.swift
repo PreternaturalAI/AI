@@ -19,6 +19,18 @@ extension ElevenLabs {
             ID(rawValue: voiceID)
         }
         
+        public init(
+            voiceID: String,
+            name: String,
+            description: String?,
+            isOwner: Bool
+        ) {
+            self.voiceID = voiceID
+            self.name = name
+            self.description = description
+            self.isOwner = isOwner
+        }
+        
         enum CodingKeys: String, CodingKey {
             case voiceID = "voiceId"
             case name
