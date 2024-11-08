@@ -224,7 +224,7 @@ extension ElevenLabs.Client {
         voice: ElevenLabs.Voice.ID,
         name: String,
         description: String,
-        fileURL: URL
+        fileURL: URL?
     ) async throws -> Bool {
         let url = URL(string: "\(apiSpecification.host)/v1/voices/\(voice.rawValue)/edit")!
         
@@ -249,8 +249,15 @@ extension ElevenLabs.Client {
             data.append("\(value)\r\n".data(using: .utf8)!)
         }
         
-        if let fileData = createMultipartData(boundary: boundary, name: "files", fileURL: fileURL, fileType: "audio/x-wav") {
-            data.append(fileData)
+        if let fileURL {
+            if let fileData = createMultipartData(
+                boundary: boundary,
+                name: "files",
+                fileURL: fileURL,
+                fileType: "audio/x-wav"
+            ) {
+                data.append(fileData)
+            }
         }
         
         data.append("--\(boundary)--\r\n".data(using: .utf8)!)
