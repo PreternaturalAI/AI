@@ -188,14 +188,14 @@ public extension HuggingFace.Hub.Client {
         // We'll probably need to support Combine as well to play well with Swift UI
         // (See for example PipelineLoader in swift-coreml-diffusers)
         @discardableResult
-        func download(progressHandler: @escaping (Double) -> Void) async throws -> URL {
+        func download(outputHandler: @escaping (Double) -> Void) async throws -> URL {
             guard !downloaded else { return destination }
 
             try prepareDestination()
             let downloader = HuggingFace.Downloader(from: source, to: destination, using: hfToken, inBackground: backgroundSession)
             let downloadSubscriber = downloader.downloadState.sink { state in
                 if case .downloading(let progress) = state {
-                    progressHandler(progress)
+                    outputHandler(progress)
                 }
             }
             _ = try withExtendedLifetime(downloadSubscriber) {
@@ -209,7 +209,7 @@ public extension HuggingFace.Hub.Client {
     func snapshot(
         from repo: Repo,
         matching globs: [String] = [],
-        progressHandler: @escaping (
+        outputHandler: @escaping (
             Progress
         ) -> Void = {
             _ in
@@ -230,11 +230,11 @@ public extension HuggingFace.Hub.Client {
             )
             try await downloader.download { fractionDownloaded in
                 fileProgress.completedUnitCount = Int64(100 * fractionDownloaded)
-                progressHandler(progress)
+                outputHandler(progress)
             }
             fileProgress.completedUnitCount = 100
         }
-        progressHandler(progress)
+        outputHandler(progress)
         return repoDestination
     }
     
@@ -242,12 +242,12 @@ public extension HuggingFace.Hub.Client {
     func snapshot(
         from repoId: String,
         matching globs: [String] = [],
-        progressHandler: @escaping (Progress) -> Void = { _ in }
+        outputHandler: @escaping (Progress) -> Void = { _ in }
     ) async throws -> URL {
         return try await snapshot(
             from: Repo(id: repoId),
             matching: globs,
-            progressHandler: progressHandler
+            outputHandler: outputHandler
         )
     }
     
@@ -255,18 +255,18 @@ public extension HuggingFace.Hub.Client {
     func snapshot(
         from repo: Repo,
         matching glob: String,
-        progressHandler: @escaping (Progress) -> Void = { _ in }
+        outputHandler: @escaping (Progress) -> Void = { _ in }
     ) async throws -> URL {
-        return try await snapshot(from: repo, matching: [glob], progressHandler: progressHandler)
+        return try await snapshot(from: repo, matching: [glob], outputHandler: outputHandler)
     }
     
     @discardableResult
     func snapshot(
         from repoId: String,
         matching glob: String,
-        progressHandler: @escaping (Progress) -> Void = {_ in }
+        outputHandler: @escaping (Progress) -> Void = {_ in }
     ) async throws -> URL {
-        return try await snapshot(from: Repo(id: repoId), matching: [glob], progressHandler: progressHandler)
+        return try await snapshot(from: Repo(id: repoId), matching: [glob], outputHandler: outputHandler)
     }
 }
 
@@ -306,33 +306,33 @@ public extension HuggingFace.Hub {
     static func snapshot(
         from repo: Repo,
         matching globs: [String] = [],
-        progressHandler: @escaping (Progress) -> Void = { _ in }
+        outputHandler: @escaping (Progress) -> Void = { _ in }
     ) async throws -> URL {
-        return try await HuggingFace.Hub.Client.shared.snapshot(from: repo, matching: globs, progressHandler: progressHandler)
+        return try await HuggingFace.Hub.Client.shared.snapshot(from: repo, matching: globs, outputHandler: outputHandler)
     }
     
     static func snapshot(
         from repoId: String,
         matching globs: [String] = [],
-        progressHandler: @escaping (Progress) -> Void = { _ in }
+        outputHandler: @escaping (Progress) -> Void = { _ in }
     ) async throws -> URL {
-        return try await HuggingFace.Hub.Client.shared.snapshot(from: Repo(id: repoId), matching: globs, progressHandler: progressHandler)
+        return try await HuggingFace.Hub.Client.shared.snapshot(from: Repo(id: repoId), matching: globs, outputHandler: outputHandler)
     }
     
     static func snapshot(
         from repo: Repo,
         matching glob: String,
-        progressHandler: @escaping (Progress) -> Void = { _ in }
+        outputHandler: @escaping (Progress) -> Void = { _ in }
     ) async throws -> URL {
-        return try await HuggingFace.Hub.Client.shared.snapshot(from: repo, matching: glob, progressHandler: progressHandler)
+        return try await HuggingFace.Hub.Client.shared.snapshot(from: repo, matching: glob, outputHandler: outputHandler)
     }
     
     static func snapshot(
         from repoId: String,
         matching glob: String,
-        progressHandler: @escaping (Progress) -> Void = { _ in }
+        outputHandler: @escaping (Progress) -> Void = { _ in }
     ) async throws -> URL {
-        return try await HuggingFace.Hub.Client.shared.snapshot(from: Repo(id: repoId), matching: glob, progressHandler: progressHandler)
+        return try await HuggingFace.Hub.Client.shared.snapshot(from: Repo(id: repoId), matching: glob, outputHandler: outputHandler)
     }
     
     static func whoami(token: String) async throws -> HuggingFace.Config {

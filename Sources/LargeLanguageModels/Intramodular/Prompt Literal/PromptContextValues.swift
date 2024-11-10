@@ -27,7 +27,9 @@ public struct PromptContextValues: Codable, Hashable, Initiable, @unchecked Send
         self.storage = .init()
     }
     
-    public subscript<Key: PromptContextKey>(key: Key.Type) -> Key.Value {
+    public subscript<Key: PromptContextKey>(
+        key: Key.Type
+    ) -> Key.Value {
         get {
             storage[key] ?? key.defaultValue
         } set {
@@ -114,7 +116,9 @@ extension PromptContextValues {
         }
     }
     
-    public mutating func assign<T: ModelIdentifierConvertible>(modelIdentifier: T) {
+    public mutating func assign<T: ModelIdentifierConvertible>(
+        modelIdentifier: T
+    ) {
         self.modelIdentifier = .one(try! modelIdentifier.__conversion())
     }
 }

@@ -115,7 +115,10 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/_Gemini"
+            path: "Sources/_Gemini",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "Mistral",
@@ -127,7 +130,10 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/Mistral"
+            path: "Sources/Mistral",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "Groq",
@@ -139,7 +145,10 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/Groq"
+            path: "Sources/Groq",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "Ollama",
@@ -176,6 +185,7 @@ let package = Package(
                 "CorePersistence",
                 "CoreMI",
                 "LargeLanguageModels",
+                "OpenAI",
                 "Merge",
                 "NetworkKit",
                 "Swallow"
@@ -195,7 +205,10 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/Jina"
+            path: "Sources/Jina",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "VoyageAI",
@@ -207,7 +220,10 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/VoyageAI"
+            path: "Sources/VoyageAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "Cohere",
@@ -219,7 +235,10 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/Cohere"
+            path: "Sources/Cohere",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "TogetherAI",
@@ -231,14 +250,20 @@ let package = Package(
                 "NetworkKit",
                 "Swallow"
             ],
-            path: "Sources/TogetherAI"
+            path: "Sources/TogetherAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "HuggingFace",
             dependencies: [
                 
             ],
-            path: "Sources/HuggingFace"
+            path: "Sources/HuggingFace",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         ),
         .target(
             name: "AI",

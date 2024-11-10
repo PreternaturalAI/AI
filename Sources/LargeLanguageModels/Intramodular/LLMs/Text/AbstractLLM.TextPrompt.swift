@@ -2,11 +2,12 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CorePersistence
 import Foundation
 import Swallow
 
 extension AbstractLLM {
-    public struct TextPrompt: AbstractLLM.Prompt, Hashable, Sendable {
+    public struct TextPrompt: AbstractLLM.Prompt, Codable, Hashable, Sendable {
         public typealias CompletionParameters = AbstractLLM.TextCompletionParameters
         public typealias Completion = AbstractLLM.TextCompletion
         
@@ -14,15 +15,24 @@ extension AbstractLLM {
             .text
         }
         
-        @_HashableExistential
+        @_UnsafelySerialized
         public var prefix: any PromptLiteralConvertible
         public var context: PromptContextValues
         
         public init(
-            prefix: any PromptLiteralConvertible,
+            prefix: PromptLiteral,
             context: PromptContextValues = .init()
         ) {
             self.prefix = prefix
+            self.context = context
+        }
+
+        @_disfavoredOverload
+        public init(
+            prefix: any PromptLiteralConvertible,
+            context: PromptContextValues = .init()
+        ) {
+            self.prefix = PromptLiteral(_lazy: prefix)
             self.context = context
         }
     }

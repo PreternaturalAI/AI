@@ -7,12 +7,12 @@ import Foundation
 import Swallow
 
 extension AbstractLLM {
-    public enum CompletionType: CaseIterable, Hashable, Sendable {
-        case text
-        case chat
+    public enum CompletionType: String, CaseIterable, Codable, Hashable, Sendable {
+        case text = "text"
+        case chat = "chat"
     }
     
-    public protocol Prompt: Hashable, Sendable {
+    public protocol Prompt: Codable, Hashable, Sendable {
         associatedtype CompletionParameters: AbstractLLM.CompletionParameters
         associatedtype Completion: Partializable
         
@@ -55,6 +55,22 @@ extension AbstractLLM {
         
         case text(TextPrompt)
         case chat(ChatPrompt)
+        
+        public var textPrompt: TextPrompt? {
+            guard case .text(let prompt) = self else {
+                return nil
+            }
+
+            return prompt
+        }
+        
+        public var chatPrompt: ChatPrompt? {
+            guard case .chat(let prompt) = self else {
+                return nil
+            }
+            
+            return prompt
+        }
     }
 }
 

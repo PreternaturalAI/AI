@@ -11,19 +11,8 @@ extension AbstractLLM {
     }
 }
 
-extension AbstractLLM {
-    /// Completion parameters shared between text and chat LLM inference.
-    public struct ChatOrTextCompletionParameters: AbstractLLM.CompletionParameters {
-        public let temperature: Double?
-        public let topProbabilityMass: Double?
-        public let numberOfCompletions: Int
-        public let stops: [String] = []
-        public let maxTokens: AbstractLLM.TokenLimit
-        public let presencePenalty: Double?
-        public let frequencyPenalty: Double?
-    }
-
-    public enum ChatOrTextCompletion: CustomStringConvertible, Hashable, Sendable {
+extension AbstractLLM {    
+    public enum ChatOrTextCompletion: CustomStringConvertible, Codable, Hashable, Sendable {
         public static var _completionType: AbstractLLM.CompletionType? {
             nil
         }
