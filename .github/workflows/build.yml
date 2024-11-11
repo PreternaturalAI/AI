@@ -22,4 +22,4 @@ jobs:
       with:
         xcode-version: '16'
         platforms: '["all"]'
-        configurations: '["debug"]'
+        configurations: '["debug, release"]'
