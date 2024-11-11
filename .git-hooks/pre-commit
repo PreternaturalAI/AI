@@ -1,0 +1,91 @@
+#!/bin/sh
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo "🔍 Scanning for secrets using Gitleaks..."
+
+# Check if gitleaks is installed
+if ! command -v gitleaks &> /dev/null; then
+    echo "Installing gitleaks..."
+    brew install gitleaks
+fi
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+if [ -z "$REPO_ROOT" ]; then
+    echo -e "${RED}Error: Not in a git repository${NC}"
+    exit 1
+fi
+
+echo "Running gitleaks on: $REPO_ROOT"
+gitleaks detect --source "$REPO_ROOT" --no-git
+SCAN_RESULT=$?
+
+case $SCAN_RESULT in
+    0)
+        ;;
+    1)
+        echo -e "${RED}❌ Potential secrets found in staged files${NC}"
+        echo -e "${YELLOW}Detailed scan results:${NC}"
+        gitleaks detect --source="$REPO_ROOT" --verbose --no-git
+        echo -e "\n${RED}Commit blocked. Please remove the secrets and try again.${NC}"
+        echo "To bypass this check (NOT RECOMMENDED), use: git commit --no-verify"
+        exit 1
+        ;;
+    2)
+        echo -e "${RED}⚠️ Gitleaks failed to run${NC}"
+        exit 2
+        ;;
+    *)
+        echo -e "${RED}Unknown error occurred${NC}"
+        exit 3
+        ;;
+esac
+
+files=$(git diff --cached --name-only)
+
+# Patterns that indicate private SSH keys
+patterns=(
+    "BEGIN.*PRIVATE KEY"
+    "BEGIN RSA PRIVATE KEY"
+    "BEGIN DSA PRIVATE KEY"
+    "BEGIN EC PRIVATE KEY"
+    "BEGIN OPENSSH PRIVATE KEY"
+    # Base64 encoded patterns
+    "LS0tLS1CRUdJTiBPUEVOU1NI"  # BEGIN OPENSSH in base64
+    "LS0tLS1CRUdJTiBSU0EgUFJJ"   # BEGIN RSA PRI in base64
+    "LS0tLS1CRUdJTiBQUklWQVRF"   # BEGIN PRIVATE in base64
+    "LS0tLS1CRUdJTiBEU0EgUFJJ"   # BEGIN DSA PRI in base64
+    "LS0tLS1CRUdJTiBFQyBQUkl"    # BEGIN EC PRI in base64
+)
+
+# Flag to track if any SSH keys are found
+found_key=false
+
+for file in $files; do
+    # Skip if file is deleted
+    if [[ ! -f "$file" ]]; then
+        continue
+    fi
+    
+    # Check each pattern
+    for pattern in "${patterns[@]}"; do
+        if git diff --cached --full-index "$file" | grep -q "$pattern"; then
+            echo -e "${RED}❌ ERROR: Potential private key found in $file${NC}"
+            echo "Pattern matched: $pattern"
+            found_key=true
+        fi
+    done
+done
+
+if $found_key; then
+    echo -e "${RED}🚫 Commit blocked: SSH private keys detected in staged files${NC}"
+    echo "Please remove the private keys and try committing again"
+    echo "To force commit (NOT RECOMMENDED), use: git commit --no-verify"
+    exit 1
+else
+    echo -e "${GREEN}✅ No secrets found${NC}"
+fi
