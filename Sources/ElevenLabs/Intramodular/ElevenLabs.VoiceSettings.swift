@@ -5,7 +5,7 @@
 import Foundation
 
 extension ElevenLabs {
-    public final class VoiceSettings: Codable, Sendable {
+    public struct VoiceSettings: Codable, Sendable, Hashable {
         
         public enum Setting: String, Codable, Sendable {
             case stability
@@ -54,7 +54,7 @@ extension ElevenLabs {
             self.removeBackgroundNoise = removeBackgroundNoise ?? false
         }
         
-        public convenience init(stability: Double) {
+        public init(stability: Double) {
             self.init(
                 stability: stability,
                 similarityBoost: 0.75,
@@ -64,7 +64,7 @@ extension ElevenLabs {
             )
         }
         
-        public convenience init(similarityBoost: Double) {
+        public init(similarityBoost: Double) {
             self.init(
                 stability: 0.5,
                 similarityBoost: similarityBoost,
@@ -74,7 +74,7 @@ extension ElevenLabs {
             )
         }
         
-        public convenience init(styleExaggeration: Double) {
+        public init(styleExaggeration: Double) {
             self.init(
                 stability: 0.5,
                 similarityBoost: 0.75,
@@ -84,7 +84,7 @@ extension ElevenLabs {
             )
         }
         
-        public convenience init(speakerBoost: Bool) {
+        public init(speakerBoost: Bool) {
             self.init(
                 stability: 0.5,
                 similarityBoost: 0.75,

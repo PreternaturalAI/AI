@@ -2,274 +2,268 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreMI
 import CorePersistence
-import Foundation
+import Diagnostics
 import NetworkKit
+import Foundation
+import SwiftAPI
+import Merge
+import FoundationX
+import Swallow
 
-public struct ElevenLabsAPI: RESTAPISpecification {
-    public var apiKey: String
-    public var host = URL(string: "https://api.elevenlabs.io")!
-    
-    public init(apiKey: String) {
-        self.apiKey = apiKey
-    }
-    
-    public var baseURL: URL {
-        host.appendingPathComponent("/v1")
-    }
-    
-    public var id: some Hashable {
-        apiKey
-    }
-    
-    // List Voices endpoint
-    @Path("voices")
-    @GET
-    var listVoices = Endpoint<Void, ResponseBodies.Voices, Void>()
-    
-    // Text to Speech endpoint
-    @Path("text-to-speech/{voiceId}")
-    @POST
-    @Body({ context in
-        RequestBodies.SpeechRequest(
-            text: context.input.text,
-            voiceSettings: context.input.voiceSettings,
-            model: context.input.model
-        )
-    })
-    var textToSpeech = Endpoint<RequestBodies.TextToSpeechInput, Data, Void>()
-    
-    // Speech to Speech endpoint
-    @Path("speech-to-speech/{voiceId}/stream")
-    @POST
-    var speechToSpeech = MultipartEndpoint<RequestBodies.SpeechToSpeechInput, Data, Void>()
-    
-    // Add Voice endpoint
-    @Path("voices/add")
-    @POST
-    var addVoice = MultipartEndpoint<RequestBodies.AddVoiceInput, ResponseBodies.VoiceID, Void>()
-    
-    // Edit Voice endpoint
-    @Path("voices/{voiceId}/edit")
-    @POST
-    var editVoice = MultipartEndpoint<RequestBodies.EditVoiceInput, Bool, Void>()
-    
-    // Delete Voice endpoint
-    @Path("voices/{voiceId}")
-    @DELETE
-    var deleteVoice = Endpoint<String, Void, Void>()
-}
-
-extension ElevenLabsAPI {
-    public final class Endpoint<Input, Output, Options>: BaseHTTPEndpoint<ElevenLabsAPI, Input, Output, Options> {
-        override public func buildRequestBase(
-            from input: Input,
-            context: BuildRequestContext
-        ) throws -> Request {
-            let request = try super.buildRequestBase(from: input, context: context)
-                .header("xi-api-key", context.root.apiKey)
-                .header(.contentType(.json))
-            
-            return request
+extension ElevenLabs {
+    @RuntimeDiscoverable
+    public final class Client: SwiftAPI.Client, ObservableObject {
+        public typealias API = ElevenLabs.APISpecification
+        public typealias Session = HTTPSession
+        
+        public let interface: API
+        public let session: Session
+        public var sessionCache: EmptyKeyedCache<Session.Request, Session.Request.Response>
+        
+        public required init(configuration: API.Configuration) {
+            self.interface = API(configuration: configuration)
+            self.session = HTTPSession.shared
+            self.sessionCache = .init()
         }
         
-        override public func decodeOutputBase(
-            from response: Request.Response,
-            context: DecodeOutputContext
-        ) throws -> Output {
-            try response.validate()
-            
-            if Output.self == Data.self {
-                return response.data as! Output
-            }
-            
-            return try response.decode(
-                Output.self,
-                keyDecodingStrategy: .convertFromSnakeCase
-            )
-        }
-    }
-    
-    public final class MultipartEndpoint<Input, Output, Options>: BaseHTTPEndpoint<ElevenLabsAPI, Input, Output, Options> {
-        override public func buildRequestBase(
-            from input: Input,
-            context: BuildRequestContext
-        ) throws -> Request {
-            let boundary = UUID().uuidString
-            var request = try super.buildRequestBase(from: input, context: context)
-                .header("xi-api-key", context.root.apiKey)
-                .header(.contentType(.multipartFormData(boundary: boundary)))
-            
-            var data = Data()
-            
-            switch input {
-            case let input as RequestBodies.SpeechToSpeechInput:
-                data.append(input.createMultipartFormData(boundary: boundary))
-            case let input as RequestBodies.AddVoiceInput:
-                data.append(input.createMultipartFormData(boundary: boundary))
-            case let input as RequestBodies.EditVoiceInput:
-                data.append(input.createMultipartFormData(boundary: boundary))
-            default:
-                throw Never.Reason.unexpected
-            }
-            
-            request.httpBody = data
-            
-            return request
-        }
-        
-        override public func decodeOutputBase(
-            from response: Request.Response,
-            context: DecodeOutputContext
-        ) throws -> Output {
-            try response.validate()
-            
-            if Output.self == Data.self {
-                return response.data as! Output
-            }
-            
-            return try response.decode(
-                Output.self,
-                keyDecodingStrategy: .convertFromSnakeCase
-            )
+        public convenience init(apiKey: String?) {
+            self.init(configuration: .init(apiKey: apiKey))
         }
     }
 }
 
-// Request and Response Bodies
-extension ElevenLabsAPI {
-    public enum RequestBodies {
-        public struct SpeechRequest: Codable {
-            let text: String
-            let voiceSettings: ElevenLabs.VoiceSettings
-            let model: ElevenLabs.Model
-        }
-        
-        public struct TextToSpeechInput {
-            let voiceId: String
-            let text: String
-            let voiceSettings: ElevenLabs.VoiceSettings
-            let model: ElevenLabs.Model
-        }
-        
-        public struct SpeechToSpeechInput {
-            let voiceId: String
-            let audioURL: URL
-            let voiceSettings: ElevenLabs.VoiceSettings
-            let model: ElevenLabs.Model
+extension ElevenLabs.APISpecification {
+    
+    enum RequestBodies {
+        public struct SpeechRequest: Codable, Hashable, Equatable {
+            public let text: String
+            public let voiceSettings: ElevenLabs.VoiceSettings
+            public let model: ElevenLabs.Model
             
-            func createMultipartFormData(boundary: String) -> Data {
-                var data = Data()
+            public init(
+                text: String,
+                voiceSettings: ElevenLabs.VoiceSettings,
+                model: ElevenLabs.Model
+            ) {
+                self.text = text
+                self.voiceSettings = voiceSettings
+                self.model = model
+            }
+            
+            public static func == (lhs: SpeechRequest, rhs: SpeechRequest) -> Bool {
+                return lhs.text == rhs.text &&
+                       lhs.voiceSettings == rhs.voiceSettings &&
+                       lhs.model == rhs.model
+            }
+        }
+        
+        public struct TextToSpeechInput: Codable, Hashable {
+            public let voiceId: String
+            public let requestBody: SpeechRequest
+            
+            public init(voiceId: String, requestBody: SpeechRequest) {
+                self.voiceId = voiceId
+                self.requestBody = requestBody
+            }
+        }
+        
+        public struct SpeechToSpeechInput: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible, Equatable {
+            public let voiceId: String
+            public let audioURL: URL
+            public let model: ElevenLabs.Model
+            public let voiceSettings: ElevenLabs.VoiceSettings
+            
+            public init(
+                voiceId: String,
+                audioURL: URL,
+                model: ElevenLabs.Model,
+                voiceSettings: ElevenLabs.VoiceSettings
+            ) {
+                self.voiceId = voiceId
+                self.audioURL = audioURL
+                self.model = model
+                self.voiceSettings = voiceSettings
+            }
+            
+            public func __conversion() throws -> HTTPRequest.Multipart.Content {
+                var result = HTTPRequest.Multipart.Content()
                 
-                // Add model_id
-                data.append("--\(boundary)\r\n".data(using: .utf8)!)
-                data.append("Content-Disposition: form-data; name=\"model_id\"\r\n\r\n".data(using: .utf8)!)
-                data.append("\(model.rawValue)\r\n".data(using: .utf8)!)
+                result.append(.text(named: "model_id", value: model.rawValue))
                 
-                // Add voice settings
                 let encoder = JSONEncoder()
                 encoder.keyEncodingStrategy = .convertToSnakeCase
                 if let voiceSettingsData = try? encoder.encode(voiceSettings),
                    let voiceSettingsString = String(data: voiceSettingsData, encoding: .utf8) {
-                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
-                    data.append("Content-Disposition: form-data; name=\"voice_settings\"\r\n\r\n".data(using: .utf8)!)
-                    data.append("\(voiceSettingsString)\r\n".data(using: .utf8)!)
+                    result.append(.text(named: "voice_settings", value: voiceSettingsString))
                 }
                 
-                // Add audio file
                 if let fileData = try? Data(contentsOf: audioURL) {
-                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
-                    data.append("Content-Disposition: form-data; name=\"audio\"; filename=\"\(audioURL.lastPathComponent)\"\r\n".data(using: .utf8)!)
-                    data.append("Content-Type: audio/mpeg\r\n\r\n".data(using: .utf8)!)
-                    data.append(fileData)
-                    data.append("\r\n".data(using: .utf8)!)
+                    result.append(
+                        .file(
+                            named: "audio",
+                            data: fileData,
+                            filename: audioURL.lastPathComponent,
+                            contentType: .mpeg
+                        )
+                    )
                 }
                 
-                data.append("--\(boundary)--\r\n".data(using: .utf8)!)
-                return data
+                return result
             }
         }
         
-        public struct AddVoiceInput {
-            let name: String
-            let description: String
-            let fileURL: URL
+        public struct AddVoiceInput: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible, Equatable {
+            public let name: String
+            public let description: String
+            public let fileURL: URL
             
-            func createMultipartFormData(boundary: String) -> Data {
-                var data = Data()
+            public init(
+                name: String,
+                description: String,
+                fileURL: URL
+            ) {
+                self.name = name
+                self.description = description
+                self.fileURL = fileURL
+            }
+            
+            public func __conversion() throws -> HTTPRequest.Multipart.Content {
+                var result = HTTPRequest.Multipart.Content()
                 
-                // Add name and description
-                let parameters = [
-                    ("name", name),
-                    ("description", description),
-                    ("labels", "")
-                ]
+                result.append(.text(named: "name", value: name))
+                result.append(.text(named: "description", value: description))
+                result.append(.text(named: "labels", value: ""))
                 
-                for (key, value) in parameters {
-                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
-                    data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
-                    data.append("\(value)\r\n".data(using: .utf8)!)
-                }
-                
-                // Add audio file
                 if let fileData = try? Data(contentsOf: fileURL) {
-                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
-                    data.append("Content-Disposition: form-data; name=\"files\"; filename=\"\(fileURL.lastPathComponent)\"\r\n".data(using: .utf8)!)
-                    data.append("Content-Type: audio/x-wav\r\n\r\n".data(using: .utf8)!)
-                    data.append(fileData)
-                    data.append("\r\n".data(using: .utf8)!)
+                    result.append(
+                        .file(
+                            named: "files",
+                            data: fileData,
+                            filename: fileURL.lastPathComponent,
+                            contentType: .wav
+                        )
+                    )
                 }
                 
-                data.append("--\(boundary)--\r\n".data(using: .utf8)!)
-                return data
+                return result
             }
         }
         
-        public struct EditVoiceInput {
-            let voiceId: String
-            let name: String
-            let description: String
-            let fileURL: URL
+        public struct EditVoiceInput: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible, Equatable {
+            public let voiceId: String
+            public let name: String
+            public let description: String
+            public let fileURL: URL
             
-            func createMultipartFormData(boundary: String) -> Data {
-                var data = Data()
+            public init(
+                voiceId: String,
+                name: String,
+                description: String,
+                fileURL: URL
+            ) {
+                self.voiceId = voiceId
+                self.name = name
+                self.description = description
+                self.fileURL = fileURL
+            }
+            
+            public func __conversion() throws -> HTTPRequest.Multipart.Content {
+                var result = HTTPRequest.Multipart.Content()
                 
-                // Add name and description
-                let parameters = [
-                    ("name", name),
-                    ("description", description),
-                    ("labels", "")
-                ]
+                result.append(.text(named: "name", value: name))
+                result.append(.text(named: "description", value: description))
+                result.append(.text(named: "labels", value: ""))
                 
-                for (key, value) in parameters {
-                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
-                    data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
-                    data.append("\(value)\r\n".data(using: .utf8)!)
-                }
-                
-                // Add audio file
                 if let fileData = try? Data(contentsOf: fileURL) {
-                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
-                    data.append("Content-Disposition: form-data; name=\"files\"; filename=\"\(fileURL.lastPathComponent)\"\r\n".data(using: .utf8)!)
-                    data.append("Content-Type: audio/x-wav\r\n\r\n".data(using: .utf8)!)
-                    data.append(fileData)
-                    data.append("\r\n".data(using: .utf8)!)
+                    result.append(
+                        .file(
+                            named: "files",
+                            data: fileData,
+                            filename: fileURL.lastPathComponent,
+                            contentType: .wav
+                        )
+                    )
                 }
                 
-                data.append("--\(boundary)--\r\n".data(using: .utf8)!)
-                return data
+                return result
             }
         }
     }
+}
+
+// Client API Methods
+extension ElevenLabs.Client {
+    public func availableVoices() async throws -> [ElevenLabs.Voice] {
+        try await run(\.listVoices).voices
+    }
     
-    public enum ResponseBodies {
-        public struct Voices: Codable {
-            public let voices: [ElevenLabs.Voice]
-        }
+    @discardableResult
+    public func speech(
+        for text: String,
+        voiceID: String,
+        voiceSettings: ElevenLabs.VoiceSettings,
+        model: ElevenLabs.Model
+    ) async throws -> Data {
+        let requestBody = ElevenLabs.APISpecification.RequestBodies.SpeechRequest(
+            text: text,
+            voiceSettings: voiceSettings,
+            model: model
+        )
         
-        public struct VoiceID: Codable {
-            public let voiceId: String
-        }
+        return try await run(\.textToSpeech, with: .init(voiceId: voiceID, requestBody: requestBody))
+    }
+    
+    public func speechToSpeech(
+        inputAudioURL: URL,
+        voiceID: String,
+        voiceSettings: ElevenLabs.VoiceSettings,
+        model: ElevenLabs.Model
+    ) async throws -> Data {
+        let input = ElevenLabs.APISpecification.RequestBodies.SpeechToSpeechInput(
+            voiceId: voiceID,
+            audioURL: inputAudioURL,
+            model: model,
+            voiceSettings: voiceSettings
+        )
+        
+        return try await run(\.speechToSpeech, with: input)
+    }
+    
+    public func upload(
+        voiceWithName name: String,
+        description: String,
+        fileURL: URL
+    ) async throws -> ElevenLabs.Voice.ID {
+        let input = ElevenLabs.APISpecification.RequestBodies.AddVoiceInput(
+            name: name,
+            description: description,
+            fileURL: fileURL
+        )
+        
+        let response = try await run(\.addVoice, with: input)
+        return try .init(rawValue: response.voiceId)
+    }
+    
+    public func edit(
+        voice: ElevenLabs.Voice.ID,
+        name: String,
+        description: String,
+        fileURL: URL
+    ) async throws -> Bool {
+        let input = ElevenLabs.APISpecification.RequestBodies.EditVoiceInput(
+            voiceId: voice.rawValue,
+            name: name,
+            description: description,
+            fileURL: fileURL
+        )
+        
+        return try await run(\.editVoice, with: input)
+    }
+    
+    public func delete(
+        voice: ElevenLabs.Voice.ID
+    ) async throws {
+        try await run(\.deleteVoice, with: voice.rawValue)
     }
 }
