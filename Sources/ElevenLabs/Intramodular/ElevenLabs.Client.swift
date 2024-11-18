@@ -41,6 +41,12 @@ extension ElevenLabs.APISpecification {
             public let voiceSettings: ElevenLabs.VoiceSettings
             public let model: ElevenLabs.Model
             
+            private enum CodingKeys: String, CodingKey {
+                case text
+                case voiceSettings = "voice_settings"
+                case model = "model_id"
+            }
+            
             public init(
                 text: String,
                 voiceSettings: ElevenLabs.VoiceSettings,
@@ -49,12 +55,6 @@ extension ElevenLabs.APISpecification {
                 self.text = text
                 self.voiceSettings = voiceSettings
                 self.model = model
-            }
-            
-            public static func == (lhs: SpeechRequest, rhs: SpeechRequest) -> Bool {
-                return lhs.text == rhs.text &&
-                       lhs.voiceSettings == rhs.voiceSettings &&
-                       lhs.model == rhs.model
             }
         }
         
@@ -89,13 +89,26 @@ extension ElevenLabs.APISpecification {
             public func __conversion() throws -> HTTPRequest.Multipart.Content {
                 var result = HTTPRequest.Multipart.Content()
                 
-                result.append(.text(named: "model_id", value: model.rawValue))
+                result.append(
+                    .text(
+                        named: "model_id",
+                        value: model.rawValue
+                    )
+                )
                 
                 let encoder = JSONEncoder()
                 encoder.keyEncodingStrategy = .convertToSnakeCase
                 if let voiceSettingsData = try? encoder.encode(voiceSettings),
-                   let voiceSettingsString = String(data: voiceSettingsData, encoding: .utf8) {
-                    result.append(.text(named: "voice_settings", value: voiceSettingsString))
+                   let voiceSettingsString = String(
+                    data: voiceSettingsData,
+                    encoding: .utf8
+                   ) {
+                    result.append(
+                        .text(
+                            named: "voice_settings",
+                            value: voiceSettingsString
+                        )
+                    )
                 }
                 
                 if let fileData = try? Data(contentsOf: audioURL) {
@@ -131,9 +144,26 @@ extension ElevenLabs.APISpecification {
             public func __conversion() throws -> HTTPRequest.Multipart.Content {
                 var result = HTTPRequest.Multipart.Content()
                 
-                result.append(.text(named: "name", value: name))
-                result.append(.text(named: "description", value: description))
-                result.append(.text(named: "labels", value: ""))
+                result.append(
+                    .text(
+                        named: "name",
+                        value: name
+                    )
+                )
+                
+                result.append(
+                    .text(
+                        named: "description",
+                        value: description
+                    )
+                )
+                
+                result.append(
+                    .text(
+                        named: "labels",
+                        value: ""
+                    )
+                )
                 
                 if let fileData = try? Data(contentsOf: fileURL) {
                     result.append(
@@ -153,35 +183,43 @@ extension ElevenLabs.APISpecification {
         public struct EditVoiceInput: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible, Equatable {
             public let voiceId: String
             public let name: String
-            public let description: String
-            public let fileURL: URL
+            public let description: String?
+            public let fileURL: URL?
+            public let removeBackgroundNoise: Bool
             
             public init(
                 voiceId: String,
                 name: String,
-                description: String,
-                fileURL: URL
+                description: String? = nil,
+                fileURL: URL? = nil,
+                removeBackgroundNoise: Bool = false
             ) {
                 self.voiceId = voiceId
                 self.name = name
                 self.description = description
                 self.fileURL = fileURL
+                self.removeBackgroundNoise = removeBackgroundNoise
             }
             
             public func __conversion() throws -> HTTPRequest.Multipart.Content {
                 var result = HTTPRequest.Multipart.Content()
                 
                 result.append(.text(named: "name", value: name))
-                result.append(.text(named: "description", value: description))
-                result.append(.text(named: "labels", value: ""))
                 
-                if let fileData = try? Data(contentsOf: fileURL) {
+                if let description = description {
+                    result.append(.text(named: "description", value: description))
+                }
+                
+                result.append(.text(named: "remove_background_noise", value: removeBackgroundNoise ? "true" : "false"))
+                
+                if let fileURL = fileURL,
+                   let fileData = try? Data(contentsOf: fileURL) {
                     result.append(
                         .file(
                             named: "files",
                             data: fileData,
                             filename: fileURL.lastPathComponent,
-                            contentType: .wav
+                            contentType: .m4a
                         )
                     )
                 }
@@ -242,20 +280,22 @@ extension ElevenLabs.Client {
         )
         
         let response = try await run(\.addVoice, with: input)
-        return try .init(rawValue: response.voiceId)
+        return .init(rawValue: response.voiceId)
     }
     
     public func edit(
         voice: ElevenLabs.Voice.ID,
         name: String,
         description: String,
-        fileURL: URL
+        fileURL: URL,
+        removeBackgroundNoise: Bool = false
     ) async throws -> Bool {
         let input = ElevenLabs.APISpecification.RequestBodies.EditVoiceInput(
             voiceId: voice.rawValue,
             name: name,
             description: description,
-            fileURL: fileURL
+            fileURL: fileURL,
+            removeBackgroundNoise: removeBackgroundNoise
         )
         
         return try await run(\.editVoice, with: input)

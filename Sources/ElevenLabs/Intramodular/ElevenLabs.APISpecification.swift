@@ -65,7 +65,7 @@ extension ElevenLabs {
         @Path({ context -> String in
             "/v1/text-to-speech/\(context.input.voiceId)"
         })
-        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
+        @Body(json: \.requestBody, keyEncodingStrategy: .convertToSnakeCase)
         var textToSpeech = Endpoint<RequestBodies.TextToSpeechInput, Data, Void>()
         
         // Speech to speech
