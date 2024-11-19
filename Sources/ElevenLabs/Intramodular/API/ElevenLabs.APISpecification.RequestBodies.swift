@@ -140,7 +140,7 @@ extension ElevenLabs.APISpecification {
                             named: "files",
                             data: fileData,
                             filename: fileURL.lastPathComponent,
-                            contentType: .wav
+                            contentType: .m4a
                         )
                     )
                 }
