@@ -128,6 +128,9 @@ extension ElevenLabs.APISpecification {
             context: DecodeOutputContext
         ) throws -> Output {
             do {
+                if Input.self == RequestBodies.EditVoiceInput.self {
+                    print("TEsts")
+                }
                 try response.validate()
             } catch {
                 let apiError: Error
@@ -162,6 +165,10 @@ extension ElevenLabs.APISpecification {
             
             if Output.self == Data.self {
                 return response.data as! Output
+            }
+            
+            if Input.self == RequestBodies.EditVoiceInput.self {
+                print(response)
             }
             
             return try response.decode(

@@ -158,13 +158,6 @@ extension ElevenLabs.APISpecification {
                     )
                 )
                 
-                result.append(
-                    .text(
-                        named: "labels",
-                        value: ""
-                    )
-                )
-                
                 if let fileData = try? Data(contentsOf: fileURL) {
                     result.append(
                         .file(
@@ -185,32 +178,37 @@ extension ElevenLabs.APISpecification {
             public let name: String
             public let description: String?
             public let fileURL: URL?
-            public let removeBackgroundNoise: Bool
             
             public init(
                 voiceId: String,
                 name: String,
                 description: String? = nil,
-                fileURL: URL? = nil,
-                removeBackgroundNoise: Bool = false
+                fileURL: URL? = nil
             ) {
                 self.voiceId = voiceId
                 self.name = name
                 self.description = description
                 self.fileURL = fileURL
-                self.removeBackgroundNoise = removeBackgroundNoise
             }
             
             public func __conversion() throws -> HTTPRequest.Multipart.Content {
                 var result = HTTPRequest.Multipart.Content()
                 
-                result.append(.text(named: "name", value: name))
+                result.append(
+                    .text(
+                        named: "name",
+                        value: name
+                    )
+                )
                 
                 if let description = description {
-                    result.append(.text(named: "description", value: description))
+                    result.append(
+                        .text(
+                            named: "description",
+                            value: description
+                        )
+                    )
                 }
-                
-                result.append(.text(named: "remove_background_noise", value: removeBackgroundNoise ? "true" : "false"))
                 
                 if let fileURL = fileURL,
                    let fileData = try? Data(contentsOf: fileURL) {
@@ -287,15 +285,13 @@ extension ElevenLabs.Client {
         voice: ElevenLabs.Voice.ID,
         name: String,
         description: String,
-        fileURL: URL,
-        removeBackgroundNoise: Bool = false
+        fileURL: URL?
     ) async throws -> Bool {
         let input = ElevenLabs.APISpecification.RequestBodies.EditVoiceInput(
             voiceId: voice.rawValue,
             name: name,
             description: description,
-            fileURL: fileURL,
-            removeBackgroundNoise: removeBackgroundNoise
+            fileURL: fileURL
         )
         
         return try await run(\.editVoice, with: input)
