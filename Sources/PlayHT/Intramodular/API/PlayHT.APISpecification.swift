@@ -67,11 +67,11 @@ extension PlayHT {
         @Path("/voices")
         var listVoices = Endpoint<Void, ResponseBodies.Voices, Void>()
         
-        // Text to speech
-        @POST
-        @Path("/tts")
-        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var textToSpeech = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
+        @GET
+        @Path({ context -> String in
+            "/tts/\(context.input)"
+        })
+        var checkJobStatus = Endpoint<String, ResponseBodies.TextToSpeechOutput, Void>()
         
         // Stream text to speech
         @POST
@@ -110,9 +110,9 @@ extension PlayHT.APISpecification {
             )
             
             request = request
-                .header("x-api-key", context.root.configuration.apiKey)
+                .header("X-USER-ID", context.root.configuration.userId)
                 .header("accept", "application/json")
-                .header("AUTHORIZATION", context.root.configuration.userId)
+                .header("AUTHORIZATION", context.root.configuration.apiKey)
                 .header(.contentType(.json))
             
             return request
@@ -122,6 +122,8 @@ extension PlayHT.APISpecification {
             from response: Request.Response,
             context: DecodeOutputContext
         ) throws -> Output {
+            print(response)
+            
             do {
                 try response.validate()
             } catch {

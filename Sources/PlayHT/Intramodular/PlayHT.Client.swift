@@ -31,8 +31,8 @@ extension PlayHT {
             self.sessionCache = .init()
         }
         
-        public convenience init(apiKey: String) {
-            self.init(configuration: .init(apiKey: apiKey))
+        public convenience init(apiKey: String, userID: String) {
+            self.init(configuration: .init(apiKey: apiKey, userId: userID))
         }
     }
 }
@@ -48,16 +48,16 @@ extension PlayHT.Client: _MIService {
             throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
         }
         
-        guard let credential = account.credential as? _MIServiceAPIKeyCredential else {
+        guard let credential = account.credential as? _MIServiceUserIDAndAPIKeyCredential else {
             throw _MIServiceError.invalidCredentials(account.credential)
         }
         
-        self.init(apiKey: credential.apiKey)
+        self.init(apiKey: credential.apiKey, userID: credential.userID)
     }
 }
 
 extension PlayHT.Client {
-    public func availableVoices() async throws -> [PlayHT.Voice] {
+    public func playHTAvailableVoices() async throws -> [PlayHT.Voice] {
         try await run(\.listVoices).voices
     }
     
@@ -67,48 +67,37 @@ extension PlayHT.Client {
     
     public func generateSpeech(
         text: String,
-        voice: PlayHT.Voice,
+        voice: String,
         settings: PlayHT.VoiceSettings,
-        outputSettings: PlayHT.OutputSettings = .default
-    ) async throws -> String? {
+        outputSettings: PlayHT.OutputSettings = .default,
+        model: PlayHT.Model
+    ) async throws -> Data {
         let input = PlayHT.APISpecification.RequestBodies.TextToSpeechInput(
             text: text,
-            voice: voice.id.rawValue,
-            voiceEngine: voice.voiceEngine,
+            voice: voice,
+            voiceEngine: model,
             quality: outputSettings.quality.rawValue,
-            outputFormat: outputSettings.format.rawValue,
-            speed: settings.speed,
-            sampleRate: outputSettings.sampleRate,
-            temperature: settings.temperature,
-            voiceGuidance: settings.voiceGuidance,
-            styleGuidance: settings.styleGuidance,
-            textGuidance: settings.textGuidance,
-            language: voice.language
+            outputFormat: outputSettings.format.rawValue
         )
         
-        let response = try await run(\.textToSpeech, with: input)
-        return response.audioUrl
+        let response = try await run(\.streamTextToSpeech, with: input)
+        print(response)
+        return response
     }
     
     public func streamSpeech(
         text: String,
-        voice: PlayHT.Voice,
+        voice: String,
         settings: PlayHT.VoiceSettings,
-        outputSettings: PlayHT.OutputSettings = .default
+        outputSettings: PlayHT.OutputSettings = .default,
+        model: PlayHT.Model
     ) async throws -> Data {
         let input = PlayHT.APISpecification.RequestBodies.TextToSpeechInput(
             text: text,
-            voice: voice.id.rawValue,
-            voiceEngine: voice.voiceEngine,
+            voice: voice,
+            voiceEngine: model,
             quality: outputSettings.quality.rawValue,
-            outputFormat: outputSettings.format.rawValue,
-            speed: settings.speed,
-            sampleRate: outputSettings.sampleRate,
-            temperature: settings.temperature,
-            voiceGuidance: settings.voiceGuidance,
-            styleGuidance: settings.styleGuidance,
-            textGuidance: settings.textGuidance,
-            language: voice.language
+            outputFormat: outputSettings.format.rawValue
         )
         
         return try await run(\.streamTextToSpeech, with: input)
@@ -131,11 +120,5 @@ extension PlayHT.Client {
         voice: PlayHT.Voice.ID
     ) async throws {
         try await run(\.deleteClonedVoice, with: voice.rawValue)
-    }
-    
-    private func findVoice(id: String) async throws -> PlayHT.Voice? {
-        let allVoices = try await availableVoices()
-        let clonedVoices = try await clonedVoices()
-        return (allVoices + clonedVoices).first { $0.id.rawValue == id }
     }
 }

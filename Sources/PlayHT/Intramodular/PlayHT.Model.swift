@@ -20,6 +20,9 @@ extension PlayHT {
         /// - 20k character limit per stream
         case play3Mini = "Play3.0-mini"
         
+        case playHT2 = "PlayHT2.0"
+        case playHT1 = "PlayHT1.0"
+        
         /// Legacy voice model with basic TTS capabilities
         case playHT2Turbo = "PlayHT2.0-turbo"
     }

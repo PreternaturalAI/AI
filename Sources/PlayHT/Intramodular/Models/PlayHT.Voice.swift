@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import ElevenLabs
+import Swallow
 
 extension PlayHT {
     public struct Voice: Codable, Hashable, Identifiable {
@@ -15,19 +15,41 @@ extension PlayHT {
         public let id: ID
         public let name: String
         public let language: String
-        public let voiceEngine: Model
+        public let languageCode: String  // Add this to store the language code separately
+        public let voiceEngine: String   // Changed from Model to String since it's consistently "PlayHT2.0"
         public let isCloned: Bool
         public let gender: String?
         public let accent: String?
         public let age: String?
         public let style: String?
-        public let useCase: String?
-        
+        public let sample: String?       // Add this for the sample URL
+        public let texture: String?      // Add these additional fields that appear in the response
+        public let loudness: String?
+        public let tempo: String?
+
         private enum CodingKeys: String, CodingKey {
-            case id, name, language, gender, accent, age, style
-            case voiceEngine = "voice_engine"
-            case isCloned = "cloned"
-            case useCase = "use_case"
+            case id, name, language, languageCode, voiceEngine, isCloned
+            case gender, accent, age, style, sample, texture, loudness, tempo
+        }
+
+        // Add custom decoding if needed to handle any special cases
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            self.id = try ID(rawValue: container.decode(String.self, forKey: .id))
+            self.name = try container.decode(String.self, forKey: .name)
+            self.language = try container.decode(String.self, forKey: .language)
+            self.languageCode = try container.decode(String.self, forKey: .languageCode)
+            self.voiceEngine = try container.decode(String.self, forKey: .voiceEngine)
+            self.isCloned = try container.decode(Bool.self, forKey: .isCloned)
+            self.gender = try container.decodeIfPresent(String.self, forKey: .gender)
+            self.accent = try container.decodeIfPresent(String.self, forKey: .accent)
+            self.age = try container.decodeIfPresent(String.self, forKey: .age)
+            self.style = try container.decodeIfPresent(String.self, forKey: .style)
+            self.sample = try container.decodeIfPresent(String.self, forKey: .sample)
+            self.texture = try container.decodeIfPresent(String.self, forKey: .texture)
+            self.loudness = try container.decodeIfPresent(String.self, forKey: .loudness)
+            self.tempo = try container.decodeIfPresent(String.self, forKey: .tempo)
         }
     }
     
@@ -45,30 +67,5 @@ extension PlayHT {
         case ogg = "ogg"
         case mulaw = "mulaw"
         case flac = "flac"
-    }
-}
-
-#warning("This is only a temporary fix. Remove these & replace with Abstract (@jared)")
-
-extension PlayHT.Voice {
-    public func toElevenLabsVoice() -> ElevenLabs.Voice {
-        ElevenLabs.Voice(
-            voiceID: id.rawValue,
-            name: name,
-            description: style,
-            isOwner: isCloned
-        )
-    }
-}
-
-extension PlayHT.VoiceSettings {
-    public static func fromElevenLabs(_ settings: ElevenLabs.VoiceSettings) -> Self {
-        PlayHT.VoiceSettings(
-            speed: 1.0,
-            temperature: settings.stability,
-            voiceGuidance: settings.similarityBoost * 6.0,
-            styleGuidance: settings.styleExaggeration * 30.0,
-            textGuidance: 1.0 + settings.similarityBoost
-        )
     }
 }
