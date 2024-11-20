@@ -65,13 +65,14 @@ extension PlayHT.Client {
         try await run(\.listClonedVoices).voices
     }
     
-    public func generateSpeech(
+    public func streamTextToSpeech(
         text: String,
         voice: String,
         settings: PlayHT.VoiceSettings,
         outputSettings: PlayHT.OutputSettings = .default,
         model: PlayHT.Model
     ) async throws -> Data {
+        // Construct the input for the API
         let input = PlayHT.APISpecification.RequestBodies.TextToSpeechInput(
             text: text,
             voice: voice,
@@ -80,28 +81,36 @@ extension PlayHT.Client {
             outputFormat: outputSettings.format.rawValue
         )
         
-        let response = try await run(\.streamTextToSpeech, with: input)
-        print(response)
-        return response
+        // Fetch the initial JSON response
+        let responseData = try await run(\.streamTextToSpeech, with: input)
+        
+        // Decode the response to extract the audio URL
+        let audioResponse = try JSONDecoder().decode(PlayHT.Client.AudioResponse.self, from: responseData)
+        
+        guard let audioUrl = URL(string: audioResponse.href) else {
+            throw PlayHTError.invalidURL
+        }
+        
+        #warning("This should be cleaned up @jared")
+        var request = URLRequest(url: audioUrl)
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue(interface.configuration.userId ?? "", forHTTPHeaderField: "X-USER-ID")
+        request.addValue(interface.configuration.apiKey ?? "", forHTTPHeaderField: "AUTHORIZATION")
+        
+        let (audioData, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw PlayHTError.audioFetchFailed
+        }
+        
+        guard !audioData.isEmpty else {
+            throw PlayHTError.audioFetchFailed
+        }
+        
+        return audioData
     }
     
-    public func streamSpeech(
-        text: String,
-        voice: String,
-        settings: PlayHT.VoiceSettings,
-        outputSettings: PlayHT.OutputSettings = .default,
-        model: PlayHT.Model
-    ) async throws -> Data {
-        let input = PlayHT.APISpecification.RequestBodies.TextToSpeechInput(
-            text: text,
-            voice: voice,
-            voiceEngine: model,
-            quality: outputSettings.quality.rawValue,
-            outputFormat: outputSettings.format.rawValue
-        )
-        
-        return try await run(\.streamTextToSpeech, with: input)
-    }
     
     public func instantCloneVoice(
         sampleFileURL: String,
@@ -120,5 +129,30 @@ extension PlayHT.Client {
         voice: PlayHT.Voice.ID
     ) async throws {
         try await run(\.deleteClonedVoice, with: voice.rawValue)
+    }
+}
+
+extension PlayHT.Client {
+    enum PlayHTError: LocalizedError {
+        case invalidURL
+        case audioFetchFailed
+        
+        var errorDescription: String? {
+            switch self {
+                case .invalidURL:
+                    return "Invalid audio URL received from PlayHT"
+                case .audioFetchFailed:
+                    return "Failed to fetch audio data from PlayHT"
+            }
+        }
+    }
+}
+extension PlayHT.Client {
+    public struct AudioResponse: Codable {
+        public let description: String
+        public let method: String
+        public let href: String
+        public let contentType: String
+        public let rel: String
     }
 }
