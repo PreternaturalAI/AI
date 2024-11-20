@@ -3,33 +3,51 @@
 //
 
 import CorePersistence
-import Diagnostics
-import NetworkKit
-import Foundation
-import SwiftAPI
+import LargeLanguageModels
 import Merge
-import FoundationX
+import NetworkKit
 import Swallow
 
 extension ElevenLabs {
     @RuntimeDiscoverable
-    public final class Client: SwiftAPI.Client, ObservableObject {
+    public final class Client: HTTPClient, _StaticSwift.Namespace {
+        public static var persistentTypeRepresentation: some IdentityRepresentation {
+            _MIServiceTypeIdentifier._ElevenLabs
+        }
+        
         public typealias API = ElevenLabs.APISpecification
         public typealias Session = HTTPSession
         
         public let interface: API
         public let session: Session
-        public var sessionCache: EmptyKeyedCache<Session.Request, Session.Request.Response>
         
         public required init(configuration: API.Configuration) {
             self.interface = API(configuration: configuration)
             self.session = HTTPSession.shared
-            self.sessionCache = .init()
         }
         
         public convenience init(apiKey: String?) {
             self.init(configuration: .init(apiKey: apiKey))
         }
+    }
+}
+
+extension ElevenLabs.Client: _MIService {
+    public convenience init(
+        account: (any _MIServiceAccount)?
+    ) async throws {
+        let account: any _MIServiceAccount = try account.unwrap()
+        let serviceIdentifier: _MIServiceTypeIdentifier = account.serviceIdentifier
+        
+        guard serviceIdentifier == _MIServiceTypeIdentifier._ElevenLabs else {
+            throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
+        }
+        
+        guard let credential = account.credential as? _MIServiceAPIKeyCredential else {
+            throw _MIServiceError.invalidCredentials(account.credential)
+        }
+        
+        self.init(apiKey: credential.apiKey)
     }
 }
 
