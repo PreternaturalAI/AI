@@ -11,25 +11,46 @@ import Foundation
 import Swift
 
 extension PlayHT {
-    public struct Voice: Codable, Hashable, Identifiable {
-        public let id: String
-        public let name: String
-        public let category: String?
-        public let language: String
-        public let gender: String?
-        public let isCloned: Bool
-        public let isPreview: Bool
-        public let previewUrl: String?
+    public enum Model: String, Codable, Sendable {
+        /// Latest speech model optimized for realtime use. Features include:
+        /// - Multilingual support (36 languages)
+        /// - Reduced hallucinations
+        /// - <200ms streaming latency
+        /// - 48kHz sampling
+        /// - 20k character limit per stream
+        case play3Mini = "Play3.0-mini"
         
-        enum CodingKeys: String, CodingKey {
-            case id
-            case name
-            case category
-            case language
-            case gender
-            case isCloned = "cloned"
-            case isPreview = "preview"
-            case previewUrl
+        /// Legacy voice model with basic TTS capabilities
+        case playHT2Turbo = "PlayHT2.0-turbo"
+    }
+}
+
+// MARK: - Conformances
+
+extension PlayHT.Model: CustomStringConvertible {
+    public var description: String {
+        rawValue
+    }
+}
+
+extension PlayHT.Model: ModelIdentifierRepresentable {
+    public init(from identifier: ModelIdentifier) throws {
+        guard identifier.provider == ._PlayHT, identifier.revision == nil else {
+            throw Never.Reason.illegal
         }
+        
+        guard let model = Self(rawValue: identifier.name) else {
+            throw Never.Reason.unexpected
+        }
+        
+        self = model
+    }
+    
+    public func __conversion() -> ModelIdentifier {
+        ModelIdentifier(
+            provider: ._PlayHT,
+            name: rawValue,
+            revision: nil
+        )
     }
 }

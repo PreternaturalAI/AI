@@ -14,6 +14,10 @@ import Swallow
 extension PlayHT {
     @RuntimeDiscoverable
     public final class Client: SwiftAPI.Client, ObservableObject {
+        public static var persistentTypeRepresentation: some IdentityRepresentation {
+            _MIServiceTypeIdentifier._PlayHT
+        }
+        
         public typealias API = PlayHT.APISpecification
         public typealias Session = HTTPSession
         
@@ -27,8 +31,8 @@ extension PlayHT {
             self.sessionCache = .init()
         }
         
-        public convenience init(apiKey: String?, userId: String?) {
-            self.init(configuration: .init(apiKey: apiKey, userId: userId))
+        public convenience init(apiKey: String) {
+            self.init(configuration: .init(apiKey: apiKey))
         }
     }
 }
@@ -57,21 +61,29 @@ extension PlayHT.Client {
         try await run(\.listVoices).voices
     }
     
+    public func clonedVoices() async throws -> [PlayHT.Voice] {
+        try await run(\.listClonedVoices).voices
+    }
+    
     public func generateSpeech(
         text: String,
-        voiceId: String,
-        quality: String = "medium",
-        outputFormat: String = "mp3",
-        speed: Double? = nil,
-        sampleRate: Int? = nil
+        voice: PlayHT.Voice,
+        settings: PlayHT.VoiceSettings,
+        outputSettings: PlayHT.OutputSettings = .default
     ) async throws -> String? {
         let input = PlayHT.APISpecification.RequestBodies.TextToSpeechInput(
             text: text,
-            voiceId: voiceId,
-            quality: quality,
-            outputFormat: outputFormat,
-            speed: speed,
-            sampleRate: sampleRate
+            voice: voice.id.rawValue,
+            voiceEngine: voice.voiceEngine,
+            quality: outputSettings.quality.rawValue,
+            outputFormat: outputSettings.format.rawValue,
+            speed: settings.speed,
+            sampleRate: outputSettings.sampleRate,
+            temperature: settings.temperature,
+            voiceGuidance: settings.voiceGuidance,
+            styleGuidance: settings.styleGuidance,
+            textGuidance: settings.textGuidance,
+            language: voice.language
         )
         
         let response = try await run(\.textToSpeech, with: input)
@@ -80,42 +92,50 @@ extension PlayHT.Client {
     
     public func streamSpeech(
         text: String,
-        voiceId: String,
-        quality: String = "medium",
-        outputFormat: String = "mp3",
-        speed: Double? = nil,
-        sampleRate: Int? = nil
+        voice: PlayHT.Voice,
+        settings: PlayHT.VoiceSettings,
+        outputSettings: PlayHT.OutputSettings = .default
     ) async throws -> Data {
         let input = PlayHT.APISpecification.RequestBodies.TextToSpeechInput(
             text: text,
-            voiceId: voiceId,
-            quality: quality,
-            outputFormat: outputFormat,
-            speed: speed,
-            sampleRate: sampleRate
+            voice: voice.id.rawValue,
+            voiceEngine: voice.voiceEngine,
+            quality: outputSettings.quality.rawValue,
+            outputFormat: outputSettings.format.rawValue,
+            speed: settings.speed,
+            sampleRate: outputSettings.sampleRate,
+            temperature: settings.temperature,
+            voiceGuidance: settings.voiceGuidance,
+            styleGuidance: settings.styleGuidance,
+            textGuidance: settings.textGuidance,
+            language: voice.language
         )
         
         return try await run(\.streamTextToSpeech, with: input)
     }
     
-    public func cloneVoice(
-        name: String,
-        description: String? = nil,
-        fileURLs: [URL]
-    ) async throws -> (id: String, name: String, status: String) {
-        let input = PlayHT.APISpecification.RequestBodies.CloneVoiceInput(
-            name: name,
-            description: description,
-            fileURLs: fileURLs
+    public func instantCloneVoice(
+        sampleFileURL: String,
+        name: String
+    ) async throws -> PlayHT.Voice.ID {
+        let input = PlayHT.APISpecification.RequestBodies.InstantCloneVoiceInput(
+            sampleFileURL: sampleFileURL,
+            voiceName: name
         )
         
-        let response = try await run(\.cloneVoice, with: input)
-        return (response.id, response.name, response.status)
+        let response = try await run(\.instantCloneVoice, with: input)
+        return .init(rawValue: response.id)
     }
     
     public func deleteClonedVoice(
-        id: String
+        voice: PlayHT.Voice.ID
     ) async throws {
-        try await run(\.deleteClonedVoice, with: id)
+        try await run(\.deleteClonedVoice, with: voice.rawValue)
+    }
+    
+    private func findVoice(id: String) async throws -> PlayHT.Voice? {
+        let allVoices = try await availableVoices()
+        let clonedVoices = try await clonedVoices()
+        return (allVoices + clonedVoices).first { $0.id.rawValue == id }
     }
 }

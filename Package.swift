@@ -106,6 +106,21 @@ let package = Package(
             ]
         ),
         .target(
+            name: "PlayHT",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/PlayHT",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .target(
             name: "_Gemini",
             dependencies: [
                 "CorePersistence",
@@ -278,6 +293,7 @@ let package = Package(
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
+                "PlayHT",
                 "Swallow",
                 "Jina",
                 "VoyageAI",
@@ -363,6 +379,17 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/ElevenLabs",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "PlayHTTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/PlayHT",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]

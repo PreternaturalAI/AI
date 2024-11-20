@@ -13,42 +13,73 @@ extension PlayHT.APISpecification {
     enum RequestBodies {
         public struct TextToSpeechInput: Codable, Hashable {
             public let text: String
-            public let voiceId: String
+            public let voice: String
+            public let voiceEngine: PlayHT.Model
             public let quality: String
             public let outputFormat: String
             public let speed: Double?
             public let sampleRate: Int?
+            public let seed: Int?
+            public let temperature: Double?
+            public let emotion: String?
+            public let voiceGuidance: Double?
+            public let styleGuidance: Double?
+            public let textGuidance: Double?
+            public let language: String?
+            
+            private enum CodingKeys: String, CodingKey {
+                case text, voice, quality
+                case voiceEngine = "voice_engine"
+                case outputFormat = "output_format"
+                case speed
+                case sampleRate = "sample_rate"
+                case seed, temperature, emotion
+                case voiceGuidance = "voice_guidance"
+                case styleGuidance = "style_guidance"
+                case textGuidance = "text_guidance"
+                case language
+            }
             
             public init(
                 text: String,
-                voiceId: String,
+                voice: String,
+                voiceEngine: PlayHT.Model = .play3Mini,
                 quality: String = "medium",
                 outputFormat: String = "mp3",
                 speed: Double? = nil,
-                sampleRate: Int? = nil
+                sampleRate: Int? = 48000,
+                seed: Int? = nil,
+                temperature: Double? = nil,
+                emotion: String? = nil,
+                voiceGuidance: Double? = nil,
+                styleGuidance: Double? = nil,
+                textGuidance: Double? = nil,
+                language: String? = nil
             ) {
                 self.text = text
-                self.voiceId = voiceId
+                self.voice = voice
+                self.voiceEngine = voiceEngine
                 self.quality = quality
                 self.outputFormat = outputFormat
                 self.speed = speed
                 self.sampleRate = sampleRate
+                self.seed = seed
+                self.temperature = temperature
+                self.emotion = emotion
+                self.voiceGuidance = voiceGuidance
+                self.styleGuidance = styleGuidance
+                self.textGuidance = textGuidance
+                self.language = language
             }
         }
         
-        public struct CloneVoiceInput: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible {
-            public let name: String
-            public let description: String?
-            public let fileURLs: [URL]
+        public struct InstantCloneVoiceInput: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible {
+            public let sampleFileURL: String
+            public let voiceName: String
             
-            public init(
-                name: String,
-                description: String? = nil,
-                fileURLs: [URL]
-            ) {
-                self.name = name
-                self.description = description
-                self.fileURLs = fileURLs
+            public init(sampleFileURL: String, voiceName: String) {
+                self.sampleFileURL = sampleFileURL
+                self.voiceName = voiceName
             }
             
             public func __conversion() throws -> HTTPRequest.Multipart.Content {
@@ -56,32 +87,17 @@ extension PlayHT.APISpecification {
                 
                 result.append(
                     .text(
-                        named: "name",
-                        value: name
+                        named: "sample_file_url",
+                        value: sampleFileURL
                     )
                 )
                 
-                if let description = description {
-                    result.append(
-                        .text(
-                            named: "description",
-                            value: description
-                        )
+                result.append(
+                    .text(
+                        named: "voice_name",
+                        value: voiceName
                     )
-                }
-                
-                for (index, fileURL) in fileURLs.enumerated() {
-                    if let fileData = try? Data(contentsOf: fileURL) {
-                        result.append(
-                            .file(
-                                named: "files[\(index)]",
-                                data: fileData,
-                                filename: fileURL.lastPathComponent,
-                                contentType: .wav
-                            )
-                        )
-                    }
-                }
+                )
                 
                 return result
             }
