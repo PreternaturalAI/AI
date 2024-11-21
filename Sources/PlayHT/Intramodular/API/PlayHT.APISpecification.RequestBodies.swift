@@ -18,59 +18,59 @@ extension PlayHT.APISpecification {
             public let quality: String
             public let outputFormat: String
             
-//            public let speed: Double?
-//            public let sampleRate: Int?
-//            public let seed: Int?
-//            public let temperature: Double?
-//            public let emotion: String?
-//            public let voiceGuidance: Double?
-//            public let styleGuidance: Double?
-//            public let textGuidance: Double?
-//            public let language: String?
-//            
+            //            public let speed: Double?
+            //            public let sampleRate: Int?
+            //            public let seed: Int?
+            //            public let temperature: Double?
+            //            public let emotion: String?
+            //            public let voiceGuidance: Double?
+            //            public let styleGuidance: Double?
+            //            public let textGuidance: Double?
+            //            public let language: String?
+            //
             private enum CodingKeys: String, CodingKey {
                 case text, voice, quality
                 case voiceEngine = "voice_engine"
                 case outputFormat = "output_format"
-//                case speed
-//                case sampleRate = "sample_rate"
-//                case seed, temperature, emotion
-//                case voiceGuidance = "voice_guidance"
-//                case styleGuidance = "style_guidance"
-//                case textGuidance = "text_guidance"
-//                case language
+                //                case speed
+                //                case sampleRate = "sample_rate"
+                //                case seed, temperature, emotion
+                //                case voiceGuidance = "voice_guidance"
+                //                case styleGuidance = "style_guidance"
+                //                case textGuidance = "text_guidance"
+                //                case language
             }
             
             public init(
                 text: String,
                 voice: String,
-                voiceEngine: PlayHT.Model = .play3Mini,
+                voiceEngine: PlayHT.Model = .playHT2,
                 quality: String = "medium",
                 outputFormat: String = "mp3"
-//                speed: Double? = nil,
-//                sampleRate: Int? = 48000,
-//                seed: Int? = nil,
-//                temperature: Double? = nil,
-//                emotion: String? = nil,
-//                voiceGuidance: Double? = nil,
-//                styleGuidance: Double? = nil,
-//                textGuidance: Double? = nil,
-//                language: String? = nil
+                //                speed: Double? = nil,
+                //                sampleRate: Int? = 48000,
+                //                seed: Int? = nil,
+                //                temperature: Double? = nil,
+                //                emotion: String? = nil,
+                //                voiceGuidance: Double? = nil,
+                //                styleGuidance: Double? = nil,
+                //                textGuidance: Double? = nil,
+                //                language: String? = nil
             ) {
                 self.text = text
                 self.voice = voice
                 self.voiceEngine = voiceEngine
                 self.quality = quality
                 self.outputFormat = outputFormat
-//                self.speed = speed
-//                self.sampleRate = sampleRate
-//                self.seed = seed
-//                self.temperature = temperature
-//                self.emotion = emotion
-//                self.voiceGuidance = voiceGuidance
-//                self.styleGuidance = styleGuidance
-//                self.textGuidance = textGuidance
-//                self.language = language
+                //                self.speed = speed
+                //                self.sampleRate = sampleRate
+                //                self.seed = seed
+                //                self.temperature = temperature
+                //                self.emotion = emotion
+                //                self.voiceGuidance = voiceGuidance
+                //                self.styleGuidance = styleGuidance
+                //                self.textGuidance = textGuidance
+                //                self.language = language
             }
         }
         
@@ -92,11 +92,10 @@ extension PlayHT.APISpecification {
             }
             
             public func __conversion() throws -> HTTPRequest.Multipart.Content {
-                var result = HTTPRequest.Multipart.Content()
+                var result: HTTPRequest.Multipart.Content = .init()
                 
-                if let url = URL(string: sampleFileURL),
+                if let url: URL = URL(string: sampleFileURL),
                    let fileData = try? Data(contentsOf: url) {
-                    print(fileData)
                     result.append(
                         .file(
                             named: "sample_file",

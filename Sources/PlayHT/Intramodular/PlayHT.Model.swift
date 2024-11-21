@@ -12,18 +12,11 @@ import Swift
 
 extension PlayHT {
     public enum Model: String, Codable, Sendable {
-        /// Latest speech model optimized for realtime use. Features include:
-        /// - Multilingual support (36 languages)
-        /// - Reduced hallucinations
-        /// - <200ms streaming latency
-        /// - 48kHz sampling
-        /// - 20k character limit per stream
-        case play3Mini = "Play3.0-mini"
         
         case playHT2 = "PlayHT2.0"
+        
         case playHT1 = "PlayHT1.0"
         
-        /// Legacy voice model with basic TTS capabilities
         case playHT2Turbo = "PlayHT2.0-turbo"
     }
 }

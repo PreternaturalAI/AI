@@ -81,7 +81,7 @@ extension PlayHT.Client {
         outputSettings: PlayHT.OutputSettings = .default,
         model: PlayHT.Model
     ) async throws -> Data {
-        // Construct the input for the API
+
         let input = PlayHT.APISpecification.RequestBodies.TextToSpeechInput(
             text: text,
             voice: voice,
@@ -90,18 +90,13 @@ extension PlayHT.Client {
             outputFormat: outputSettings.format.rawValue
         )
         
-        // Fetch the initial JSON response
         let responseData = try await run(\.streamTextToSpeech, with: input)
         
-        // Decode the response to extract the audio URL
-        let audioResponse = try JSONDecoder().decode(PlayHT.Client.AudioResponse.self, from: responseData)
-        
-        guard let audioUrl = URL(string: audioResponse.href) else {
+        guard let url = URL(string: responseData.href) else {
             throw PlayHTError.invalidURL
         }
         
-        #warning("This should be cleaned up @jared")
-        var request = URLRequest(url: audioUrl)
+        var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue(interface.configuration.userId ?? "", forHTTPHeaderField: "X-USER-ID")
@@ -154,14 +149,5 @@ extension PlayHT.Client {
                     return "Failed to fetch audio data from PlayHT"
             }
         }
-    }
-}
-extension PlayHT.Client {
-    public struct AudioResponse: Codable {
-        public let description: String
-        public let method: String
-        public let href: String
-        public let contentType: String
-        public let rel: String
     }
 }

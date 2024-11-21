@@ -71,13 +71,13 @@ extension PlayHT {
         @POST
         @Path("/tts/stream")
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var streamTextToSpeech = Endpoint<RequestBodies.TextToSpeechInput, Data, Void>()
+        var streamTextToSpeech = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechResponse, Void>()
         
-        // Clone Voice
         @GET
         @Path("/cloned-voices")
         var listClonedVoices = Endpoint<Void, ResponseBodies.Voices, Void>()
         
+        // Clone Voice
         @POST
         @Path("/cloned-voices/instant")
         @Body(multipart: .input)
@@ -97,7 +97,7 @@ extension PlayHT.APISpecification {
             from input: Input,
             context: BuildRequestContext
         ) throws -> Request {
-            var request = try super.buildRequestBase(
+            var request: HTTPRequest = try super.buildRequestBase(
                 from: input,
                 context: context
             )
