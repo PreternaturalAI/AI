@@ -13,7 +13,7 @@ import Swallow
 
 extension PlayHT {
     @RuntimeDiscoverable
-    public final class Client: SwiftAPI.Client, ObservableObject {
+    public final class Client: HTTPClient, _StaticSwift.Namespace {
         public static var persistentTypeRepresentation: some IdentityRepresentation {
             _MIServiceTypeIdentifier._PlayHT
         }
