@@ -17,6 +17,12 @@ extension Rime.APISpecification {
             public let text: String
             public let modelId: String
             
+            enum CodingKeys: CodingKey {
+                case speaker
+                case text
+                case modelId
+            }
+            
             public init(
                 speaker: String,
                 text: String,

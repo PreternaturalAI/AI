@@ -37,7 +37,7 @@ extension Rime {
             public var apiKey: String?
             
             public init(
-                host: URL = URL(string: "https://users.rime.ai/")!,
+                host: URL = URL(string: "https://users.rime.ai")!,
                 apiKey: String? = nil
             ) {
                 self.host = host
@@ -65,6 +65,7 @@ extension Rime {
         
         @POST
         @Path("/v1/rime-tts")
+        @Body(json: \.input)
         var textToSpeech = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
     }
 }
@@ -80,9 +81,13 @@ extension Rime.APISpecification {
                 context: context
             )
             
+            guard let apiKey = context.root.configuration.apiKey, !apiKey.isEmpty else {
+                throw Rime.APIError.apiKeyMissing
+            }
+            
             request = request
                 .header("Accept", "application/json")
-                .header("Authorization", "Bearer \(context.root.configuration.apiKey ?? "")")
+                .header(.authorization(.bearer, apiKey))
                 .header(.contentType(.json))
             
             return request

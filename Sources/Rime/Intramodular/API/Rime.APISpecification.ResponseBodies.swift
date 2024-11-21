@@ -30,20 +30,38 @@ extension Rime.APISpecification {
         }
         
         public struct TextToSpeechOutput: Codable {
-            public let audioData: Data
+            public let audioContent: Data
             
-            public init(audioData: Data) {
-                self.audioData = audioData
+            public init(audioContent: Data) {
+                self.audioContent = audioContent
+            }
+            
+            enum CodingKeys: String, CodingKey {
+                case audioContent
             }
             
             public init(from decoder: Decoder) throws {
-                let container = try decoder.singleValueContainer()
-                self.audioData = try container.decode(Data.self)
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                
+                let base64String = try container.decode(String.self, forKey: .audioContent)
+                
+                guard let audioData = Data(base64Encoded: base64String) else {
+                    throw DecodingError.dataCorrupted(
+                        DecodingError.Context(
+                            codingPath: [CodingKeys.audioContent],
+                            debugDescription: "Invalid base64 encoded string"
+                        )
+                    )
+                }
+                
+                self.audioContent = audioData
             }
             
             public func encode(to encoder: Encoder) throws {
-                var container = encoder.singleValueContainer()
-                try container.encode(audioData)
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                
+                let base64String = audioContent.base64EncodedString()
+                try container.encode(base64String, forKey: .audioContent)
             }
         }
     }

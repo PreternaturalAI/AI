@@ -75,6 +75,6 @@ extension Rime.Client {
         
         let responseData = try await run(\.textToSpeech, with: input)
         
-        return responseData.audioData
+        return responseData.audioContent
     }
 }
