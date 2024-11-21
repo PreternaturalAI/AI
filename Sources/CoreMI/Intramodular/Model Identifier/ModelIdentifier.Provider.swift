@@ -163,6 +163,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 return "togetherai"
             case ._PlayHT:
                 return "playht"
+            case ._Rime:
+                return "rime"
             case .unknown(let provider):
                 return provider
         }
@@ -198,6 +200,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 self = ._TogetherAI
             case Self._PlayHT.rawValue:
                 self = ._PlayHT
+            case Self._Rime.rawValue:
+                self = ._Rime
             default:
                 self = .unknown(rawValue)
         }

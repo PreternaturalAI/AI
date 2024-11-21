@@ -39,4 +39,5 @@ extension _MIServiceTypeIdentifier {
     public static let _Cohere = _MIServiceTypeIdentifier(rawValue: "guzob-fipin-navij-duvon")
     public static let _TogetherAI = _MIServiceTypeIdentifier(rawValue: "pafob-vopoj-lurig-zilur")
     public static let _PlayHT = _MIServiceTypeIdentifier(rawValue: "foluv-jufuk-zuhok-hofid")
+    public static let _Rime = _MIServiceTypeIdentifier(rawValue: "tohaz-zivir-bosov-minog")
 }
