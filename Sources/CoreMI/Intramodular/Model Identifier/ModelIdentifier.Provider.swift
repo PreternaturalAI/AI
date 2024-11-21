@@ -25,6 +25,7 @@ extension ModelIdentifier {
         case _ElevenLabs
         case _TogetherAI
         case _PlayHT
+        case _Rime
         
         case unknown(String)
         
@@ -79,6 +80,10 @@ extension ModelIdentifier {
         public static var playHT: Self {
             Self._PlayHT
         }
+        
+        public static var rime: Self {
+            Self._Rime
+        }
     }
 }
 
@@ -117,6 +122,8 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
                 return "TogetherAI"
             case ._PlayHT:
                 return "PlayHT"
+            case ._Rime:
+                return "Rime"
             case .unknown(let provider):
                 return provider
         }
