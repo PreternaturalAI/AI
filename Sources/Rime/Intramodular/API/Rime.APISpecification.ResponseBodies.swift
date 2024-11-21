@@ -28,5 +28,23 @@ extension Rime.APISpecification {
                 try container.encode(voices)
             }
         }
+        
+        public struct TextToSpeechOutput: Codable {
+            public let audioData: Data
+            
+            public init(audioData: Data) {
+                self.audioData = audioData
+            }
+            
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                self.audioData = try container.decode(Data.self)
+            }
+            
+            public func encode(to encoder: Encoder) throws {
+                var container = encoder.singleValueContainer()
+                try container.encode(audioData)
+            }
+        }
     }
 }

@@ -62,6 +62,10 @@ extension Rime {
         @GET
         @Path("/data/voices/voice_details.json")
         var listVoices = Endpoint<Void, ResponseBodies.Voices, Void>()
+        
+        @POST
+        @Path("/v1/rime-tts")
+        var textToSpeech = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
     }
 }
 

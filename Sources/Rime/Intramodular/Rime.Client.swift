@@ -60,4 +60,21 @@ extension Rime.Client {
     public func getAllAvailableVoices() async throws -> [Rime.Voice] {
         try await run(\.listVoices).voices
     }
+    
+    public func streamTextToSpeech(
+        text: String,
+        voice: String,
+        model: Rime.Model
+    ) async throws -> Data {
+        
+        let input = Rime.APISpecification.RequestBodies.TextToSpeechInput(
+            speaker: voice,
+            text: text,
+            modelId: model.rawValue
+        )
+        
+        let responseData = try await run(\.textToSpeech, with: input)
+        
+        return responseData.audioData
+    }
 }
