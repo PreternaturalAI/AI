@@ -167,10 +167,6 @@ extension ElevenLabs.APISpecification {
                 return response.data as! Output
             }
             
-            if Input.self == RequestBodies.EditVoiceInput.self {
-                print(response)
-            }
-            
             return try response.decode(
                 Output.self,
                 keyDecodingStrategy: .convertFromSnakeCase

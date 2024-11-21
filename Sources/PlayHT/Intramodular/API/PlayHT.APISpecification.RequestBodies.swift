@@ -74,6 +74,14 @@ extension PlayHT.APISpecification {
             }
         }
         
+        public struct DeleteVoiceInput: Codable, Hashable {
+            var voiceID: String
+            
+            enum CodingKeys: String, CodingKey {
+                case voiceID = "voice_id"
+            }
+        }
+        
         public struct InstantCloneVoiceInput: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible {
             public let sampleFileURL: String
             public let voiceName: String
@@ -86,12 +94,18 @@ extension PlayHT.APISpecification {
             public func __conversion() throws -> HTTPRequest.Multipart.Content {
                 var result = HTTPRequest.Multipart.Content()
                 
-                result.append(
-                    .text(
-                        named: "sample_file_url",
-                        value: sampleFileURL
+                if let url = URL(string: sampleFileURL),
+                   let fileData = try? Data(contentsOf: url) {
+                    print(fileData)
+                    result.append(
+                        .file(
+                            named: "sample_file",
+                            data: fileData,
+                            filename: url.lastPathComponent,
+                            contentType: .mp4
+                        )
                     )
-                )
+                }
                 
                 result.append(
                     .text(

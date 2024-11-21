@@ -57,6 +57,15 @@ extension PlayHT.Client: _MIService {
 }
 
 extension PlayHT.Client {
+    
+    public func getAllAvailableVoices() async throws -> [PlayHT.Voice] {
+        async let htVoices = playHTAvailableVoices()
+        async let clonedVoices = clonedVoices()
+        
+        let (available, cloned) = try await (htVoices, clonedVoices)
+        return available + cloned
+    }
+    
     public func playHTAvailableVoices() async throws -> [PlayHT.Voice] {
         try await run(\.listVoices).voices
     }
@@ -128,7 +137,7 @@ extension PlayHT.Client {
     public func deleteClonedVoice(
         voice: PlayHT.Voice.ID
     ) async throws {
-        try await run(\.deleteClonedVoice, with: voice.rawValue)
+        try await run(\.deleteClonedVoice, with: .init(voiceID: voice.rawValue))
     }
 }
 

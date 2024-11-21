@@ -66,13 +66,7 @@ extension PlayHT {
         @GET
         @Path("/voices")
         var listVoices = Endpoint<Void, ResponseBodies.Voices, Void>()
-        
-        @GET
-        @Path({ context -> String in
-            "/tts/\(context.input)"
-        })
-        var checkJobStatus = Endpoint<String, ResponseBodies.TextToSpeechOutput, Void>()
-        
+
         // Stream text to speech
         @POST
         @Path("/tts/stream")
@@ -80,7 +74,7 @@ extension PlayHT {
         var streamTextToSpeech = Endpoint<RequestBodies.TextToSpeechInput, Data, Void>()
         
         // Clone Voice
-        @POST
+        @GET
         @Path("/cloned-voices")
         var listClonedVoices = Endpoint<Void, ResponseBodies.Voices, Void>()
         
@@ -91,10 +85,9 @@ extension PlayHT {
         
         // Delete cloned voice
         @DELETE
-        @Path({ context -> String in
-            "/cloned-voices/\(context.input)"
-        })
-        var deleteClonedVoice = Endpoint<String, Void, Void>()
+        @Path("/cloned-voices")
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
+        var deleteClonedVoice = Endpoint<RequestBodies.DeleteVoiceInput, Void, Void>()
     }
 }
 
@@ -122,8 +115,6 @@ extension PlayHT.APISpecification {
             from response: Request.Response,
             context: DecodeOutputContext
         ) throws -> Output {
-            print(response)
-            
             do {
                 try response.validate()
             } catch {

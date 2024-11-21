@@ -14,16 +14,16 @@ extension PlayHT {
         
         public let id: ID
         public let name: String
-        public let language: String
-        public let languageCode: String  // Add this to store the language code separately
-        public let voiceEngine: String   // Changed from Model to String since it's consistently "PlayHT2.0"
-        public let isCloned: Bool
+        public let language: String?
+        public let languageCode: String?
+        public let voiceEngine: String
+        public let isCloned: Bool?
         public let gender: String?
         public let accent: String?
         public let age: String?
         public let style: String?
-        public let sample: String?       // Add this for the sample URL
-        public let texture: String?      // Add these additional fields that appear in the response
+        public let sample: String?
+        public let texture: String?
         public let loudness: String?
         public let tempo: String?
 
@@ -38,10 +38,13 @@ extension PlayHT {
             
             self.id = try ID(rawValue: container.decode(String.self, forKey: .id))
             self.name = try container.decode(String.self, forKey: .name)
-            self.language = try container.decode(String.self, forKey: .language)
-            self.languageCode = try container.decode(String.self, forKey: .languageCode)
+            self.language = try container.decodeIfPresent(String.self, forKey: .language)
+            self.languageCode = try container.decodeIfPresent(String.self, forKey: .languageCode)
             self.voiceEngine = try container.decode(String.self, forKey: .voiceEngine)
-            self.isCloned = try container.decode(Bool.self, forKey: .isCloned)
+            
+            self.isCloned = try container.decodeIfPresent(Bool.self, forKey: .isCloned) ?? true
+            // isCloned is always false if not created by user. Otherwise doesn't exist so we set to true
+            
             self.gender = try container.decodeIfPresent(String.self, forKey: .gender)
             self.accent = try container.decodeIfPresent(String.self, forKey: .accent)
             self.age = try container.decodeIfPresent(String.self, forKey: .age)
