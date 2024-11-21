@@ -58,6 +58,6 @@ extension Rime.Client: _MIService {
 
 extension Rime.Client {
     public func getAllAvailableVoices() async throws -> [Rime.Voice] {
-        async let voice
+        try await run(\.listVoices).voices
     }
 }
