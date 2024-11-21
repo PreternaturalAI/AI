@@ -121,6 +121,21 @@ let package = Package(
             ]
         ),
         .target(
+            name: "Rime",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/Rime",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .target(
             name: "_Gemini",
             dependencies: [
                 "CorePersistence",
@@ -294,12 +309,13 @@ let package = Package(
                 "OpenAI",
                 "Perplexity",
                 "PlayHT",
+                "Rime",
                 "Swallow",
                 "Jina",
                 "VoyageAI",
                 "Cohere",
                 "TogetherAI",
-                "HuggingFace"
+                "HuggingFace",
             ],
             path: "Sources/AI",
             swiftSettings: [
