@@ -83,6 +83,12 @@ extension PlayHT {
         @Body(multipart: .input)
         var instantCloneVoice = Endpoint<RequestBodies.InstantCloneVoiceInput, ResponseBodies.ClonedVoiceOutput, Void>()
         
+        // Clone Voice
+        @POST
+        @Path("/cloned-voices/instant")
+        @Body(multipart: .input)
+        var instantCloneVoiceWithURL = Endpoint<RequestBodies.InstantCloneVoiceWithURLInput, ResponseBodies.ClonedVoiceOutput, Void>()
+        
         // Delete cloned voice
         @DELETE
         @Path("/cloned-voices")
