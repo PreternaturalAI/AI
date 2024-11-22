@@ -78,7 +78,7 @@ extension Ollama {
 
 extension Ollama: PersistentlyRepresentableType {
     public static var persistentTypeRepresentation: some IdentityRepresentation {
-        _MIServiceTypeIdentifier._Ollama
+        CoreMI._ServiceVendorIdentifier._Ollama
     }
 }
 
@@ -88,13 +88,13 @@ extension Ollama: _MIService {
 
 extension _MIService where Self == Ollama {
     public init(
-        account: (any _MIServiceAccount)?
+        account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {
-        let account: any _MIServiceAccount = try account.unwrap()
-        let serviceIdentifier: _MIServiceTypeIdentifier = account.serviceIdentifier
+        let account: any CoreMI._ServiceAccountProtocol = try account.unwrap()
+        let serviceVendorIdentifier: CoreMI._ServiceVendorIdentifier = try account.serviceVendorIdentifier.unwrap()
         
-        guard serviceIdentifier == _MIServiceTypeIdentifier._Ollama else {
-            throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
+        guard serviceVendorIdentifier == CoreMI._ServiceVendorIdentifier._Ollama else {
+            throw CoreMI._ServiceClientError.incompatibleVendor(serviceVendorIdentifier)
         }
         
         self = .shared

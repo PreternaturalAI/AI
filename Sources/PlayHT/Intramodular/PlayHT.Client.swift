@@ -15,7 +15,7 @@ extension PlayHT {
     @RuntimeDiscoverable
     public final class Client: HTTPClient, _StaticSwift.Namespace {
         public static var persistentTypeRepresentation: some IdentityRepresentation {
-            _MIServiceTypeIdentifier._PlayHT
+            CoreMI._ServiceVendorIdentifier._PlayHT
         }
         
         public typealias API = PlayHT.APISpecification
@@ -39,17 +39,17 @@ extension PlayHT {
 
 extension PlayHT.Client: _MIService {
     public convenience init(
-        account: (any _MIServiceAccount)?
+        account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {
-        let account: any _MIServiceAccount = try account.unwrap()
-        let serviceIdentifier: _MIServiceTypeIdentifier = account.serviceIdentifier
+        let account: any CoreMI._ServiceAccountProtocol = try account.unwrap()
+        let serviceVendorIdentifier: CoreMI._ServiceVendorIdentifier = try account.serviceVendorIdentifier.unwrap()
         
-        guard serviceIdentifier == _MIServiceTypeIdentifier._PlayHT else {
-            throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
+        guard serviceVendorIdentifier == CoreMI._ServiceVendorIdentifier._PlayHT else {
+            throw CoreMI._ServiceClientError.incompatibleVendor(serviceVendorIdentifier)
         }
         
-        guard let credential = account.credential as? _MIServiceUserIDAndAPIKeyCredential else {
-            throw _MIServiceError.invalidCredentials(account.credential)
+        guard let credential = try account.credential as? CoreMI._ServiceCredentialTypes.PlayHTCredential else {
+            throw CoreMI._ServiceClientError.invalidCredential(try account.credential)
         }
         
         self.init(apiKey: credential.apiKey, userID: credential.userID)

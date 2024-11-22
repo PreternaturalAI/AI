@@ -206,7 +206,7 @@ extension OpenAI.Client: _MaybeAsyncProtocol {
 
 extension OpenAI.Client: PersistentlyRepresentableType {
     public static var persistentTypeRepresentation: some IdentityRepresentation {
-        _MIServiceTypeIdentifier._OpenAI
+        CoreMI._ServiceVendorIdentifier._OpenAI
     }
 }
 

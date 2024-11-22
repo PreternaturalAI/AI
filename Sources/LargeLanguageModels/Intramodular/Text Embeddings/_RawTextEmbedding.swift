@@ -21,7 +21,7 @@ public struct _RawTextEmbedding: Hashable, Sendable {
     }
 }
 
-// MARK: - Implemented Conformances
+// MARK: - Conformees
 
 extension _RawTextEmbedding: Codable {
     @inlinable

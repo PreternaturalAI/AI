@@ -12,7 +12,7 @@ extension Groq {
     @RuntimeDiscoverable
     public final class Client: HTTPClient, _StaticSwift.Namespace {
         public static var persistentTypeRepresentation: some IdentityRepresentation {
-            _MIServiceTypeIdentifier._Groq
+            CoreMI._ServiceVendorIdentifier._Groq
         }
         
         public let interface: APISpecification
@@ -34,17 +34,17 @@ extension Groq {
 
 extension Groq.Client: _MIService {
     public convenience init(
-        account: (any _MIServiceAccount)?
+        account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {
-        let account: any _MIServiceAccount = try account.unwrap()
-        let serviceIdentifier: _MIServiceTypeIdentifier = account.serviceIdentifier
+        let account: any CoreMI._ServiceAccountProtocol = try account.unwrap()
+        let serviceVendorIdentifier: CoreMI._ServiceVendorIdentifier = try account.serviceVendorIdentifier.unwrap()
 
-        guard serviceIdentifier == _MIServiceTypeIdentifier._Groq else {
-            throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
+        guard serviceVendorIdentifier == CoreMI._ServiceVendorIdentifier._Groq else {
+            throw CoreMI._ServiceClientError.incompatibleVendor(serviceVendorIdentifier)
         }
         
-        guard let credential = account.credential as? _MIServiceAPIKeyCredential else {
-            throw _MIServiceError.invalidCredentials(account.credential)
+        guard let credential = try account.credential as? CoreMI._ServiceCredentialTypes.APIKeyCredential else {
+            throw CoreMI._ServiceClientError.invalidCredential(try account.credential)
         }
         
         self.init(apiKey: credential.apiKey)

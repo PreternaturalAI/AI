@@ -15,7 +15,7 @@ extension Rime {
     @RuntimeDiscoverable
     public final class Client: HTTPClient, _StaticSwift.Namespace {
         public static var persistentTypeRepresentation: some IdentityRepresentation {
-            _MIServiceTypeIdentifier._Rime
+            CoreMI._ServiceVendorIdentifier._Rime
         }
         
         public typealias API = Rime.APISpecification
@@ -25,34 +25,19 @@ extension Rime {
         public let session: Session
         public var sessionCache: EmptyKeyedCache<Session.Request, Session.Request.Response>
         
-        public required init(configuration: API.Configuration) {
+        public required init(
+            configuration: API.Configuration
+        ) {
             self.interface = API(configuration: configuration)
             self.session = HTTPSession.shared
             self.sessionCache = .init()
         }
         
-        public convenience init(apiKey: String) {
+        public convenience init(
+            apiKey: String
+        ) {
             self.init(configuration: .init(apiKey: apiKey))
         }
-    }
-}
-
-extension Rime.Client: _MIService {
-    public convenience init(
-        account: (any _MIServiceAccount)?
-    ) async throws {
-        let account: any _MIServiceAccount = try account.unwrap()
-        let serviceIdentifier: _MIServiceTypeIdentifier = account.serviceIdentifier
-        
-        guard serviceIdentifier == _MIServiceTypeIdentifier._PlayHT else {
-            throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
-        }
-        
-        guard let credential = account.credential as? _MIServiceAPIKeyCredential else {
-            throw _MIServiceError.invalidCredentials(account.credential)
-        }
-        
-        self.init(apiKey: credential.apiKey)
     }
 }
 
@@ -66,15 +51,35 @@ extension Rime.Client {
         voice: String,
         model: Rime.Model
     ) async throws -> Data {
-        
         let input = Rime.APISpecification.RequestBodies.TextToSpeechInput(
             speaker: voice,
             text: text,
-            modelId: model.rawValue
+            modelID: model.rawValue
         )
         
         let responseData = try await run(\.textToSpeech, with: input)
         
         return responseData.audioContent
+    }
+}
+
+// MARK: - Conformances
+
+extension Rime.Client: _MIService {
+    public convenience init(
+        account: (any CoreMI._ServiceAccountProtocol)?
+    ) async throws {
+        let account: any CoreMI._ServiceAccountProtocol = try account.unwrap()
+        let serviceVendorIdentifier: CoreMI._ServiceVendorIdentifier = try account.serviceVendorIdentifier.unwrap()
+        
+        guard serviceVendorIdentifier == CoreMI._ServiceVendorIdentifier._PlayHT else {
+            throw CoreMI._ServiceClientError.incompatibleVendor(serviceVendorIdentifier)
+        }
+        
+        guard let credential = try account.credential as? CoreMI._ServiceCredentialTypes.APIKeyCredential else {
+            throw CoreMI._ServiceClientError.invalidCredential(try account.credential)
+        }
+        
+        self.init(apiKey: credential.apiKey)
     }
 }

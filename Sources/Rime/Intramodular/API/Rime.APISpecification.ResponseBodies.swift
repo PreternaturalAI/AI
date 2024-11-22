@@ -14,7 +14,9 @@ extension Rime.APISpecification {
         public struct Voices: Codable {
             public let voices: [Rime.Voice]
             
-            public init(voices: [Rime.Voice]) {
+            public init(
+                voices: [Rime.Voice]
+            ) {
                 self.voices = voices
             }
             
@@ -30,37 +32,28 @@ extension Rime.APISpecification {
         }
         
         public struct TextToSpeechOutput: Codable {
+            fileprivate enum CodingKeys: String, CodingKey {
+                case audioContent
+            }
+
             public let audioContent: Data
             
             public init(audioContent: Data) {
                 self.audioContent = audioContent
             }
-            
-            enum CodingKeys: String, CodingKey {
-                case audioContent
-            }
-            
+                        
             public init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                
                 let base64String = try container.decode(String.self, forKey: .audioContent)
                 
-                guard let audioData = Data(base64Encoded: base64String) else {
-                    throw DecodingError.dataCorrupted(
-                        DecodingError.Context(
-                            codingPath: [CodingKeys.audioContent],
-                            debugDescription: "Invalid base64 encoded string"
-                        )
-                    )
-                }
-                
-                self.audioContent = audioData
+                self.audioContent = try Data(base64Encoded: base64String).unwrap()
             }
             
             public func encode(to encoder: Encoder) throws {
                 var container = encoder.container(keyedBy: CodingKeys.self)
                 
                 let base64String = audioContent.base64EncodedString()
+
                 try container.encode(base64String, forKey: .audioContent)
             }
         }

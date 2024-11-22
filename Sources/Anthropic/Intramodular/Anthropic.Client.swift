@@ -11,7 +11,7 @@ extension Anthropic {
     @RuntimeDiscoverable
     public final class Client: HTTPClient, PersistentlyRepresentableType, _StaticSwift.Namespace {
         public static var persistentTypeRepresentation: some IdentityRepresentation {
-            _MIServiceTypeIdentifier._Anthropic
+            CoreMI._ServiceVendorIdentifier._Anthropic
         }
         
         public let interface: API
