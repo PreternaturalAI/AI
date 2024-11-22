@@ -11,7 +11,7 @@ import Merge
 
 extension Rime.APISpecification {
     enum ResponseBodies {
-        public struct Voices: Codable {
+        public struct VoiceDetails: Codable {
             public let voices: [Rime.Voice]
             
             public init(voices: [Rime.Voice]) {
@@ -27,6 +27,11 @@ extension Rime.APISpecification {
                 var container = encoder.singleValueContainer()
                 try container.encode(voices)
             }
+        }
+        
+        struct Voices: Codable {
+            let v1: [String]
+            let mist: [String]
         }
         
         public struct TextToSpeechOutput: Codable {
