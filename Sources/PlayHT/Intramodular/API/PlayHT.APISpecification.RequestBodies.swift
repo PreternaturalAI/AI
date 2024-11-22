@@ -116,5 +116,38 @@ extension PlayHT.APISpecification {
                 return result
             }
         }
+        
+        public struct InstantCloneVoiceWithURLInput: Codable, Hashable, HTTPRequest.Multipart.ContentConvertible {
+            public let url: String
+            public let voiceName: String
+            
+            public init(
+                url: String,
+                voiceName: String
+            ) {
+                self.url = url
+                self.voiceName = voiceName
+            }
+            
+            public func __conversion() throws -> HTTPRequest.Multipart.Content {
+                var result: HTTPRequest.Multipart.Content = .init()
+                
+                result.append(
+                    .string(
+                        named: "sample_file_url",
+                        value: url
+                    )
+                )
+                
+                result.append(
+                    .text(
+                        named: "voice_name",
+                        value: voiceName
+                    )
+                )
+                
+                return result
+            }
+        }
     }
 }

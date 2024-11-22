@@ -59,14 +59,14 @@ extension PlayHT.Client: _MIService {
 extension PlayHT.Client {
     
     public func getAllAvailableVoices() async throws -> [PlayHT.Voice] {
-        async let htVoices = playHTAvailableVoices()
+        async let htVoices = availableVoices()
         async let clonedVoices = clonedVoices()
         
         let (available, cloned) = try await (htVoices, clonedVoices)
         return available + cloned
     }
     
-    public func playHTAvailableVoices() async throws -> [PlayHT.Voice] {
+    public func availableVoices() async throws -> [PlayHT.Voice] {
         try await run(\.listVoices).voices
     }
     
@@ -126,6 +126,19 @@ extension PlayHT.Client {
         )
         
         let response = try await run(\.instantCloneVoice, with: input)
+        return .init(rawValue: response.id)
+    }
+    
+    public func instantCloneVoice(
+        url: String,
+        name: String
+    ) async throws -> PlayHT.Voice.ID {
+        let input = PlayHT.APISpecification.RequestBodies.InstantCloneVoiceWithURLInput(
+            url: url,
+            voiceName: name
+        )
+        
+        let response = try await run(\.instantCloneVoiceWithURL, with: input)
         return .init(rawValue: response.id)
     }
     
