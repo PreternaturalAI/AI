@@ -57,5 +57,5 @@ extension Rime.APISpecification {
                 try container.encode(base64String, forKey: .audioContent)
             }
         }
-    }
+    } 
 }

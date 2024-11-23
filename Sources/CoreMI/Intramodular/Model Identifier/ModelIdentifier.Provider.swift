@@ -26,6 +26,8 @@ extension ModelIdentifier {
         case _TogetherAI
         case _PlayHT
         case _Rime
+        case _HumeAI
+        case _NeetsAI
         
         case unknown(String)
         
@@ -84,6 +86,14 @@ extension ModelIdentifier {
         public static var rime: Self {
             Self._Rime
         }
+        
+        public static var humeAI: Self {
+            self._HumeAI
+        }
+        
+        public static var neetsAI: Self {
+            self._NeetsAI
+        }
     }
 }
 
@@ -124,6 +134,10 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
                 return "PlayHT"
             case ._Rime:
                 return "Rime"
+            case ._HumeAI:
+                return "HumeAI"
+            case ._NeetsAI:
+                return "NeetsAI"
             case .unknown(let provider):
                 return provider
         }
@@ -165,6 +179,10 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 return "playht"
             case ._Rime:
                 return "rime"
+            case ._HumeAI:
+                return "humeai"
+            case ._NeetsAI:
+                return "neetsai"
             case .unknown(let provider):
                 return provider
         }
@@ -202,6 +220,10 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 self = ._PlayHT
             case Self._Rime.rawValue:
                 self = ._Rime
+            case Self._HumeAI.rawValue:
+                self = ._HumeAI
+            case Self._NeetsAI.rawValue:
+                self = ._NeetsAI
             default:
                 self = .unknown(rawValue)
         }
