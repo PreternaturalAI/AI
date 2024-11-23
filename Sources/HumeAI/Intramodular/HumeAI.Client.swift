@@ -47,60 +47,6 @@ extension HumeAI.Client {
         let response = try await run(\.listVoices)
         return response.voices
     }
-    
-    public func generateSpeech(
-        text: String,
-        voiceID: String,
-        speed: Double? = nil,
-        stability: Double? = nil,
-        similarityBoost: Double? = nil,
-        styleExaggeration: Double? = nil
-    ) async throws -> Data {
-        let input = HumeAI.APISpecification.RequestBodies.TTSInput(
-            text: text,
-            voiceId: voiceID,
-            speed: speed,
-            stability: stability,
-            similarityBoost: similarityBoost,
-            styleExaggeration: styleExaggeration
-        )
-        
-        return try await run(\.generateSpeech, with: input).audio
-    }
-    
-    public func generateSpeechStream(
-        text: String,
-        voiceID: String,
-        speed: Double? = nil,
-        stability: Double? = nil,
-        similarityBoost: Double? = nil,
-        styleExaggeration: Double? = nil
-    ) async throws -> Data {
-        let input = HumeAI.APISpecification.RequestBodies.TTSInput(
-            text: text,
-            voiceId: voiceID,
-            speed: speed,
-            stability: stability,
-            similarityBoost: similarityBoost,
-            styleExaggeration: styleExaggeration
-        )
-        
-        let stream = try await run(\.generateSpeechStream, with: input)
-        
-        var request = URLRequest(url: stream.streamURL)
-        
-        let (audioData, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw HumeAI.APIError.audioDataError
-        }
-        
-        guard !audioData.isEmpty else {
-            throw HumeAI.APIError.audioDataError
-        }
-        
-        return audioData
-    }
 }
 
 // MARK: - Conformances

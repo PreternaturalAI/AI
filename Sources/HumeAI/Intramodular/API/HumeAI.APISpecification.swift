@@ -86,17 +86,6 @@ extension HumeAI {
         @Path("/v0/evi/custom_voices/{id}")
         @Body(json: \.input)
         var updateVoiceName = Endpoint<RequestBodies.UpdateVoiceNameInput, ResponseBodies.Voice, Void>()
-        
-        // Text to Speech Endpoints
-        @POST
-        @Path("/v0/tts/generate")
-        @Body(json: \.input)
-        var generateSpeech = Endpoint<RequestBodies.TTSInput, ResponseBodies.TTSOutput, Void>()
-        
-        @POST
-        @Path("/v0/tts/generate/stream")
-        @Body(json: \.input)
-        var generateSpeechStream = Endpoint<RequestBodies.TTSInput, ResponseBodies.TTSStreamOutput, Void>()
     }
 }
 
