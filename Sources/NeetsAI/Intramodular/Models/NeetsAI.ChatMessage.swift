@@ -16,7 +16,7 @@ extension NeetsAI {
         private enum CodingKeys: String, CodingKey {
             case role
             case content
-            case toolCalls = "tool_calls"
+            case toolCalls
         }
     }
     
@@ -39,8 +39,8 @@ extension NeetsAI {
                 case index
                 case message
                 case logprobs
-                case finishReason = "finish_reason"
-                case stopReason = "stop_reason"
+                case finishReason
+                case stopReason
             }
         }
         
@@ -50,9 +50,9 @@ extension NeetsAI {
             public let completionTokens: Int
             
             private enum CodingKeys: String, CodingKey {
-                case promptTokens = "prompt_tokens"
-                case totalTokens = "total_tokens"
-                case completionTokens = "completion_tokens"
+                case promptTokens
+                case totalTokens
+                case completionTokens
             }
         }
     }
