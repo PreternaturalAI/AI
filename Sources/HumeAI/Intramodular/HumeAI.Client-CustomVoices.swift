@@ -10,7 +10,7 @@ import SwiftAPI
 import Merge
 
 extension HumeAI.Client {
-    public func listCustomVoices() async throws -> [HumeAI.APISpecification.ResponseBodies.Voice] {
+    public func listCustomVoices() async throws -> [HumeAI.Voice] {
         let response = try await run(\.listCustomVoices)
         return response.voices
     }
@@ -18,17 +18,22 @@ extension HumeAI.Client {
     public func createCustomVoice(
         name: String,
         baseVoice: String,
-        parameters: HumeAI.APISpecification.ResponseBodies.VoiceParameters
-    ) async throws -> HumeAI.APISpecification.ResponseBodies.Voice {
+        model: HumeAI.Model,
+        parameters: HumeAI.Voice.Parameters
+    ) async throws -> HumeAI.Voice {
         let input = HumeAI.APISpecification.RequestBodies.CreateVoiceInput(
             name: name,
             baseVoice: baseVoice,
+            parameterModel: model.rawValue,
             parameters: parameters
         )
         return try await run(\.createCustomVoice, with: input)
     }
     
     public func deleteCustomVoice(id: String) async throws {
-        try await run(\.deleteCustomVoice, with: id)
+        let input = HumeAI.APISpecification.PathInput.ID(
+            id: id
+        )
+        try await run(\.deleteCustomVoice, with: input)
     }
 }

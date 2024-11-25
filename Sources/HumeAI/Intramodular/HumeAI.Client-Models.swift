@@ -20,14 +20,20 @@ extension HumeAI.Client {
     public func getModel(
         id: String
     ) async throws -> HumeAI.Model {
-        try await run(\.getModel, with: id)
+        let input = HumeAI.APISpecification.PathInput.ID(
+            id: id
+        )
+        return try await run(\.getModel, with: input)
     }
     
     public func updateModelName(
         id: String,
         name: String
     ) async throws -> HumeAI.Model {
-        let input = HumeAI.APISpecification.RequestBodies.UpdateModelNameInput(name: name)
+        let input = HumeAI.APISpecification.RequestBodies.UpdateModelNameInput(
+            id: id,
+            name: name
+        )
         return try await run(\.updateModelName, with: input)
     }
 }

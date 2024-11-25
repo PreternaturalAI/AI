@@ -10,7 +10,7 @@ import SwiftAPI
 import Merge
 
 extension HumeAI.Client {
-    public func listFiles() async throws -> [HumeAI.APISpecification.ResponseBodies.File] {
+    public func listFiles() async throws -> [HumeAI.File] {
         let response = try await run(\.listFiles)
         return response.files
     }
@@ -19,12 +19,19 @@ extension HumeAI.Client {
         data: Data,
         name: String,
         metadata: [String: String]? = nil
-    ) async throws -> HumeAI.APISpecification.ResponseBodies.File {
-        let input = HumeAI.APISpecification.RequestBodies.UploadFileInput(file: data, name: name, metadata: metadata)
+    ) async throws -> HumeAI.File {
+        let input = HumeAI.APISpecification.RequestBodies.UploadFileInput(
+            file: data,
+            name: name,
+            metadata: metadata
+        )
         return try await run(\.uploadFile, with: input)
     }
     
     public func deleteFile(id: String) async throws {
-        try await run(\.deleteFile, with: id)
+        let input = HumeAI.APISpecification.PathInput.ID(
+            id: id
+        )
+        try await run(\.deleteFile, with: input)
     }
 }

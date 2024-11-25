@@ -10,8 +10,9 @@ import SwiftAPI
 import Merge
 
 extension HumeAI.Client {
-    public func listConfigs() async throws -> [HumeAI.APISpecification.ResponseBodies.Config] {
+    public func listConfigs() async throws -> [HumeAI.Config] {
         let response = try await run(\.listConfigs)
+        
         return response.configs
     }
     
@@ -19,7 +20,7 @@ extension HumeAI.Client {
         name: String,
         description: String?,
         settings: [String: String]
-    ) async throws -> HumeAI.APISpecification.ResponseBodies.Config {
+    ) async throws -> HumeAI.Config {
         let input = HumeAI.APISpecification.RequestBodies.CreateConfigInput(
             name: name,
             description: description,
@@ -29,6 +30,10 @@ extension HumeAI.Client {
     }
     
     public func deleteConfig(id: String) async throws {
-        try await run(\.deleteConfig, with: id)
+        let input = HumeAI.APISpecification.PathInput.ID(
+            id: id
+        )
+        
+        try await run(\.deleteConfig, with: input)
     }
 }

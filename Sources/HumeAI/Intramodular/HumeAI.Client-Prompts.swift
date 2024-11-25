@@ -10,7 +10,7 @@ import SwiftAPI
 import Merge
 
 extension HumeAI.Client {
-    public func listPrompts() async throws -> [HumeAI.APISpecification.ResponseBodies.Prompt] {
+    public func listPrompts() async throws -> [HumeAI.Prompt] {
         let response = try await run(\.listPrompts)
         return response.prompts
     }
@@ -19,7 +19,7 @@ extension HumeAI.Client {
         name: String,
         content: String,
         description: String? = nil
-    ) async throws -> HumeAI.APISpecification.ResponseBodies.Prompt {
+    ) async throws -> HumeAI.Prompt {
         let input = HumeAI.APISpecification.RequestBodies.CreatePromptInput(
             name: name,
             description: description,
@@ -30,6 +30,9 @@ extension HumeAI.Client {
     }
     
     public func deletePrompt(id: String) async throws {
-        try await run(\.deletePrompt, with: id)
+        let input = HumeAI.APISpecification.PathInput.ID(
+            id: id
+        )
+        try await run(\.deletePrompt, with: input)
     }
 }

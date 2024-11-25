@@ -15,7 +15,7 @@ extension HumeAI.Client {
         name: String,
         description: String? = nil,
         configuration: [String: String]
-    ) async throws -> HumeAI.APISpecification.ResponseBodies.Job {
+    ) async throws -> HumeAI.Job {
         let input = HumeAI.APISpecification.RequestBodies.TrainingJobInput(
             datasetId: datasetId,
             name: name,
@@ -27,9 +27,9 @@ extension HumeAI.Client {
     
     public func startCustomInferenceJob(
         modelId: String,
-        files: [HumeAI.APISpecification.RequestBodies.CustomInferenceJobInput.FileInput],
+        files: [HumeAI.FileInput],
         configuration: [String: String]
-    ) async throws -> HumeAI.APISpecification.ResponseBodies.Job {
+    ) async throws -> HumeAI.Job {
         let input = HumeAI.APISpecification.RequestBodies.CustomInferenceJobInput(
             modelId: modelId,
             files: files,

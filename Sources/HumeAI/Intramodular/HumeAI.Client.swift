@@ -44,7 +44,7 @@ extension HumeAI {
 extension HumeAI.Client {
     // Text to Speech
     public func getAllAvailableVoices() async throws -> [HumeAI.Voice] {
-        let response = try await run(\.listVoices)
+        let response = try await run(\.listCustomVoices)
         return response.voices
     }
 }

@@ -10,7 +10,7 @@ import SwiftAPI
 import Merge
 
 extension HumeAI.Client {
-    public func listDatasets() async throws -> [ResponseBodies.Dataset] {
+    public func listDatasets() async throws -> [HumeAI.Dataset] {
         let response = try await run(\.listDatasets)
         return response.datasets
     }
@@ -19,7 +19,7 @@ extension HumeAI.Client {
         name: String,
         description: String?,
         fileIds: [String]
-    ) async throws -> HumeAI.APISpecification.ResponseBodies.Dataset {
+    ) async throws -> HumeAI.Dataset {
         let input = HumeAI.APISpecification.RequestBodies.CreateDatasetInput(
             name: name,
             description: description,
@@ -29,6 +29,9 @@ extension HumeAI.Client {
     }
     
     public func deleteDataset(id: String) async throws {
-        try await run(\.deleteDataset, with: id)
+        let input = HumeAI.APISpecification.PathInput.ID(
+            id: id
+        )
+        try await run(\.deleteDataset, with: input)
     }
 }

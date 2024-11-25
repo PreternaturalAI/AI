@@ -132,7 +132,7 @@ extension HumeAI.APISpecification {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let chats: [Chat]
+            let chats: [HumeAI.Chat]
             
             private enum CodingKeys: String, CodingKey {
                 case pageNumber = "page_number"
@@ -143,19 +143,10 @@ extension HumeAI.APISpecification {
         }
         
         struct ChatEventList: Codable {
-            let events: [ChatEvent]
+            let events: [HumeAI.ChatEvent]
         }
         
         typealias ChatAudio = Data
-        
-        struct Config: Codable {
-            let id: String
-            let name: String
-            let description: String?
-            let createdOn: Int64
-            let modifiedOn: Int64
-            let versions: [ConfigVersion]?
-        }
         
         struct ConfigVersion: Codable {
             let id: String
@@ -170,7 +161,7 @@ extension HumeAI.APISpecification {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let configs: [Config]
+            let configs: [HumeAI.Config]
             
             private enum CodingKeys: String, CodingKey {
                 case pageNumber = "page_number"
@@ -208,29 +199,11 @@ extension HumeAI.APISpecification {
             }
         }
         
-        struct Dataset: Codable {
-            let id: String
-            let name: String
-            let description: String?
-            let createdOn: Int64
-            let modifiedOn: Int64
-            let versions: [DatasetVersion]?
-        }
-        
-        struct DatasetVersion: Codable {
-            let id: String
-            let datasetId: String
-            let description: String?
-            let createdOn: Int64
-            let modifiedOn: Int64
-            let files: [File]?
-        }
-        
         struct DatasetList: Codable {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let datasets: [Dataset]
+            let datasets: [HumeAI.Dataset]
             
             private enum CodingKeys: String, CodingKey {
                 case pageNumber = "page_number"
@@ -240,29 +213,11 @@ extension HumeAI.APISpecification {
             }
         }
         
-        struct File: Codable {
-            let id: String
-            let name: String
-            let size: Int
-            let mimeType: String
-            let createdOn: Int64
-            let modifiedOn: Int64
-            let metadata: [String: String]?
-            
-            private enum CodingKeys: String, CodingKey {
-                case id, name, size
-                case mimeType = "mime_type"
-                case createdOn = "created_on"
-                case modifiedOn = "modified_on"
-                case metadata
-            }
-        }
-        
         struct FileList: Codable {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let files: [File]
+            let files: [HumeAI.File]
             
             private enum CodingKeys: String, CodingKey {
                 case pageNumber = "page_number"
@@ -304,30 +259,11 @@ extension HumeAI.APISpecification {
             }
         }
         
-        struct Prompt: Codable {
-            let id: String
-            let name: String
-            let description: String?
-            let createdOn: Int64
-            let modifiedOn: Int64
-            let versions: [PromptVersion]?
-        }
-        
-        struct PromptVersion: Codable {
-            let id: String
-            let promptId: String
-            let description: String?
-            let createdOn: Int64
-            let modifiedOn: Int64
-            let content: String
-            let metadata: [String: String]?
-        }
-        
         struct PromptList: Codable {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let prompts: [Prompt]
+            let prompts: [HumeAI.Prompt]
             
             private enum CodingKeys: String, CodingKey {
                 case pageNumber = "page_number"
@@ -363,7 +299,7 @@ extension HumeAI.APISpecification {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let tools: [Tool]
+            let tools: [HumeAI.Tool]
             
             private enum CodingKeys: String, CodingKey {
                 case pageNumber = "page_number"

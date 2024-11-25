@@ -11,11 +11,17 @@ import Merge
 
 extension HumeAI.Client {
     public func streamInference(
+        id: String,
         file: Data,
         models: [HumeAI.Model],
         metadata: [String: String]? = nil
-    ) async throws -> HumeAI.APISpecification.ResponseBodies.Job {
-        let input = HumeAI.APISpecification.RequestBodies.StreamInput(file: file, models: models, metadata: metadata)
+    ) async throws -> HumeAI.Job {
+        let input = HumeAI.APISpecification.RequestBodies.StreamInput(
+            id: id,
+            file: file,
+            models: models,
+            metadata: metadata
+        )
         return try await run(\.streamInference, with: input)
     }
 }

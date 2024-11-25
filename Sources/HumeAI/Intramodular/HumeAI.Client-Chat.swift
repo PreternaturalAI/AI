@@ -11,12 +11,12 @@ import Merge
 
 extension HumeAI.Client {
     public func chat(
-        messages: [HumeAI.APISpecification.RequestBodies.ChatRequest.Message],
+        messages: [HumeAI.ChatMessage],
         model: String,
         temperature: Double? = nil
-    ) async throws -> HumeAI.APISpecification.ResponseBodies.ChatResponse {
+    ) async throws -> HumeAI.ChatResponse {
         let input = HumeAI.APISpecification.RequestBodies.ChatRequest(
-            messages: messages,
+            messages: messages.map { .init(role: $0.role, content: $0.content) },
             model: model,
             temperature: temperature,
             maxTokens: nil,

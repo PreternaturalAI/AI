@@ -67,36 +67,50 @@ extension HumeAI {
         @POST
         @Path("/v0/tools")
         @Body(json: \.input)
-        var createTool = Endpoint<RequestBodies.CreateToolInput, ResponseBodies.Tool, Void>()
+        var createTool = Endpoint<RequestBodies.CreateToolInput, HumeAI.Tool, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions" })
+        @Path({ context -> String in
+            "/v0/tools/\(context.input.id)/versions"
+        })
         var listToolVersions = Endpoint<PathInput.ID, [ResponseBodies.ToolVersion], Void>()
         
         @POST
-        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions" })
+        @Path({ context -> String in
+            "/v0/tools/\(context.input.id)/versions"
+        })
         @Body(json: \.input)
-        var createToolVersion = Endpoint<RequestBodies.CreateToolVersionInput, ResponseBodies.ToolVersion, Void>()
+        var createToolVersion = Endpoint<RequestBodies.CreateToolInput, ResponseBodies.ToolVersion, Void>()
         
         @DELETE
-        @Path({ context -> String in "/v0/tools/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/tools/\(context.input.id)"
+        })
         var deleteTool = Endpoint<PathInput.ID, Void, Void>()
         
         @PATCH
-        @Path({ context -> String in "/v0/tools/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/tools/\(context.input.id)"
+        })
         @Body(json: \.input)
-        var updateToolName = Endpoint<RequestBodies.UpdateToolNameInput, ResponseBodies.Tool, Void>()
+        var updateToolName = Endpoint<RequestBodies.UpdateToolNameInput, HumeAI.Tool, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/tools/\(context.input.id)/versions/\(context.input.versionId)"
+        })
         var getToolVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ToolVersion, Void>()
         
         @DELETE
-        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/tools/\(context.input.id)/versions/\(context.input.versionId)"
+        })
         var deleteToolVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
         
         @PATCH
-        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/tools/\(context.input.id)/versions/\(context.input.versionID)"
+        })
         @Body(json: \.input)
         var updateToolDescription = Endpoint<RequestBodies.UpdateToolDescriptionInput, ResponseBodies.ToolVersion, Void>()
         
@@ -108,41 +122,52 @@ extension HumeAI {
         @POST
         @Path("/v0/prompts")
         @Body(json: \.input)
-        var createPrompt = Endpoint<RequestBodies.CreatePromptInput, ResponseBodies.Prompt, Void>()
+        var createPrompt = Endpoint<RequestBodies.CreatePromptInput, HumeAI.Prompt, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions" })
-        var listPromptVersions = Endpoint<PathInput.ID, [ResponseBodies.PromptVersion], Void>()
+        @Path({ context -> String in
+            "/v0/prompts/\(context.input.id)/versions"
+        })
+        var listPromptVersions = Endpoint<PathInput.ID, [HumeAI.Prompt.PromptVersion], Void>()
         
         @POST
-        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions" })
+        @Path({ context -> String in
+            "/v0/prompts/\(context.input.id)/versions"
+        })
         @Body(json: \.input)
-        var createPromptVersion = Endpoint<RequestBodies.CreatePromptVersionInput, ResponseBodies.PromptVersion, Void>()
+        var createPromptVersion = Endpoint<RequestBodies.CreatePromptVersionInput, HumeAI.Prompt.PromptVersion, Void>()
         
         @DELETE
-        @Path({ context -> String in "/v0/prompts/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/prompts/\(context.input.id)"
+        })
         var deletePrompt = Endpoint<PathInput.ID, Void, Void>()
         
         @PATCH
-        @Path(
-            {
-                context -> String in "/v0/prompts/\(context.input.id)"
-            })
+        @Path({ context -> String in 
+            "/v0/prompts/\(context.input.id)"
+        })
         @Body(json: \.input)
-        var updatePromptName = Endpoint<RequestBodies.UpdatePromptNameInput, ResponseBodies.Prompt, Void>()
+        var updatePromptName = Endpoint<RequestBodies.UpdatePromptNameInput, HumeAI.Prompt, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions/\(context.input.versionId)" })
-        var getPromptVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.PromptVersion, Void>()
+        @Path({ context -> String in
+            "/v0/prompts/\(context.input.id)/versions/\(context.input.versionId)"
+        })
+        var getPromptVersion = Endpoint<PathInput.IDWithVersion, HumeAI.Prompt.PromptVersion, Void>()
         
         @DELETE
-        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/prompts/\(context.input.id)/versions/\(context.input.versionId)"
+        })
         var deletePromptVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
         
         @PATCH
-        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/prompts/\(context.input.id)/versions/\(context.input.versionID)"
+        })
         @Body(json: \.input)
-        var updatePromptDescription = Endpoint<RequestBodies.UpdatePromptDescriptionInput, ResponseBodies.PromptVersion, Void>()
+        var updatePromptDescription = Endpoint<RequestBodies.UpdatePromptDescriptionInput, HumeAI.Prompt.PromptVersion, Void>()
         
         // MARK: - Custom Voices
         @GET
@@ -155,20 +180,28 @@ extension HumeAI {
         var createCustomVoice = Endpoint<RequestBodies.CreateVoiceInput, ResponseBodies.Voice, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/custom-voices/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/custom-voices/\(context.input.id)"
+        })
         var getCustomVoice = Endpoint<PathInput.ID, ResponseBodies.Voice, Void>()
         
         @POST
-        @Path({ context -> String in "/v0/custom-voices/\(context.input.id)/versions" })
+        @Path({ context -> String in
+            "/v0/custom-voices/\(context.input.id)/versions"
+        })
         @Body(json: \.input)
         var createCustomVoiceVersion = Endpoint<RequestBodies.CreateVoiceVersionInput, ResponseBodies.Voice, Void>()
         
         @DELETE
-        @Path({ context -> String in "/v0/custom-voices/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/custom-voices/\(context.input.id)"
+        })
         var deleteCustomVoice = Endpoint<PathInput.ID, Void, Void>()
         
         @PATCH
-        @Path({ context -> String in "/v0/custom-voices/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/custom-voices/\(context.input.id)"
+        })
         @Body(json: \.input)
         var updateCustomVoiceName = Endpoint<RequestBodies.UpdateVoiceNameInput, ResponseBodies.Voice, Void>()
         
@@ -180,36 +213,50 @@ extension HumeAI {
         @POST
         @Path("/v0/configs")
         @Body(json: \.input)
-        var createConfig = Endpoint<RequestBodies.CreateConfigInput, ResponseBodies.Config, Void>()
+        var createConfig = Endpoint<RequestBodies.CreateConfigInput, HumeAI.Config, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions" })
+        @Path({ context -> String in
+            "/v0/configs/\(context.input.id)/versions"
+        })
         var listConfigVersions = Endpoint<PathInput.ID, [ResponseBodies.ConfigVersion], Void>()
         
         @POST
-        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions" })
+        @Path({ context -> String in
+            "/v0/configs/\(context.input.id)/versions"
+        })
         @Body(json: \.input)
         var createConfigVersion = Endpoint<RequestBodies.CreateConfigVersionInput, ResponseBodies.ConfigVersion, Void>()
         
         @DELETE
-        @Path({ context -> String in "/v0/configs/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/configs/\(context.input.id)"
+        })
         var deleteConfig = Endpoint<PathInput.ID, Void, Void>()
         
         @PATCH
-        @Path({ context -> String in "/v0/configs/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/configs/\(context.input.id)"
+        })
         @Body(json: \.input)
-        var updateConfigName = Endpoint<RequestBodies.UpdateConfigNameInput, ResponseBodies.Config, Void>()
+        var updateConfigName = Endpoint<RequestBodies.UpdateConfigNameInput, HumeAI.Config, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/configs/\(context.input.id)/versions/\(context.input.versionId)"
+        })
         var getConfigVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ConfigVersion, Void>()
         
         @DELETE
-        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/configs/\(context.input.id)/versions/\(context.input.versionId)"
+        })
         var deleteConfigVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
         
         @PATCH
-        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/configs/\(context.input.id)/versions/\(context.input.versionID)"
+        })
         @Body(json: \.input)
         var updateConfigDescription = Endpoint<RequestBodies.UpdateConfigDescriptionInput, ResponseBodies.ConfigVersion, Void>()
         
@@ -219,11 +266,15 @@ extension HumeAI {
         var listChats = Endpoint<Void, ResponseBodies.ChatList, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/chats/\(context.input.id)/events" })
+        @Path({ context -> String in
+            "/v0/chats/\(context.input.id)/events"
+        })
         var listChatEvents = Endpoint<PathInput.ID, ResponseBodies.ChatEventList, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/chats/\(context.input.id)/audio" })
+        @Path({ context -> String in
+            "/v0/chats/\(context.input.id)/audio"
+        })
         var getChatAudio = Endpoint<PathInput.ID, ResponseBodies.ChatAudio, Void>()
         
         // MARK: - Chat Groups
@@ -232,22 +283,28 @@ extension HumeAI {
         var listChatGroups = Endpoint<Void, ResponseBodies.ChatGroupList, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/chat-groups/\(context.input.id)" })
-        var getChatGroup = Endpoint<PathInput.ID, ResponseBodies.ChatGroup, Void>()
+        @Path({ context -> String in
+            "/v0/chat-groups/\(context.input.id)"
+        })
+        var getChatGroup = Endpoint<PathInput.ID, HumeAI.ChatGroup, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/chat-groups/\(context.input.id)/events" })
+        @Path({ context -> String in
+            "/v0/chat-groups/\(context.input.id)/events"
+        })
         var listChatGroupEvents = Endpoint<PathInput.ID, ResponseBodies.ChatEventList, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/chat-groups/\(context.input.id)/audio" })
+        @Path({ context -> String in
+            "/v0/chat-groups/\(context.input.id)/audio"
+        })
         var getChatGroupAudio = Endpoint<PathInput.ID, ResponseBodies.ChatAudio, Void>()
         
         // MARK: - Chat
         @POST
         @Path("/v0/chat")
         @Body(json: \.input)
-        var chat = Endpoint<RequestBodies.ChatRequest, ResponseBodies.ChatResponse, Void>()
+        var chat = Endpoint<RequestBodies.ChatRequest, HumeAI.ChatResponse, Void>()
         
         // MARK: - Batch
         @GET
@@ -257,25 +314,31 @@ extension HumeAI {
         @POST
         @Path("/v0/batch/jobs")
         @Body(json: \.input)
-        var startInferenceJob = Endpoint<RequestBodies.BatchInferenceJobInput, ResponseBodies.Job, Void>()
+        var startInferenceJob = Endpoint<RequestBodies.BatchInferenceJobInput, HumeAI.Job, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/batch/jobs/\(context.input.id)" })
-        var getJobDetails = Endpoint<PathInput.ID, ResponseBodies.Job, Void>()
+        @Path({ context -> String in
+            "/v0/batch/jobs/\(context.input.id)"
+        })
+        var getJobDetails = Endpoint<PathInput.ID, HumeAI.Job, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/batch/jobs/\(context.input.id)/predictions" })
-        var getJobPredictions = Endpoint<PathInput.ID, [ResponseBodies.Job.Prediction], Void>()
+        @Path({ context -> String in
+            "/v0/batch/jobs/\(context.input.id)/predictions"
+        })
+        var getJobPredictions = Endpoint<PathInput.ID, [HumeAI.Job.Prediction], Void>()
         
         @GET
-        @Path({ context -> String in "/v0/batch/jobs/\(context.input.id)/artifacts" })
+        @Path({ context -> String in
+            "/v0/batch/jobs/\(context.input.id)/artifacts"
+        })
         var getJobArtifacts = Endpoint<PathInput.ID, [String: String], Void>()
         
         // MARK: - Stream
         @POST
         @Path("/v0/stream")
         @Body(multipart: .input)
-        var streamInference = Endpoint<RequestBodies.StreamInput, ResponseBodies.Job, Void>()
+        var streamInference = Endpoint<RequestBodies.StreamInput, HumeAI.Job, Void>()
         
         // MARK: - Files
         @GET
@@ -285,24 +348,32 @@ extension HumeAI {
         @POST
         @Path("/v0/files")
         @Body(multipart: .input)
-        var uploadFile = Endpoint<RequestBodies.UploadFileInput, ResponseBodies.File, Void>()
+        var uploadFile = Endpoint<RequestBodies.UploadFileInput, HumeAI.File, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/files/\(context.input.id)" })
-        var getFile = Endpoint<PathInput.ID, ResponseBodies.File, Void>()
+        @Path({ context -> String in
+            "/v0/files/\(context.input.id)"
+        })
+        var getFile = Endpoint<PathInput.ID, HumeAI.File, Void>()
         
         @DELETE
-        @Path({ context -> String in "/v0/files/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/files/\(context.input.id)"
+        })
         var deleteFile = Endpoint<PathInput.ID, Void, Void>()
         
         @PATCH
-        @Path({ context -> String in "/v0/files/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/files/\(context.input.id)"
+        })
         @Body(json: \.input)
-        var updateFileName = Endpoint<RequestBodies.UpdateFileNameInput, ResponseBodies.File, Void>()
+        var updateFileName = Endpoint<RequestBodies.UpdateFileNameInput, HumeAI.File, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/files/\(context.input.id)/predictions" })
-        var getFilePredictions = Endpoint<PathInput.ID, [ResponseBodies.Job.Prediction], Void>()
+        @Path({ context -> String in
+            "/v0/files/\(context.input.id)/predictions"
+        })
+        var getFilePredictions = Endpoint<PathInput.ID, [HumeAI.Job.Prediction], Void>()
         
         // MARK: - Datasets
         @GET
@@ -312,23 +383,31 @@ extension HumeAI {
         @POST
         @Path("/v0/datasets")
         @Body(json: \.input)
-        var createDataset = Endpoint<RequestBodies.CreateDatasetInput, ResponseBodies.Dataset, Void>()
+        var createDataset = Endpoint<RequestBodies.CreateDatasetInput, HumeAI.Dataset, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/datasets/\(context.input.id)" })
-        var getDataset = Endpoint<PathInput.ID, ResponseBodies.Dataset, Void>()
+        @Path({ context -> String in
+            "/v0/datasets/\(context.input.id)"
+        })
+        var getDataset = Endpoint<PathInput.ID, HumeAI.Dataset, Void>()
         
         @POST
-        @Path({ context -> String in "/v0/datasets/\(context.input.id)/versions" })
+        @Path({ context -> String in
+            "/v0/datasets/\(context.input.id)/versions"
+        })
         @Body(json: \.input)
         var createDatasetVersion = Endpoint<RequestBodies.CreateDatasetVersionInput, ResponseBodies.DatasetVersion, Void>()
         
         @DELETE
-        @Path({ context -> String in "/v0/datasets/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/datasets/\(context.input.id)"
+        })
         var deleteDataset = Endpoint<PathInput.ID, Void, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/datasets/\(context.input.id)/versions" })
+        @Path({ context -> String in
+            "/v0/datasets/\(context.input.id)/versions"
+        })
         var listDatasetVersions = Endpoint<PathInput.ID, [ResponseBodies.DatasetVersion], Void>()
         // MARK: - Models
         @GET
@@ -336,24 +415,34 @@ extension HumeAI {
         var listModels = Endpoint<Void, ResponseBodies.ModelList, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/models/\(context.input.id)" })
-        var getModel = Endpoint<PathInput.ID, ResponseBodies.Model, Void>()
+        @Path({ context -> String in
+            "/v0/models/\(context.input.id)"
+        })
+        var getModel = Endpoint<PathInput.ID, HumeAI.Model, Void>()
         
         @PATCH
-        @Path({ context -> String in "/v0/models/\(context.input.id)" })
+        @Path({ context -> String in
+            "/v0/models/\(context.input.id)"
+        })
         @Body(json: \.input)
-        var updateModelName = Endpoint<RequestBodies.UpdateModelNameInput, ResponseBodies.Model, Void>()
+        var updateModelName = Endpoint<RequestBodies.UpdateModelNameInput, HumeAI.Model, Void>()
         
         @GET
-        @Path({ context -> String in "/v0/models/\(context.input.id)/versions" })
+        @Path({ context -> String in
+            "/v0/models/\(context.input.id)/versions"
+        })
         var listModelVersions = Endpoint<PathInput.ID, [ResponseBodies.ModelVersion], Void>()
         
         @GET
-        @Path({ context -> String in "/v0/models/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/models/\(context.input.id)/versions/\(context.input.versionId)"
+        })
         var getModelVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ModelVersion, Void>()
         
         @PATCH
-        @Path({ context -> String in "/v0/models/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Path({ context -> String in
+            "/v0/models/\(context.input.id)/versions/\(context.input.versionId)"
+        })
         @Body(json: \.input)
         var updateModelDescription = Endpoint<RequestBodies.UpdateModelDescriptionInput, ResponseBodies.ModelVersion, Void>()
         
@@ -361,12 +450,12 @@ extension HumeAI {
         @POST
         @Path("/v0/jobs/training")
         @Body(json: \.input)
-        var startTrainingJob = Endpoint<RequestBodies.TrainingJobInput, ResponseBodies.Job, Void>()
+        var startTrainingJob = Endpoint<RequestBodies.TrainingJobInput, HumeAI.Job, Void>()
         
         @POST
         @Path("/v0/jobs/inference")
         @Body(json: \.input)
-        var startCustomInferenceJob = Endpoint<RequestBodies.CustomInferenceJobInput, ResponseBodies.Job, Void>()
+        var startCustomInferenceJob = Endpoint<RequestBodies.CustomInferenceJobInput, HumeAI.Job, Void>()
     }
 }
 

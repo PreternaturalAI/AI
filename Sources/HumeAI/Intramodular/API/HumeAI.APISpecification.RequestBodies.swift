@@ -15,43 +15,24 @@ extension HumeAI.APISpecification {
             let pageNumber: Int?
             let pageSize: Int?
             let name: String?
-            
-            private enum CodingKeys: String, CodingKey {
-                case pageNumber = "page_number"
-                case pageSize = "page_size"
-                case name
-            }
         }
         
         struct CreateVoiceInput: Codable {
             let name: String
             let baseVoice: String
             let parameterModel: String
-            let parameters: Parameters?
-            
-            private enum CodingKeys: String, CodingKey {
-                case name
-                case baseVoice = "base_voice"
-                case parameterModel = "parameter_model"
-                case parameters
-            }
-            
-            struct Parameters: Codable {
-                let gender: Double?
-                let articulation: Double?
-                let assertiveness: Double?
-                let buoyancy: Double?
-                let confidence: Double?
-                let enthusiasm: Double?
-                let nasality: Double?
-                let relaxedness: Double?
-                let smoothness: Double?
-                let tepidity: Double?
-                let tightness: Double?
-            }
+            let parameters: HumeAI.Voice.Parameters?
+        }
+        
+        struct CreateVoiceVersionInput: Codable {
+            let id: String
+            let baseVoice: String
+            let parameterModel: String
+            let parameters: HumeAI.Voice.Parameters?
         }
         
         struct UpdateVoiceNameInput: Codable {
+            let id: String
             let name: String
         }
         
@@ -74,21 +55,9 @@ extension HumeAI.APISpecification {
         }
         
         struct BatchInferenceJobInput: Codable {
-            let files: [FileInput]
+            let files: [HumeAI.FileInput]
             let models: [HumeAI.Model]
             let callback: CallbackConfig?
-        }
-        
-        struct FileInput: Codable {
-            let url: String
-            let mimeType: String
-            let metadata: [String: String]?
-            
-            private enum CodingKeys: String, CodingKey {
-                case url
-                case mimeType = "mime_type"
-                case metadata
-            }
         }
         
         struct CallbackConfig: Codable {
@@ -121,11 +90,20 @@ extension HumeAI.APISpecification {
             let settings: [String: String]
         }
         
+        struct CreateConfigVersionInput: Codable {
+            let id: String
+            let description: String?
+            let settings: [String: String]
+        }
+        
         struct UpdateConfigNameInput: Codable {
+            let id: String
             let name: String
         }
         
         struct UpdateConfigDescriptionInput: Codable {
+            let id: String
+            let versionID: String
             let description: String
         }
         
@@ -133,11 +111,12 @@ extension HumeAI.APISpecification {
             let name: String
             let description: String?
             let fileIds: [String]
-            
-            private enum CodingKeys: String, CodingKey {
-                case name, description
-                case fileIds = "file_ids"
-            }
+        }
+        
+        struct CreateDatasetVersionInput: Codable {
+            let id: String
+            let description: String?
+            let fileIds: [String]
         }
         
         struct UploadFileInput: Codable, HTTPRequest.Multipart.ContentConvertible {
@@ -159,7 +138,7 @@ extension HumeAI.APISpecification {
                     result.append(
                         .string(
                             named: "metadata",
-                            value: try JSONEncoder().encode(metadata).utf8String ?? ""
+                            value: try JSONEncoder().encode(metadata).toUTF8String() ?? ""
                         )
                     )
                 }
@@ -168,6 +147,7 @@ extension HumeAI.APISpecification {
         }
         
         struct UpdateFileNameInput: Codable {
+            let id: String
             let name: String
         }
         
@@ -176,29 +156,22 @@ extension HumeAI.APISpecification {
             let name: String
             let description: String?
             let configuration: [String: String]
-            
-            private enum CodingKeys: String, CodingKey {
-                case datasetId = "dataset_id"
-                case name, description, configuration
-            }
         }
         
         struct CustomInferenceJobInput: Codable {
             let modelId: String
-            let files: [FileInput]
+            let files: [HumeAI.FileInput]
             let configuration: [String: String]
-            
-            private enum CodingKeys: String, CodingKey {
-                case modelId = "model_id"
-                case files, configuration
-            }
         }
         
         struct UpdateModelNameInput: Codable {
+            let id: String
             let name: String
         }
         
         struct UpdateModelDescriptionInput: Codable {
+            let id: String
+            let versionId: String
             let description: String
         }
         
@@ -209,15 +182,26 @@ extension HumeAI.APISpecification {
             let metadata: [String: String]?
         }
         
+        struct CreatePromptVersionInput: Codable {
+            let id: String
+            let description: String?
+            let content: String
+            let metadata: [String: String]?
+        }
+        
         struct UpdatePromptNameInput: Codable {
+            let id: String
             let name: String
         }
         
         struct UpdatePromptDescriptionInput: Codable {
+            let id: String
+            let versionID: String
             let description: String
         }
         
         struct StreamInput: Codable, HTTPRequest.Multipart.ContentConvertible {
+            let id: String  // Add file ID
             let file: Data
             let models: [HumeAI.Model]
             let metadata: [String: String]?
@@ -230,13 +214,13 @@ extension HumeAI.APISpecification {
                         named: "file",
                         data: file,
                         filename: "file",
-                        contentType: .binary
+                        contentType: .json
                     )
                 )
                 result.append(
                     .string(
                         named: "models",
-                        value: try JSONEncoder().encode(models).utf8String ?? ""
+                        value: try JSONEncoder().encode(models).toUTF8String() ?? ""
                     )
                 )
                 
@@ -244,7 +228,7 @@ extension HumeAI.APISpecification {
                     result.append(
                         .string(
                             named: "metadata",
-                            value: try JSONEncoder().encode(metadata).utf8String ?? ""
+                            value: try JSONEncoder().encode(metadata).toUTF8String() ?? ""
                         )
                     )
                 }
@@ -254,6 +238,7 @@ extension HumeAI.APISpecification {
         }
         
         struct CreateToolInput: Codable {
+            let id: String
             let name: String
             let description: String?
             let configuration: Configuration
@@ -263,11 +248,24 @@ extension HumeAI.APISpecification {
             }
         }
         
+        struct CreateToolVersionInput: Codable {
+            let id: String
+            let description: String?
+            let configuration: Configuration
+            
+            struct Configuration: Codable {
+                let parameters: [String: String]
+            }
+        }
+        
         struct UpdateToolNameInput: Codable {
+            let id: String
             let name: String
         }
         
         struct UpdateToolDescriptionInput: Codable {
+            let id: String
+            let versionID: String
             let description: String
         }
     }
