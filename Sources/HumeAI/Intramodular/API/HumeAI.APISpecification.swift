@@ -396,7 +396,7 @@ extension HumeAI {
             "/v0/datasets/\(context.input.id)/versions"
         })
         @Body(json: \.input)
-        var createDatasetVersion = Endpoint<RequestBodies.CreateDatasetVersionInput, ResponseBodies.DatasetVersion, Void>()
+        var createDatasetVersion = Endpoint<RequestBodies.CreateDatasetVersionInput, HumeAI.Dataset.DatasetVersion, Void>()
         
         @DELETE
         @Path({ context -> String in
@@ -408,7 +408,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/datasets/\(context.input.id)/versions"
         })
-        var listDatasetVersions = Endpoint<PathInput.ID, [ResponseBodies.DatasetVersion], Void>()
+        var listDatasetVersions = Endpoint<PathInput.ID, [HumeAI.Dataset.DatasetVersion], Void>()
         // MARK: - Models
         @GET
         @Path("/v0/models")
