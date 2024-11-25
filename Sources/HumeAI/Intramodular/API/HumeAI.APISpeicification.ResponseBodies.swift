@@ -102,13 +102,6 @@ extension HumeAI.APISpecification {
             let pageSize: Int
             let totalPages: Int
             let chatGroups: [ChatGroup]
-            
-            private enum CodingKeys: String, CodingKey {
-                case pageNumber = "page_number"
-                case pageSize = "page_size"
-                case totalPages = "total_pages"
-                case chatGroups = "chat_groups_page"
-            }
         }
         
         struct Chat: Codable {
@@ -273,85 +266,27 @@ extension HumeAI.APISpecification {
             }
         }
         
-        struct Tool: Codable {
-            let id: String
-            let name: String
-            let description: String?
-            let createdOn: Int64
-            let modifiedOn: Int64
-            let versions: [ToolVersion]?
-        }
-        
         struct ToolVersion: Codable {
             let id: String
-            let toolId: String
+            let version: Int
+            let toolId: String?
             let description: String?
             let createdOn: Int64
             let modifiedOn: Int64
-            let configuration: Configuration
-            
-            struct Configuration: Codable {
-                let parameters: [String: String]
-            }
         }
         
         struct ToolList: Codable {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let tools: [HumeAI.Tool]
-            
-            private enum CodingKeys: String, CodingKey {
-                case pageNumber = "page_number"
-                case pageSize = "page_size"
-                case totalPages = "total_pages"
-                case tools = "tools_page"
-            }
+            let toolsPage: [HumeAI.Tool]
         }
-        
-        struct Job: Codable {
-            let id: String
-            let status: String
-            let createdOn: Int64
-            let modifiedOn: Int64
-            let predictions: [Prediction]?
-            let artifacts: [String: String]?
-            
-            struct Prediction: Codable {
-                let file: FileInfo
-                let results: [ModelResult]
-                
-                struct FileInfo: Codable {
-                    let url: String
-                    let mimeType: String
-                    let metadata: [String: String]?
-                    
-                    private enum CodingKeys: String, CodingKey {
-                        case url
-                        case mimeType = "mime_type"
-                        case metadata
-                    }
-                }
-                
-                struct ModelResult: Codable {
-                    let model: String
-                    let results: [String: String]
-                }
-            }
-        }
-        
+       
         struct JobList: Codable {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let jobs: [Job]
-            
-            private enum CodingKeys: String, CodingKey {
-                case pageNumber = "page_number"
-                case pageSize = "page_size"
-                case totalPages = "total_pages"
-                case jobs = "jobs_page"
-            }
+            let jobs: [HumeAI.Job]
         }
     }
 }

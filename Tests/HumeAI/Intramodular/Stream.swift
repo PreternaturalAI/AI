@@ -14,7 +14,7 @@ final class HumeAIClientStreamTests: XCTestCase {
         let job = try await client.streamInference(
             id: "test-id",
             file: Data(),
-            models: [.language]
+            models: [.language()]
         )
         XCTAssertNotNil(job)
     }

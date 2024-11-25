@@ -11,11 +11,11 @@ import Merge
 
 extension HumeAI.Client {
     public func startInferenceJob(
-        files: [HumeAI.FileInput],
-        models: [HumeAI.Model]
-    ) async throws -> HumeAI.Job {
+        urls: [URL],
+        models: HumeAI.Model
+    ) async throws -> HumeAI.JobID {
         let input = HumeAI.APISpecification.RequestBodies.BatchInferenceJobInput(
-            files: files.map { .init(url: $0.url, mimeType: $0.mimeType, metadata: $0.metadata) },
+            urls: urls,
             models: models,
             callback: nil
         )
@@ -29,5 +29,22 @@ extension HumeAI.Client {
             id: id
         )
         return try await run(\.getJobDetails, with: input)
+    }
+    
+    public func getJobPredictions(
+        id: String
+    ) async throws -> [HumeAI.JobPrediction] {
+        let input = HumeAI.APISpecification.PathInput.ID(
+            id: id
+        )
+        return try await run(\.getJobPredictions, with: input)
+    }
+    public func listJobs() async throws -> [HumeAI.Job] {
+        return try await run(\.listJobs, with: ())
+    }
+    
+    public func getJobArtifacts(id: String) async throws -> [String: String] {
+        let input = HumeAI.APISpecification.PathInput.ID(id: id)
+        return try await run(\.getJobArtifacts, with: input)
     }
 }

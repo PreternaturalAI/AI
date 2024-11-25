@@ -19,7 +19,7 @@ final class HumeAIClientCustomVoiceTests: XCTestCase {
         let voice = try await client.createCustomVoice(
             name: "Test Voice",
             baseVoice: "base-voice",
-            model: .prosody,
+            model: HumeAI.Model.prosody(),
             parameters: .init()
         )
         XCTAssertEqual(voice.name, "Test Voice")

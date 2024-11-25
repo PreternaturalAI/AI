@@ -55,8 +55,8 @@ extension HumeAI.APISpecification {
         }
         
         struct BatchInferenceJobInput: Codable {
-            let files: [HumeAI.FileInput]
-            let models: [HumeAI.Model]
+            let urls: [URL]
+            let models: HumeAI.Model
             let callback: CallbackConfig?
         }
         
@@ -238,14 +238,12 @@ extension HumeAI.APISpecification {
         }
         
         struct CreateToolInput: Codable {
-            let id: String
+            var id: String? = nil
             let name: String
+            let parameters: String
+            let versionDescription: String?
             let description: String?
-            let configuration: Configuration
-            
-            struct Configuration: Codable {
-                let parameters: [String: String]
-            }
+            let fallbackContent: String?
         }
         
         struct CreateToolVersionInput: Codable {

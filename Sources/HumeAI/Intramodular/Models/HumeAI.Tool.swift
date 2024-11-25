@@ -20,11 +20,8 @@ extension HumeAI {
             public let description: String?
             public let createdOn: Int64
             public let modifiedOn: Int64
-            public let configuration: Configuration
-            
-            public struct Configuration: Codable {
-                public let parameters: [String: String]
-            }
+            public let parameters: String
+            public let fallbackContent: String?
         }
     }
 }

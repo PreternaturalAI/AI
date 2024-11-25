@@ -24,7 +24,7 @@ extension HumeAI.Client {
         let input = HumeAI.APISpecification.RequestBodies.CreateVoiceInput(
             name: name,
             baseVoice: baseVoice,
-            parameterModel: model.rawValue,
+            parameterModel: HumeAI.paramaterModel,
             parameters: parameters
         )
         return try await run(\.createCustomVoice, with: input)

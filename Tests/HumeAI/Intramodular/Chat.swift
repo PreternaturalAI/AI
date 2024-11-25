@@ -26,7 +26,13 @@ final class HumeAIClientChatTests: XCTestCase {
     }
     
     func testChat() async throws {
-        let response = try await client.chat(messages: [.init(role: "user", content: "Hello")], model: "test-model")
+        let response = try await client.chat(
+            messages: [.init(
+                role: "user",
+                content: "Hello"
+            )],
+            model: "test-model"
+        )
         XCTAssertNotNil(response)
     }
 }
