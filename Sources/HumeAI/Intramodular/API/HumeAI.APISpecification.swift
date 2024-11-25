@@ -66,7 +66,7 @@ extension HumeAI {
         
         @POST
         @Path("/v0/tools")
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createTool = Endpoint<RequestBodies.CreateToolInput, HumeAI.Tool, Void>()
         
         @GET
@@ -79,7 +79,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/tools/\(context.input.id)/versions"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createToolVersion = Endpoint<RequestBodies.CreateToolInput, ResponseBodies.ToolVersion, Void>()
         
         @DELETE
@@ -92,7 +92,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/tools/\(context.input.id)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateToolName = Endpoint<RequestBodies.UpdateToolNameInput, HumeAI.Tool, Void>()
         
         @GET
@@ -111,7 +111,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/tools/\(context.input.id)/versions/\(context.input.versionID)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateToolDescription = Endpoint<RequestBodies.UpdateToolDescriptionInput, ResponseBodies.ToolVersion, Void>()
         
         // MARK: - Prompts
@@ -121,7 +121,7 @@ extension HumeAI {
         
         @POST
         @Path("/v0/prompts")
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createPrompt = Endpoint<RequestBodies.CreatePromptInput, HumeAI.Prompt, Void>()
         
         @GET
@@ -134,7 +134,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/prompts/\(context.input.id)/versions"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createPromptVersion = Endpoint<RequestBodies.CreatePromptVersionInput, HumeAI.Prompt.PromptVersion, Void>()
         
         @DELETE
@@ -147,7 +147,7 @@ extension HumeAI {
         @Path({ context -> String in 
             "/v0/prompts/\(context.input.id)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updatePromptName = Endpoint<RequestBodies.UpdatePromptNameInput, HumeAI.Prompt, Void>()
         
         @GET
@@ -166,7 +166,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/prompts/\(context.input.id)/versions/\(context.input.versionID)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updatePromptDescription = Endpoint<RequestBodies.UpdatePromptDescriptionInput, HumeAI.Prompt.PromptVersion, Void>()
         
         // MARK: - Custom Voices
@@ -176,7 +176,7 @@ extension HumeAI {
         
         @POST
         @Path("/v0/custom-voices")
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createCustomVoice = Endpoint<RequestBodies.CreateVoiceInput, ResponseBodies.Voice, Void>()
         
         @GET
@@ -189,7 +189,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/custom-voices/\(context.input.id)/versions"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createCustomVoiceVersion = Endpoint<RequestBodies.CreateVoiceVersionInput, ResponseBodies.Voice, Void>()
         
         @DELETE
@@ -202,7 +202,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/custom-voices/\(context.input.id)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateCustomVoiceName = Endpoint<RequestBodies.UpdateVoiceNameInput, ResponseBodies.Voice, Void>()
         
         // MARK: - Configs
@@ -212,7 +212,7 @@ extension HumeAI {
         
         @POST
         @Path("/v0/configs")
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createConfig = Endpoint<RequestBodies.CreateConfigInput, HumeAI.Config, Void>()
         
         @GET
@@ -225,7 +225,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/configs/\(context.input.id)/versions"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createConfigVersion = Endpoint<RequestBodies.CreateConfigVersionInput, ResponseBodies.ConfigVersion, Void>()
         
         @DELETE
@@ -238,7 +238,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/configs/\(context.input.id)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateConfigName = Endpoint<RequestBodies.UpdateConfigNameInput, HumeAI.Config, Void>()
         
         @GET
@@ -257,7 +257,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/configs/\(context.input.id)/versions/\(context.input.versionID)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateConfigDescription = Endpoint<RequestBodies.UpdateConfigDescriptionInput, ResponseBodies.ConfigVersion, Void>()
         
         // MARK: - Chats
@@ -303,7 +303,7 @@ extension HumeAI {
         // MARK: - Chat
         @POST
         @Path("/v0/chat")
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var chat = Endpoint<RequestBodies.ChatRequest, HumeAI.ChatResponse, Void>()
         
         // MARK: - Batch
@@ -313,7 +313,7 @@ extension HumeAI {
         
         @POST
         @Path("/v0/batch/jobs")
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var startInferenceJob = Endpoint<RequestBodies.BatchInferenceJobInput, HumeAI.Job, Void>()
         
         @GET
@@ -366,7 +366,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/files/\(context.input.id)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateFileName = Endpoint<RequestBodies.UpdateFileNameInput, HumeAI.File, Void>()
         
         @GET
@@ -382,7 +382,7 @@ extension HumeAI {
         
         @POST
         @Path("/v0/datasets")
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createDataset = Endpoint<RequestBodies.CreateDatasetInput, HumeAI.Dataset, Void>()
         
         @GET
@@ -395,7 +395,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/datasets/\(context.input.id)/versions"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createDatasetVersion = Endpoint<RequestBodies.CreateDatasetVersionInput, HumeAI.Dataset.DatasetVersion, Void>()
         
         @DELETE
@@ -424,7 +424,7 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/models/\(context.input.id)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateModelName = Endpoint<RequestBodies.UpdateModelNameInput, HumeAI.Model, Void>()
         
         @GET
@@ -443,18 +443,18 @@ extension HumeAI {
         @Path({ context -> String in
             "/v0/models/\(context.input.id)/versions/\(context.input.versionId)"
         })
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateModelDescription = Endpoint<RequestBodies.UpdateModelDescriptionInput, ResponseBodies.ModelVersion, Void>()
         
         // MARK: - Jobs
         @POST
         @Path("/v0/jobs/training")
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var startTrainingJob = Endpoint<RequestBodies.TrainingJobInput, HumeAI.Job, Void>()
         
         @POST
         @Path("/v0/jobs/inference")
-        @Body(json: \.input)
+        @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var startCustomInferenceJob = Endpoint<RequestBodies.CustomInferenceJobInput, HumeAI.Job, Void>()
     }
 }
@@ -487,7 +487,7 @@ extension HumeAI.APISpecification {
             
             request = request
                 .header("Accept", "application/json")
-                .header(.authorization(.bearer, apiKey))
+                .header("X-Hume-Api-Key", apiKey)
                 .header(.contentType(.json))
             
             return request
