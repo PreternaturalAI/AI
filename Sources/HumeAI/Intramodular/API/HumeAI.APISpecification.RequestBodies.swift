@@ -263,7 +263,7 @@ extension HumeAI.APISpecification {
         
         struct UpdateToolDescriptionInput: Codable {
             let id: String
-            let versionID: String
+            let version: Int
             let description: String
         }
     }

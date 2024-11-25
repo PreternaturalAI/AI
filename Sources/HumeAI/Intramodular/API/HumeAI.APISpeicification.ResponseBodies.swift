@@ -266,13 +266,11 @@ extension HumeAI.APISpecification {
             }
         }
         
-        struct ToolVersion: Codable {
-            let id: String
-            let version: Int
-            let toolId: String?
-            let description: String?
-            let createdOn: Int64
-            let modifiedOn: Int64
+        struct ToolVersionList: Codable {
+            let pageNumber: Int
+            let pageSize: Int
+            let totalPages: Int
+            let toolsPage: [HumeAI.Tool.ToolVersion]
         }
         
         struct ToolList: Codable {

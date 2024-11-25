@@ -59,14 +59,27 @@ extension HumeAI.Client {
         try await run(\.deleteTool, with: input)
     }
     
+    public func deleteToolVersion(
+        id: String,
+        version: Int
+    ) async throws {
+        
+        let input = HumeAI.APISpecification.PathInput.IDWithVersion(
+            id: id,
+            version: version
+        )
+        
+        try await run(\.deleteToolVersion, with: input)
+    }
+    
     public func updateToolName(
         id: String,
         name: String
-    ) async throws -> HumeAI.Tool {
+    ) async throws {
         let input = HumeAI.APISpecification.RequestBodies.UpdateToolNameInput(
             id: id,
             name: name
         )
-        return try await run(\.updateToolName, with: input)
+        try await run(\.updateToolName, with: input)
     }
 }

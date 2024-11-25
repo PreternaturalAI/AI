@@ -16,7 +16,11 @@ final class HumeAIClientPromptTests: XCTestCase {
     }
     
     func testCreatePrompt() async throws {
-        let prompt = try await client.createPrompt(name: "Test Prompt", content: "Test Content", description: "Test Description")
+        let prompt = try await client.createPrompt(
+            name: "Test Prompt",
+            content: "Test Content",
+            description: "Test Description"
+        )
         XCTAssertEqual(prompt.name, "Test Prompt")
     }
     

@@ -15,13 +15,12 @@ extension HumeAI {
         public let versions: [ToolVersion]?
         
         public struct ToolVersion: Codable {
-            public let id: String
-            public let toolId: String
-            public let description: String?
-            public let createdOn: Int64
-            public let modifiedOn: Int64
-            public let parameters: String
-            public let fallbackContent: String?
+            let id: String
+            let version: Int
+            let toolId: String?
+            let description: String?
+            let createdOn: Int64
+            let modifiedOn: Int64
         }
     }
 }

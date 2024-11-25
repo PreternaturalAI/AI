@@ -71,16 +71,16 @@ extension HumeAI {
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/tools/\(context.input.id)/versions"
+            "/v0/evi/tools/\(context.input.id)"
         })
-        var listToolVersions = Endpoint<PathInput.ID, [ResponseBodies.ToolVersion], Void>()
+        var listToolVersions = Endpoint<PathInput.ID, ResponseBodies.ToolList, Void>()
         
         @POST
         @Path({ context -> String in
             "/v0/evi/tools/\(context.input.id ?? "")"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var createToolVersion = Endpoint<RequestBodies.CreateToolInput, ResponseBodies.ToolVersion, Void>()
+        var createToolVersion = Endpoint<RequestBodies.CreateToolInput, HumeAI.Tool.ToolVersion, Void>()
         
         @DELETE
         @Path({ context -> String in
@@ -93,26 +93,26 @@ extension HumeAI {
             "/v0/evi/tools/\(context.input.id)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var updateToolName = Endpoint<RequestBodies.UpdateToolNameInput, HumeAI.Tool, Void>()
+        var updateToolName = Endpoint<RequestBodies.UpdateToolNameInput, Void, Void>()
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/tools/\(context.input.id)/versions/\(context.input.versionId)"
+            "/v0/evi/tools/\(context.input.id)/version/\(context.input.version)"
         })
-        var getToolVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ToolVersion, Void>()
+        var getToolVersion = Endpoint<PathInput.IDWithVersion, HumeAI.Tool.ToolVersion, Void>()
         
         @DELETE
         @Path({ context -> String in
-            "/v0/evi/tools/\(context.input.id)/versions/\(context.input.versionId)"
+            "/v0/evi/tools/\(context.input.id)/version/\(context.input.version)"
         })
         var deleteToolVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
         
         @PATCH
         @Path({ context -> String in
-            "/v0/evi/tools/\(context.input.id)/versions/\(context.input.versionID)"
+            "/v0/evi/tools/\(context.input.id)/version/\(context.input.version)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var updateToolDescription = Endpoint<RequestBodies.UpdateToolDescriptionInput, ResponseBodies.ToolVersion, Void>()
+        var updateToolDescription = Endpoint<RequestBodies.UpdateToolDescriptionInput, HumeAI.Tool.ToolVersion, Void>()
         
         // MARK: - Prompts
         @GET
@@ -152,13 +152,13 @@ extension HumeAI {
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/prompts/\(context.input.id)/versions/\(context.input.versionId)"
+            "/v0/evi/prompts/\(context.input.id)/versions/\(context.input.version)"
         })
         var getPromptVersion = Endpoint<PathInput.IDWithVersion, HumeAI.Prompt.PromptVersion, Void>()
         
         @DELETE
         @Path({ context -> String in
-            "/v0/evi/prompts/\(context.input.id)/versions/\(context.input.versionId)"
+            "/v0/evi/prompts/\(context.input.id)/versions/\(context.input.version)"
         })
         var deletePromptVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
         
@@ -243,13 +243,13 @@ extension HumeAI {
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/configs/\(context.input.id)/versions/\(context.input.versionId)"
+            "/v0/evi/configs/\(context.input.id)/versions/\(context.input.version)"
         })
         var getConfigVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ConfigVersion, Void>()
         
         @DELETE
         @Path({ context -> String in
-            "/v0/evi/configs/\(context.input.id)/versions/\(context.input.versionId)"
+            "/v0/evi/configs/\(context.input.id)/versions/\(context.input.version)"
         })
         var deleteConfigVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
         
@@ -279,24 +279,24 @@ extension HumeAI {
         
         // MARK: - Chat Groups
         @GET
-        @Path("/v0/evi/chat-groups")
+        @Path("/v0/evi/chat_groups")
         var listChatGroups = Endpoint<Void, ResponseBodies.ChatGroupList, Void>()
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/chat-groups/\(context.input.id)"
+            "/v0/evi/chat_groups/\(context.input.id)"
         })
         var getChatGroup = Endpoint<PathInput.ID, HumeAI.ChatGroup, Void>()
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/chat-groups/\(context.input.id)/events"
+            "/v0/evi/chat_groups/\(context.input.id)/events"
         })
         var listChatGroupEvents = Endpoint<PathInput.ID, ResponseBodies.ChatEventList, Void>()
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/chat-groups/\(context.input.id)/audio"
+            "/v0/evi/chat_groups/\(context.input.id)/audio"
         })
         var getChatGroupAudio = Endpoint<PathInput.ID, ResponseBodies.ChatAudio, Void>()
         
@@ -435,7 +435,7 @@ extension HumeAI {
         
         @GET
         @Path({ context -> String in
-            "/v0/registry/models/\(context.input.id)/versions/\(context.input.versionId)"
+            "/v0/registry/models/\(context.input.id)/versions/\(context.input.version)"
         })
         var getModelVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ModelVersion, Void>()
         
@@ -467,7 +467,7 @@ extension HumeAI.APISpecification {
         
         struct IDWithVersion: Codable {
             let id: String
-            let versionId: String
+            let version: Int
         }
     }
     
