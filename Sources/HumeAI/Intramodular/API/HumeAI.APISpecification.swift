@@ -59,37 +59,329 @@ extension HumeAI {
             self.configuration = configuration
         }
         
-        // Custom Voice Endpoints
+        // MARK: - Tools
         @GET
-        @Path("/v0/evi/custom_voices")
-        var listVoices = Endpoint<Void, ResponseBodies.VoiceList, Void>()
+        @Path("/v0/tools")
+        var listTools = Endpoint<Void, ResponseBodies.ToolList, Void>()
         
         @POST
-        @Path("/v0/evi/custom_voices")
+        @Path("/v0/tools")
         @Body(json: \.input)
-        var createVoice = Endpoint<RequestBodies.CreateVoiceInput, ResponseBodies.Voice, Void>()
+        var createTool = Endpoint<RequestBodies.CreateToolInput, ResponseBodies.Tool, Void>()
         
         @GET
-        @Path("/v0/evi/custom_voices/{id}")
-        var getVoice = Endpoint<Void, ResponseBodies.Voice, Void>()
+        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions" })
+        var listToolVersions = Endpoint<PathInput.ID, [ResponseBodies.ToolVersion], Void>()
         
         @POST
-        @Path("/v0/evi/custom_voices/{id}")
+        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions" })
         @Body(json: \.input)
-        var createVoiceVersion = Endpoint<RequestBodies.CreateVoiceInput, ResponseBodies.Voice, Void>()
+        var createToolVersion = Endpoint<RequestBodies.CreateToolVersionInput, ResponseBodies.ToolVersion, Void>()
         
         @DELETE
-        @Path("/v0/evi/custom_voices/{id}")
-        var deleteVoice = Endpoint<Void, Void, Void>()
+        @Path({ context -> String in "/v0/tools/\(context.input.id)" })
+        var deleteTool = Endpoint<PathInput.ID, Void, Void>()
         
         @PATCH
-        @Path("/v0/evi/custom_voices/{id}")
+        @Path({ context -> String in "/v0/tools/\(context.input.id)" })
         @Body(json: \.input)
-        var updateVoiceName = Endpoint<RequestBodies.UpdateVoiceNameInput, ResponseBodies.Voice, Void>()
+        var updateToolName = Endpoint<RequestBodies.UpdateToolNameInput, ResponseBodies.Tool, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions/\(context.input.versionId)" })
+        var getToolVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ToolVersion, Void>()
+        
+        @DELETE
+        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions/\(context.input.versionId)" })
+        var deleteToolVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
+        
+        @PATCH
+        @Path({ context -> String in "/v0/tools/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Body(json: \.input)
+        var updateToolDescription = Endpoint<RequestBodies.UpdateToolDescriptionInput, ResponseBodies.ToolVersion, Void>()
+        
+        // MARK: - Prompts
+        @GET
+        @Path("/v0/prompts")
+        var listPrompts = Endpoint<Void, ResponseBodies.PromptList, Void>()
+        
+        @POST
+        @Path("/v0/prompts")
+        @Body(json: \.input)
+        var createPrompt = Endpoint<RequestBodies.CreatePromptInput, ResponseBodies.Prompt, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions" })
+        var listPromptVersions = Endpoint<PathInput.ID, [ResponseBodies.PromptVersion], Void>()
+        
+        @POST
+        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions" })
+        @Body(json: \.input)
+        var createPromptVersion = Endpoint<RequestBodies.CreatePromptVersionInput, ResponseBodies.PromptVersion, Void>()
+        
+        @DELETE
+        @Path({ context -> String in "/v0/prompts/\(context.input.id)" })
+        var deletePrompt = Endpoint<PathInput.ID, Void, Void>()
+        
+        @PATCH
+        @Path(
+            {
+                context -> String in "/v0/prompts/\(context.input.id)"
+            })
+        @Body(json: \.input)
+        var updatePromptName = Endpoint<RequestBodies.UpdatePromptNameInput, ResponseBodies.Prompt, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions/\(context.input.versionId)" })
+        var getPromptVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.PromptVersion, Void>()
+        
+        @DELETE
+        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions/\(context.input.versionId)" })
+        var deletePromptVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
+        
+        @PATCH
+        @Path({ context -> String in "/v0/prompts/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Body(json: \.input)
+        var updatePromptDescription = Endpoint<RequestBodies.UpdatePromptDescriptionInput, ResponseBodies.PromptVersion, Void>()
+        
+        // MARK: - Custom Voices
+        @GET
+        @Path("/v0/custom-voices")
+        var listCustomVoices = Endpoint<Void, ResponseBodies.CustomVoiceList, Void>()
+        
+        @POST
+        @Path("/v0/custom-voices")
+        @Body(json: \.input)
+        var createCustomVoice = Endpoint<RequestBodies.CreateVoiceInput, ResponseBodies.Voice, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/custom-voices/\(context.input.id)" })
+        var getCustomVoice = Endpoint<PathInput.ID, ResponseBodies.Voice, Void>()
+        
+        @POST
+        @Path({ context -> String in "/v0/custom-voices/\(context.input.id)/versions" })
+        @Body(json: \.input)
+        var createCustomVoiceVersion = Endpoint<RequestBodies.CreateVoiceVersionInput, ResponseBodies.Voice, Void>()
+        
+        @DELETE
+        @Path({ context -> String in "/v0/custom-voices/\(context.input.id)" })
+        var deleteCustomVoice = Endpoint<PathInput.ID, Void, Void>()
+        
+        @PATCH
+        @Path({ context -> String in "/v0/custom-voices/\(context.input.id)" })
+        @Body(json: \.input)
+        var updateCustomVoiceName = Endpoint<RequestBodies.UpdateVoiceNameInput, ResponseBodies.Voice, Void>()
+        
+        // MARK: - Configs
+        @GET
+        @Path("/v0/configs")
+        var listConfigs = Endpoint<Void, ResponseBodies.ConfigList, Void>()
+        
+        @POST
+        @Path("/v0/configs")
+        @Body(json: \.input)
+        var createConfig = Endpoint<RequestBodies.CreateConfigInput, ResponseBodies.Config, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions" })
+        var listConfigVersions = Endpoint<PathInput.ID, [ResponseBodies.ConfigVersion], Void>()
+        
+        @POST
+        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions" })
+        @Body(json: \.input)
+        var createConfigVersion = Endpoint<RequestBodies.CreateConfigVersionInput, ResponseBodies.ConfigVersion, Void>()
+        
+        @DELETE
+        @Path({ context -> String in "/v0/configs/\(context.input.id)" })
+        var deleteConfig = Endpoint<PathInput.ID, Void, Void>()
+        
+        @PATCH
+        @Path({ context -> String in "/v0/configs/\(context.input.id)" })
+        @Body(json: \.input)
+        var updateConfigName = Endpoint<RequestBodies.UpdateConfigNameInput, ResponseBodies.Config, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions/\(context.input.versionId)" })
+        var getConfigVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ConfigVersion, Void>()
+        
+        @DELETE
+        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions/\(context.input.versionId)" })
+        var deleteConfigVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
+        
+        @PATCH
+        @Path({ context -> String in "/v0/configs/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Body(json: \.input)
+        var updateConfigDescription = Endpoint<RequestBodies.UpdateConfigDescriptionInput, ResponseBodies.ConfigVersion, Void>()
+        
+        // MARK: - Chats
+        @GET
+        @Path("/v0/chats")
+        var listChats = Endpoint<Void, ResponseBodies.ChatList, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/chats/\(context.input.id)/events" })
+        var listChatEvents = Endpoint<PathInput.ID, ResponseBodies.ChatEventList, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/chats/\(context.input.id)/audio" })
+        var getChatAudio = Endpoint<PathInput.ID, ResponseBodies.ChatAudio, Void>()
+        
+        // MARK: - Chat Groups
+        @GET
+        @Path("/v0/chat-groups")
+        var listChatGroups = Endpoint<Void, ResponseBodies.ChatGroupList, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/chat-groups/\(context.input.id)" })
+        var getChatGroup = Endpoint<PathInput.ID, ResponseBodies.ChatGroup, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/chat-groups/\(context.input.id)/events" })
+        var listChatGroupEvents = Endpoint<PathInput.ID, ResponseBodies.ChatEventList, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/chat-groups/\(context.input.id)/audio" })
+        var getChatGroupAudio = Endpoint<PathInput.ID, ResponseBodies.ChatAudio, Void>()
+        
+        // MARK: - Chat
+        @POST
+        @Path("/v0/chat")
+        @Body(json: \.input)
+        var chat = Endpoint<RequestBodies.ChatRequest, ResponseBodies.ChatResponse, Void>()
+        
+        // MARK: - Batch
+        @GET
+        @Path("/v0/batch/jobs")
+        var listJobs = Endpoint<Void, ResponseBodies.JobList, Void>()
+        
+        @POST
+        @Path("/v0/batch/jobs")
+        @Body(json: \.input)
+        var startInferenceJob = Endpoint<RequestBodies.BatchInferenceJobInput, ResponseBodies.Job, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/batch/jobs/\(context.input.id)" })
+        var getJobDetails = Endpoint<PathInput.ID, ResponseBodies.Job, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/batch/jobs/\(context.input.id)/predictions" })
+        var getJobPredictions = Endpoint<PathInput.ID, [ResponseBodies.Job.Prediction], Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/batch/jobs/\(context.input.id)/artifacts" })
+        var getJobArtifacts = Endpoint<PathInput.ID, [String: String], Void>()
+        
+        // MARK: - Stream
+        @POST
+        @Path("/v0/stream")
+        @Body(multipart: .input)
+        var streamInference = Endpoint<RequestBodies.StreamInput, ResponseBodies.Job, Void>()
+        
+        // MARK: - Files
+        @GET
+        @Path("/v0/files")
+        var listFiles = Endpoint<Void, ResponseBodies.FileList, Void>()
+        
+        @POST
+        @Path("/v0/files")
+        @Body(multipart: .input)
+        var uploadFile = Endpoint<RequestBodies.UploadFileInput, ResponseBodies.File, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/files/\(context.input.id)" })
+        var getFile = Endpoint<PathInput.ID, ResponseBodies.File, Void>()
+        
+        @DELETE
+        @Path({ context -> String in "/v0/files/\(context.input.id)" })
+        var deleteFile = Endpoint<PathInput.ID, Void, Void>()
+        
+        @PATCH
+        @Path({ context -> String in "/v0/files/\(context.input.id)" })
+        @Body(json: \.input)
+        var updateFileName = Endpoint<RequestBodies.UpdateFileNameInput, ResponseBodies.File, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/files/\(context.input.id)/predictions" })
+        var getFilePredictions = Endpoint<PathInput.ID, [ResponseBodies.Job.Prediction], Void>()
+        
+        // MARK: - Datasets
+        @GET
+        @Path("/v0/datasets")
+        var listDatasets = Endpoint<Void, ResponseBodies.DatasetList, Void>()
+        
+        @POST
+        @Path("/v0/datasets")
+        @Body(json: \.input)
+        var createDataset = Endpoint<RequestBodies.CreateDatasetInput, ResponseBodies.Dataset, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/datasets/\(context.input.id)" })
+        var getDataset = Endpoint<PathInput.ID, ResponseBodies.Dataset, Void>()
+        
+        @POST
+        @Path({ context -> String in "/v0/datasets/\(context.input.id)/versions" })
+        @Body(json: \.input)
+        var createDatasetVersion = Endpoint<RequestBodies.CreateDatasetVersionInput, ResponseBodies.DatasetVersion, Void>()
+        
+        @DELETE
+        @Path({ context -> String in "/v0/datasets/\(context.input.id)" })
+        var deleteDataset = Endpoint<PathInput.ID, Void, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/datasets/\(context.input.id)/versions" })
+        var listDatasetVersions = Endpoint<PathInput.ID, [ResponseBodies.DatasetVersion], Void>()
+        // MARK: - Models
+        @GET
+        @Path("/v0/models")
+        var listModels = Endpoint<Void, ResponseBodies.ModelList, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/models/\(context.input.id)" })
+        var getModel = Endpoint<PathInput.ID, ResponseBodies.Model, Void>()
+        
+        @PATCH
+        @Path({ context -> String in "/v0/models/\(context.input.id)" })
+        @Body(json: \.input)
+        var updateModelName = Endpoint<RequestBodies.UpdateModelNameInput, ResponseBodies.Model, Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/models/\(context.input.id)/versions" })
+        var listModelVersions = Endpoint<PathInput.ID, [ResponseBodies.ModelVersion], Void>()
+        
+        @GET
+        @Path({ context -> String in "/v0/models/\(context.input.id)/versions/\(context.input.versionId)" })
+        var getModelVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ModelVersion, Void>()
+        
+        @PATCH
+        @Path({ context -> String in "/v0/models/\(context.input.id)/versions/\(context.input.versionId)" })
+        @Body(json: \.input)
+        var updateModelDescription = Endpoint<RequestBodies.UpdateModelDescriptionInput, ResponseBodies.ModelVersion, Void>()
+        
+        // MARK: - Jobs
+        @POST
+        @Path("/v0/jobs/training")
+        @Body(json: \.input)
+        var startTrainingJob = Endpoint<RequestBodies.TrainingJobInput, ResponseBodies.Job, Void>()
+        
+        @POST
+        @Path("/v0/jobs/inference")
+        @Body(json: \.input)
+        var startCustomInferenceJob = Endpoint<RequestBodies.CustomInferenceJobInput, ResponseBodies.Job, Void>()
     }
 }
 
 extension HumeAI.APISpecification {
+    enum PathInput {
+        struct ID: Codable {
+            let id: String
+        }
+        
+        struct IDWithVersion: Codable {
+            let id: String
+            let versionId: String
+        }
+    }
+    
     public final class Endpoint<Input, Output, Options>: BaseHTTPEndpoint<HumeAI.APISpecification, Input, Output, Options> {
         public override func buildRequestBase(
             from input: Input,
