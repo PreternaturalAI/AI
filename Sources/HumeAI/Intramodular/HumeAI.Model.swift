@@ -11,11 +11,11 @@ import Foundation
 import Swift
 
 extension HumeAI {
-    static let paramaterModel = "20241004-11parameter"
+    static let parameterModel = "20241004-11parameter"
 }
 
 extension HumeAI {
-    public struct Model: Codable {
+    public struct APIModel: Codable {
         public var face: Face?
         public var burst: [String: String]?
         public var prosody: Prosody?
@@ -123,7 +123,7 @@ extension HumeAI {
 }
 
 // Helper initializers for simpler model creation
-extension HumeAI.Model {
+extension HumeAI.APIModel {
     public static func face(
         fpsPred: Double? = 3.0,
         probThreshold: Double? = 0.99,

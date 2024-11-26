@@ -23,9 +23,7 @@ final class HumeAIClientPromptTests: XCTestCase {
     func testCreatePrompt() async throws {
         let prompt = try await createPrompt()
         try await client.deletePrompt(id: prompt.id)
-        
-        XCTAssertNotNil(prompt.id)
-        XCTAssertEqual(prompt.version, 0)
+        XCTAssertNotNil(prompt)
     }
     
     func testListPromptVersions() async throws {

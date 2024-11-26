@@ -13,7 +13,7 @@ extension HumeAI.Client {
     public func streamInference(
         id: String,
         file: Data,
-        models: [HumeAI.Model],
+        models: [HumeAI.APIModel],
         metadata: [String: String]? = nil
     ) async throws -> HumeAI.Job {
         let input = HumeAI.APISpecification.RequestBodies.StreamInput(

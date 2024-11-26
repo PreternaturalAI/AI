@@ -56,7 +56,7 @@ extension HumeAI.APISpecification {
         
         struct BatchInferenceJobInput: Codable {
             let urls: [URL]
-            let models: HumeAI.Model
+            let models: HumeAI.APIModel
             let callback: CallbackConfig?
         }
         
@@ -92,6 +92,7 @@ extension HumeAI.APISpecification {
         
         struct CreateConfigVersionInput: Codable {
             let id: String
+            let version: Int
             let description: String?
             let settings: [String: String]
         }
@@ -115,6 +116,7 @@ extension HumeAI.APISpecification {
         
         struct CreateDatasetVersionInput: Codable {
             let id: String
+            let version: Int
             let description: String?
             let fileIds: [String]
         }
@@ -201,7 +203,7 @@ extension HumeAI.APISpecification {
         struct StreamInput: Codable, HTTPRequest.Multipart.ContentConvertible {
             let id: String  // Add file ID
             let file: Data
-            let models: [HumeAI.Model]
+            let models: [HumeAI.APIModel]
             let metadata: [String: String]?
             
             public func __conversion() throws -> HTTPRequest.Multipart.Content {

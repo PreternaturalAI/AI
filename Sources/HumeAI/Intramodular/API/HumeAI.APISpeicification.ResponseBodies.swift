@@ -24,9 +24,7 @@ extension HumeAI.APISpecification {
                 case voices = "custom_voices_page"
             }
         }
-        
-        typealias Voice = HumeAI.Voice
-        
+                
         struct TTSOutput: Codable {
             public let audio: Data
             public let durationMs: Int
@@ -182,14 +180,7 @@ extension HumeAI.APISpecification {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let voices: [Voice]
-            
-            private enum CodingKeys: String, CodingKey {
-                case pageNumber = "page_number"
-                case pageSize = "page_size"
-                case totalPages = "total_pages"
-                case voices = "voices_page"
-            }
+            let customVoicesPage: [HumeAI.Voice]
         }
         
         struct DatasetList: Codable {

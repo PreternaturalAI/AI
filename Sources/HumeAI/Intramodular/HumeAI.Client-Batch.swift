@@ -12,7 +12,7 @@ import Merge
 extension HumeAI.Client {
     public func startInferenceJob(
         urls: [URL],
-        models: HumeAI.Model
+        models: HumeAI.APIModel
     ) async throws -> HumeAI.JobID {
         let input = HumeAI.APISpecification.RequestBodies.BatchInferenceJobInput(
             urls: urls,

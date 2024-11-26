@@ -171,39 +171,39 @@ extension HumeAI {
         
         // MARK: - Custom Voices
         @GET
-        @Path("/v0/evi/custom-voices")
+        @Path("/v0/evi/custom_voices")
         var listCustomVoices = Endpoint<Void, ResponseBodies.CustomVoiceList, Void>()
         
         @POST
-        @Path("/v0/evi/custom-voices")
+        @Path("/v0/evi/custom_voices")
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var createCustomVoice = Endpoint<RequestBodies.CreateVoiceInput, ResponseBodies.Voice, Void>()
+        var createCustomVoice = Endpoint<RequestBodies.CreateVoiceInput, HumeAI.Voice, Void>()
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/custom-voices/\(context.input.id)"
+            "/v0/evi/custom_voices/\(context.input.id)"
         })
-        var getCustomVoice = Endpoint<PathInput.ID, ResponseBodies.Voice, Void>()
+        var getCustomVoice = Endpoint<PathInput.ID, HumeAI.Voice, Void>()
         
         @POST
         @Path({ context -> String in
-            "/v0/evi/custom-voices/\(context.input.id)/versions"
+            "/v0/evi/custom_voices/\(context.input.id)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var createCustomVoiceVersion = Endpoint<RequestBodies.CreateVoiceVersionInput, ResponseBodies.Voice, Void>()
+        var createCustomVoiceVersion = Endpoint<RequestBodies.CreateVoiceVersionInput, HumeAI.Voice, Void>()
         
         @DELETE
         @Path({ context -> String in
-            "/v0/evi/custom-voices/\(context.input.id)"
+            "/v0/evi/custom_voices/\(context.input.id)"
         })
         var deleteCustomVoice = Endpoint<PathInput.ID, Void, Void>()
         
         @PATCH
         @Path({ context -> String in
-            "/v0/evi/custom-voices/\(context.input.id)"
+            "/v0/evi/custom_voices/\(context.input.id)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var updateCustomVoiceName = Endpoint<RequestBodies.UpdateVoiceNameInput, ResponseBodies.Voice, Void>()
+        var updateCustomVoiceName = Endpoint<RequestBodies.UpdateVoiceNameInput, Void, Void>()
         
         // MARK: - Configs
         @GET
@@ -217,13 +217,13 @@ extension HumeAI {
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/configs/\(context.input.id)/versions"
+            "/v0/evi/configs/\(context.input.id)/version/\(context.input.version)"
         })
-        var listConfigVersions = Endpoint<PathInput.ID, [ResponseBodies.ConfigVersion], Void>()
+        var listConfigVersions = Endpoint<PathInput.IDWithVersion, [ResponseBodies.ConfigVersion], Void>()
         
         @POST
         @Path({ context -> String in
-            "/v0/evi/configs/\(context.input.id)/versions"
+            "/v0/evi/configs/\(context.input.id)/version/\(context.input.version)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createConfigVersion = Endpoint<RequestBodies.CreateConfigVersionInput, ResponseBodies.ConfigVersion, Void>()
@@ -393,7 +393,7 @@ extension HumeAI {
         
         @POST
         @Path({ context -> String in
-            "/v0/registry/datasets/\(context.input.id)/versions"
+            "/v0/registry/datasets/\(context.input.id)/version/\(context.input.version)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createDatasetVersion = Endpoint<RequestBodies.CreateDatasetVersionInput, HumeAI.Dataset.DatasetVersion, Void>()
@@ -406,9 +406,9 @@ extension HumeAI {
         
         @GET
         @Path({ context -> String in
-            "/v0/registry/datasets/\(context.input.id)/versions"
+            "/v0/registry/datasets/\(context.input.id)/version/\(context.input.version)"
         })
-        var listDatasetVersions = Endpoint<PathInput.ID, [HumeAI.Dataset.DatasetVersion], Void>()
+        var listDatasetVersions = Endpoint<PathInput.IDWithVersion, [HumeAI.Dataset.DatasetVersion], Void>()
         // MARK: - Models
         @GET
         @Path("/v0/registry/models")
@@ -425,26 +425,26 @@ extension HumeAI {
             "/v0/registry/models/\(context.input.id)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var updateModelName = Endpoint<RequestBodies.UpdateModelNameInput, HumeAI.Model, Void>()
+        var updateModelName = Endpoint<RequestBodies.UpdateModelNameInput, Void, Void>()
         
         @GET
         @Path({ context -> String in
-            "/v0/registry/models/\(context.input.id)/versions"
+            "/v0/registry/models/version"
         })
-        var listModelVersions = Endpoint<PathInput.ID, [ResponseBodies.ModelVersion], Void>()
+        var listModelVersions = Endpoint<PathInput.ID, [HumeAI.Model.ModelVersion], Void>()
         
         @GET
         @Path({ context -> String in
             "/v0/registry/models/\(context.input.id)/version/\(context.input.version)"
         })
-        var getModelVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ModelVersion, Void>()
+        var getModelVersion = Endpoint<PathInput.IDWithVersion, HumeAI.Model.ModelVersion, Void>()
         
         @PATCH
         @Path({ context -> String in
             "/v0/registry/models/\(context.input.id)/version/\(context.input.versionId)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var updateModelDescription = Endpoint<RequestBodies.UpdateModelDescriptionInput, ResponseBodies.ModelVersion, Void>()
+        var updateModelDescription = Endpoint<RequestBodies.UpdateModelDescriptionInput, Void, Void>()
         
         // MARK: - Jobs
         @POST
