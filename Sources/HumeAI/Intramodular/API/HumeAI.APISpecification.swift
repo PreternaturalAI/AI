@@ -126,13 +126,13 @@ extension HumeAI {
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/prompts/\(context.input.id)/versions"
+            "/v0/evi/prompts/\(context.input.id)"
         })
-        var listPromptVersions = Endpoint<PathInput.ID, [HumeAI.Prompt.PromptVersion], Void>()
+        var listPromptVersions = Endpoint<PathInput.ID, ResponseBodies.PromptList, Void>()
         
         @POST
         @Path({ context -> String in
-            "/v0/evi/prompts/\(context.input.id)/versions"
+            "/v0/evi/prompts/\(context.input.id)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var createPromptVersion = Endpoint<RequestBodies.CreatePromptVersionInput, HumeAI.Prompt.PromptVersion, Void>()
@@ -148,26 +148,26 @@ extension HumeAI {
             "/v0/evi/prompts/\(context.input.id)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var updatePromptName = Endpoint<RequestBodies.UpdatePromptNameInput, HumeAI.Prompt, Void>()
+        var updatePromptName = Endpoint<RequestBodies.UpdatePromptNameInput, Void, Void>()
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/prompts/\(context.input.id)/versions/\(context.input.version)"
+            "/v0/evi/prompts/\(context.input.id)/version/\(context.input.version)"
         })
         var getPromptVersion = Endpoint<PathInput.IDWithVersion, HumeAI.Prompt.PromptVersion, Void>()
         
         @DELETE
         @Path({ context -> String in
-            "/v0/evi/prompts/\(context.input.id)/versions/\(context.input.version)"
+            "/v0/evi/prompts/\(context.input.id)/version/\(context.input.version)"
         })
         var deletePromptVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
         
         @PATCH
         @Path({ context -> String in
-            "/v0/evi/prompts/\(context.input.id)/versions/\(context.input.versionID)"
+            "/v0/evi/prompts/\(context.input.id)/version/\(context.input.version)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var updatePromptDescription = Endpoint<RequestBodies.UpdatePromptDescriptionInput, HumeAI.Prompt.PromptVersion, Void>()
+        var updatePromptDescription = Endpoint<RequestBodies.UpdatePromptDescriptionInput, Void, Void>()
         
         // MARK: - Custom Voices
         @GET
@@ -243,19 +243,19 @@ extension HumeAI {
         
         @GET
         @Path({ context -> String in
-            "/v0/evi/configs/\(context.input.id)/versions/\(context.input.version)"
+            "/v0/evi/configs/\(context.input.id)/version/\(context.input.version)"
         })
         var getConfigVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ConfigVersion, Void>()
         
         @DELETE
         @Path({ context -> String in
-            "/v0/evi/configs/\(context.input.id)/versions/\(context.input.version)"
+            "/v0/evi/configs/\(context.input.id)/version/\(context.input.version)"
         })
         var deleteConfigVersion = Endpoint<PathInput.IDWithVersion, Void, Void>()
         
         @PATCH
         @Path({ context -> String in
-            "/v0/evi/configs/\(context.input.id)/versions/\(context.input.versionID)"
+            "/v0/evi/configs/\(context.input.id)/version/\(context.input.versionID)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateConfigDescription = Endpoint<RequestBodies.UpdateConfigDescriptionInput, ResponseBodies.ConfigVersion, Void>()
@@ -435,13 +435,13 @@ extension HumeAI {
         
         @GET
         @Path({ context -> String in
-            "/v0/registry/models/\(context.input.id)/versions/\(context.input.version)"
+            "/v0/registry/models/\(context.input.id)/version/\(context.input.version)"
         })
         var getModelVersion = Endpoint<PathInput.IDWithVersion, ResponseBodies.ModelVersion, Void>()
         
         @PATCH
         @Path({ context -> String in
-            "/v0/registry/models/\(context.input.id)/versions/\(context.input.versionId)"
+            "/v0/registry/models/\(context.input.id)/version/\(context.input.versionId)"
         })
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
         var updateModelDescription = Endpoint<RequestBodies.UpdateModelDescriptionInput, ResponseBodies.ModelVersion, Void>()

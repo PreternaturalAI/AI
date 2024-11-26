@@ -177,16 +177,14 @@ extension HumeAI.APISpecification {
         
         struct CreatePromptInput: Codable {
             let name: String
-            let description: String?
-            let content: String
-            let metadata: [String: String]?
+            let text: String
+            let versionDescription: String?
         }
         
         struct CreatePromptVersionInput: Codable {
             let id: String
-            let description: String?
-            let content: String
-            let metadata: [String: String]?
+            let text: String
+            let versionDescription: String?
         }
         
         struct UpdatePromptNameInput: Codable {
@@ -196,7 +194,7 @@ extension HumeAI.APISpecification {
         
         struct UpdatePromptDescriptionInput: Codable {
             let id: String
-            let versionID: String
+            let version: Int
             let description: String
         }
         

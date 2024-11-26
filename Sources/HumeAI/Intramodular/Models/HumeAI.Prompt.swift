@@ -8,20 +8,23 @@
 extension HumeAI {
     public struct Prompt: Codable {
         public let id: String
+        public let version: Int
+        public let versionType: String
         public let name: String
-        public let description: String?
         public let createdOn: Int64
         public let modifiedOn: Int64
-        public let versions: [PromptVersion]?
+        public let text: String
+        public let versionDescription: String?
         
         public struct PromptVersion: Codable {
             public let id: String
-            public let promptId: String
-            public let description: String?
+            public let version: Int
+            public let versionType: String
+            public let name: String
             public let createdOn: Int64
             public let modifiedOn: Int64
-            public let content: String
-            public let metadata: [String: String]?
+            public let text: String
+            public let versionDescription: String?
         }
     }
 }

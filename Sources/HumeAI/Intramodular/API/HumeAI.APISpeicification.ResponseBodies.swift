@@ -256,14 +256,7 @@ extension HumeAI.APISpecification {
             let pageNumber: Int
             let pageSize: Int
             let totalPages: Int
-            let prompts: [HumeAI.Prompt]
-            
-            private enum CodingKeys: String, CodingKey {
-                case pageNumber = "page_number"
-                case pageSize = "page_size"
-                case totalPages = "total_pages"
-                case prompts = "prompts_page"
-            }
+            let promptsPage: [HumeAI.Prompt]
         }
         
         struct ToolVersionList: Codable {
