@@ -95,7 +95,7 @@ extension Rime.Client {
         let input = Rime.APISpecification.RequestBodies.TextToSpeechInput(
             speaker: voice,
             text: text,
-            modelId: model.rawValue
+            modelID: model.rawValue
         )
         
         switch outputAudio {
