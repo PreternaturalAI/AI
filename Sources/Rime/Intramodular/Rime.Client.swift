@@ -42,13 +42,25 @@ extension Rime {
 }
 
 extension Rime.Client {
-    public func getAllAvailableVoices() async throws -> [Rime.Voice] {
-        try await run(\.listVoices).voices
+    public func getAllAvailableVoiceDetails() async throws -> [Rime.Voice] {
+        try await run(\.listVoiceDetails).voices
+    }
+    
+    public func getAllAvailableVoices(
+        model: Rime.Model
+    ) async throws -> [String] {
+        switch model {
+            case .mist:
+                return try await run(\.listVoices).mist
+            case .v1:
+                return try await run(\.listVoices).v1
+        }
     }
     
     public func streamTextToSpeech(
         text: String,
         voice: String,
+        outputAudio: StreamOutputAudioType,
         model: Rime.Model
     ) async throws -> Data {
         let input = Rime.APISpecification.RequestBodies.TextToSpeechInput(
@@ -57,9 +69,53 @@ extension Rime.Client {
             modelID: model.rawValue
         )
         
-        let responseData = try await run(\.textToSpeech, with: input)
+        switch outputAudio {
+            case .MP3:
+                let responseData = try await run(\.streamTextToSpeechMP3, with: input)
+                
+                return responseData.audioContent
+            case .PCM:
+                let responseData = try await run(\.streamTextToSpeechPCM, with: input)
+                
+                return responseData.audioContent
+            case .MULAW:
+                let responseData = try await run(\.streamTextToSpeechMULAW, with: input)
+                
+                return responseData.audioContent
+        }
+    }
+    
+    public func textToSpeech(
+        text: String,
+        voice: String,
+        outputAudio: OutputAudioType,
+        model: Rime.Model
+    ) async throws -> Data {
         
-        return responseData.audioContent
+        let input = Rime.APISpecification.RequestBodies.TextToSpeechInput(
+            speaker: voice,
+            text: text,
+            modelId: model.rawValue
+        )
+        
+        switch outputAudio {
+            case .MP3:
+                let responseData = try await run(\.textToSpeechMP3, with: input)
+
+                return responseData.audioContent
+            case .WAV:
+                let responseData = try await run(\.textToSpeechWAV, with: input)
+
+                return responseData.audioContent
+            case .OGG:
+                let responseData = try await run(\.textToSpeechOGG, with: input)
+
+                return responseData.audioContent
+            case .MULAW:
+                let responseData = try await run(\.textToSpeechMULAW, with: input)
+
+                return responseData.audioContent
+        }
     }
 }
 

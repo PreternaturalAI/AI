@@ -61,12 +61,50 @@ extension Rime {
         
         @GET
         @Path("/data/voices/voice_details.json")
+        var listVoiceDetails = Endpoint<Void, ResponseBodies.VoiceDetails, Void>()
+        
+        @GET
+        @Path("/data/voices/voices/all.json")
         var listVoices = Endpoint<Void, ResponseBodies.Voices, Void>()
+        
+        // Streaming Audio
+        @POST
+        @Path("/v1/rime-tts")
+        @Body(json: \.input)
+        var streamTextToSpeechMP3 = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
+        
+        // TODO: - Fix below
         
         @POST
         @Path("/v1/rime-tts")
         @Body(json: \.input)
-        var textToSpeech = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
+        var streamTextToSpeechPCM = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
+        
+        @POST
+        @Path("/v1/rime-tts")
+        @Body(json: \.input)
+        var streamTextToSpeechMULAW = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
+        
+        // Non-Streaming Audio
+        @POST
+        @Path("/v1/rime-tts")
+        @Body(json: \.input)
+        var textToSpeechMP3 = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
+        
+        @POST
+        @Path("/v1/rime-tts")
+        @Body(json: \.input)
+        var textToSpeechWAV = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
+        
+        @POST
+        @Path("/v1/rime-tts")
+        @Body(json: \.input)
+        var textToSpeechOGG = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
+        
+        @POST
+        @Path("/v1/rime-tts")
+        @Body(json: \.input)
+        var textToSpeechMULAW = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechOutput, Void>()
     }
 }
 
