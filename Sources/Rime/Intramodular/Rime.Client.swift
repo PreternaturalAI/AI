@@ -121,7 +121,7 @@ extension Rime.Client {
 
 // MARK: - Conformances
 
-extension Rime.Client: _MIService {
+extension Rime.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

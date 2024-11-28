@@ -51,7 +51,7 @@ extension HumeAI.Client {
 
 // MARK: - Conformances
 
-extension HumeAI.Client: _MIService {
+extension HumeAI.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

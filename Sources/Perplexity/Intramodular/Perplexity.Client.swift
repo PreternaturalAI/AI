@@ -32,7 +32,7 @@ extension Perplexity {
     }
 }
 
-extension Perplexity.Client: _MIService {
+extension Perplexity.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

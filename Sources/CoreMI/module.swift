@@ -12,7 +12,7 @@ public enum _module {
 // MARK: - Deprecated
 
 @available(*, deprecated, renamed: "CoreMI.Context")
-public typealias MIContext = CoreMI.Context
+public typealias MIContext = CoreMI._RequestHandlingContext
 @available(*, deprecated, renamed: "ModelIdentifier")
 public typealias _MLModelIdentifier = ModelIdentifier
 @available(*, deprecated, renamed: "ModelIdentifierConvertible")

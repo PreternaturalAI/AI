@@ -32,7 +32,7 @@ extension Jina {
     }
 }
 
-extension Jina.Client: _MIService {
+extension Jina.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

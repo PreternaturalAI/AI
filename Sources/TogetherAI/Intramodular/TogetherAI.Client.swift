@@ -32,7 +32,7 @@ extension TogetherAI {
     }
 }
 
-extension TogetherAI.Client: _MIService {
+extension TogetherAI.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

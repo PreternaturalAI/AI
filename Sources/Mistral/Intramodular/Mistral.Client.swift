@@ -32,7 +32,7 @@ extension Mistral {
     }
 }
 
-extension Mistral.Client: _MIService {
+extension Mistral.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {
