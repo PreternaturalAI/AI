@@ -22,5 +22,5 @@ jobs:
       with:
         reuse_derived_data: false
         xcode-version: '16'
-        platforms: '["all"]'
+        platforms: 'macOS'
         configurations: '["debug"]'
