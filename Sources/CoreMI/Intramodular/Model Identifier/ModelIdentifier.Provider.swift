@@ -15,6 +15,7 @@ extension ModelIdentifier {
         case _Fal
         case _Mistral
         case _Groq
+        case _xAI
         case _Ollama
         case _OpenAI
         case _Gemini
@@ -45,6 +46,10 @@ extension ModelIdentifier {
         
         public static var groq: Self {
             Self._Groq
+        }
+        
+        public static var xAI: Self {
+            Self._xAI
         }
         
         public static var gemini: Self {
@@ -92,6 +97,8 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
             return "Mistral"
         case ._Groq:
             return "Groq"
+        case ._xAI:
+            return "xAI"
         case ._Ollama:
             return "Ollama"
         case ._OpenAI:
@@ -129,6 +136,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
             return "mistral"
         case ._Groq:
             return "groq"
+        case ._xAI:
+            return "xai"
         case ._Ollama:
             return "ollama"
         case ._OpenAI:
@@ -164,6 +173,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
             self = ._Mistral
         case Self._Groq.rawValue:
             self = ._Groq
+        case Self._xAI.rawValue:
+            self = ._xAI
         case Self._OpenAI.rawValue:
             self = ._OpenAI
         case Self._Gemini.rawValue:
