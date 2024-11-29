@@ -44,6 +44,7 @@ extension CoreMI._ServiceVendorIdentifier {
     public static let _Jina = CoreMI._ServiceVendorIdentifier(rawValue: "bozud-sipup-natin-bizif")
     public static let _TogetherAI = CoreMI._ServiceVendorIdentifier(rawValue: "pafob-vopoj-lurig-zilur")
     public static let _VoyageAI = CoreMI._ServiceVendorIdentifier(rawValue: "hajat-fufoh-janaf-disam")
+    public static let _xAI = CoreMI._ServiceVendorIdentifier(rawValue: "niluj-futol-guhaj-pabas")
 }
 
 // MARK: - Deprecated
