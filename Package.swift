@@ -22,6 +22,7 @@ let package = Package(
                 "ElevenLabs",
                 "_Gemini",
                 "Groq",
+                "xAI",
                 "HuggingFace",
                 "Jina",
                 "Mistral",
@@ -151,6 +152,21 @@ let package = Package(
             ]
         ),
         .target(
+            name: "xAI",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/xAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .target(
             name: "Ollama",
             dependencies: [
                 "CorePersistence",
@@ -275,6 +291,7 @@ let package = Package(
                 "Mistral",
                 "_Gemini",
                 "Groq",
+                "xAI",
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
@@ -341,6 +358,17 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/Groq",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "xAITests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/xAI",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]

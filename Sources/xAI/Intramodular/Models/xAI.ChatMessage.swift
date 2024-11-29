@@ -1,0 +1,210 @@
+
+import CorePersistence
+import Diagnostics
+import LargeLanguageModels
+import Swallow
+
+extension xAI {
+    public struct ChatMessage: Hashable, Sendable {
+        public typealias ID = String
+        
+        public let id: ID
+        public let role: ChatRole
+        public var body: ChatMessageBody
+        
+        public init(
+            id: ID? = nil,
+            role: ChatRole,
+            body: ChatMessageBody
+        ) {
+            switch body {
+            case .text:
+                assert(role != .function)
+            case .content:
+                assert(role != .function)
+            case .functionCall:
+                assert(role == .assistant)
+            case .toolCalls(_):
+                assert(role == .assistant)
+            case .functionInvocation:
+                assert(role == .function)
+            }
+            
+            self.id = id ?? UUID().stringValue // FIXME: !!!
+            self.role = role
+            self.body = body
+        }
+    }
+    
+    public enum FunctionCallingStrategy: Codable, Hashable, Sendable {
+        enum CodingKeys: String, CodingKey {
+            case none = "none"
+            case auto = "auto"
+            case function = "name"
+        }
+        
+        case none
+        case auto
+        case function(String)
+        
+        public init(from decoder: Decoder) throws {
+            switch try decoder._determineContainerKind() {
+            case .singleValue:
+                let rawValue = try decoder.singleValueContainer().decode(String.self)
+                
+                switch rawValue {
+                case CodingKeys.none.rawValue:
+                    self = .none
+                case CodingKeys.auto.rawValue:
+                    self = .auto
+                default:
+                    throw DecodingError.dataCorrupted(.init(codingPath: []))
+                }
+            case .keyed:
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                
+                self = try .function(container.decode(String.self, forKey: .function))
+            default:
+                throw DecodingError.dataCorrupted(.init(codingPath: []))
+            }
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            switch self {
+            case .none:
+                var container = encoder.singleValueContainer()
+                
+                try container.encode(CodingKeys.none.rawValue)
+            case .auto:
+                var container = encoder.singleValueContainer()
+                
+                try container.encode(CodingKeys.auto.rawValue)
+            case .function(let name):
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                
+                try container.encode(name, forKey: .function)
+            }
+        }
+    }
+}
+
+// MARK: - Conformances
+
+extension xAI.ChatMessage: AbstractLLM.ChatMessageConvertible {
+    public func __conversion() throws -> AbstractLLM.ChatMessage {
+        .init(
+            id: .init(rawValue: id),
+            role: try role.__conversion(),
+            content: try PromptLiteral(from: self)
+        )
+    }
+}
+
+extension xAI.ChatMessage: Codable {
+    public enum CodingKeys: CodingKey {
+        case id
+        case role
+        case content
+        case name
+        case functionCall
+        case toolCalls
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        print(try JSON(from: decoder).prettyPrintedDescription)
+        
+        
+        self.id = try container.decodeIfPresent(String.self, forKey: .id) ?? UUID().stringValue // FIXME
+        self.role = try container.decode(xAI.ChatRole.self, forKey: .role)
+        
+        switch role {
+        case .function:
+            self.body = .functionInvocation(
+                .init(
+                    name: try container.decode(String.self, forKey: .name),
+                    response: try container.decode(String.self, forKey: .name)
+                )
+            )
+        case .assistant:
+            if let toolCalls = try container.decodeIfPresent([xAI.ToolCall].self, forKey: .toolCalls) {
+                if let function = toolCalls.first?.function {
+                    self.body = .functionCall(function)
+                } else {
+                    self.body = .toolCalls(toolCalls)
+                }
+                
+            } else {
+                self.body = try .content(container.decode(String.self, forKey: .content))
+            }
+        default:
+            self.body = try .content(container.decode(String.self, forKey: .content))
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(role, forKey: .role)
+        
+        switch body {
+        case .text(let content):
+            try container.encode(content, forKey: .content)
+        case .content(let content):
+            try container.encode(content, forKey: .content)
+        case .functionCall(let call):
+            try _tryAssert(role == .assistant)
+            
+            try container.encode(call, forKey: .functionCall)
+            try container.encodeNil(forKey: .content)
+        case .toolCalls(let calls):
+            try _tryAssert(role == .assistant)
+            
+            try container.encode(calls, forKey: .toolCalls)
+            try container.encodeNil(forKey: .content)
+        case .functionInvocation(let invocation):
+            try _tryAssert(role == .function)
+            
+            try container.encode(invocation.name, forKey: .name)
+            try container.encode(invocation.response, forKey: .content)
+        }
+    }
+}
+
+// MARK: - Initializers
+
+extension xAI.ChatMessage {
+    public init(
+        id: ID? = nil,
+        role: xAI.ChatRole,
+        body: String
+    ) {
+        self.init(
+            id: id,
+            role: role,
+            body: .content(body)
+        )
+    }
+    
+    public init(
+        role: xAI.ChatRole,
+        content: String
+    ) {
+        self.init(
+            role: role,
+            body: content
+        )
+    }
+    
+    public static func system(
+        _ content: String
+    ) -> Self {
+        Self(id: UUID().stringValue, role: .system, body: .content(content))
+    }
+    
+    public static func user(
+        _ content: String
+    ) -> Self {
+        Self(id: UUID().stringValue, role: .user, body: .content(content))
+    }
+}

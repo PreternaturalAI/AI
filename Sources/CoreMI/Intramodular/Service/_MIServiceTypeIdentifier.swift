@@ -38,4 +38,5 @@ extension _MIServiceTypeIdentifier {
     public static let _VoyageAI = _MIServiceTypeIdentifier(rawValue: "hajat-fufoh-janaf-disam")
     public static let _Cohere = _MIServiceTypeIdentifier(rawValue: "guzob-fipin-navij-duvon")
     public static let _TogetherAI = _MIServiceTypeIdentifier(rawValue: "pafob-vopoj-lurig-zilur")
+    public static let _xAI = _MIServiceTypeIdentifier(rawValue: "niluj-futol-guhaj-pabas")
 }
