@@ -45,7 +45,7 @@ extension AbstractLLM.ChatCompletion {
     }
 }
 
-// MARK: - Implemented Conformances
+// MARK: - Conformees
 
 extension AbstractLLM.ChatFunctionCall: AbstractLLM.ChatCompletionDecodable {
     public static func decode(

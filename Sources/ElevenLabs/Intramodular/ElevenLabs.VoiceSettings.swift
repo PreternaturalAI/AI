@@ -5,8 +5,7 @@
 import Foundation
 
 extension ElevenLabs {
-    public final class VoiceSettings: Codable, Sendable {
-        
+    public struct VoiceSettings: Codable, Sendable, Hashable {
         public enum Setting: String, Codable, Sendable {
             case stability
             case similarityBoost = "similarity_boost"
@@ -30,70 +29,20 @@ extension ElevenLabs {
         
         public var removeBackgroundNoise: Bool
         
-        public init(stability: Double,
-                    similarityBoost: Double,
-                    styleExaggeration: Double,
-                    speakerBoost: Bool,
-                    removeBackgroundNoise: Bool) {
-            self.stability = max(0, min(1, stability))
-            self.similarityBoost = max(0, min(1, similarityBoost))
-            self.styleExaggeration = max(0, min(1, styleExaggeration))
-            self.speakerBoost = speakerBoost
-            self.removeBackgroundNoise = removeBackgroundNoise
-        }
-        
-        public init(stability: Double? = nil,
-                    similarityBoost: Double? = nil,
-                    styleExaggeration: Double? = nil,
-                    speakerBoost: Bool? = nil,
-                    removeBackgroundNoise: Bool? = nil) {
+        public init(
+            stability: Double? = nil,
+            similarityBoost: Double? = nil,
+            styleExaggeration: Double? = nil,
+            speakerBoost: Bool? = nil,
+            removeBackgroundNoise: Bool? = nil
+        ) {
             self.stability = stability.map { max(0, min(1, $0)) } ?? 0.5
             self.similarityBoost = similarityBoost.map { max(0, min(1, $0)) } ?? 0.75
             self.styleExaggeration = styleExaggeration.map { max(0, min(1, $0)) } ?? 0
             self.speakerBoost = speakerBoost ?? true
             self.removeBackgroundNoise = removeBackgroundNoise ?? false
         }
-        
-        public convenience init(stability: Double) {
-            self.init(
-                stability: stability,
-                similarityBoost: 0.75,
-                styleExaggeration: 0,
-                speakerBoost: true,
-                removeBackgroundNoise: false
-            )
-        }
-        
-        public convenience init(similarityBoost: Double) {
-            self.init(
-                stability: 0.5,
-                similarityBoost: similarityBoost,
-                styleExaggeration: 0,
-                speakerBoost: true,
-                removeBackgroundNoise: false
-            )
-        }
-        
-        public convenience init(styleExaggeration: Double) {
-            self.init(
-                stability: 0.5,
-                similarityBoost: 0.75,
-                styleExaggeration: styleExaggeration,
-                speakerBoost: true,
-                removeBackgroundNoise: false
-            )
-        }
-        
-        public convenience init(speakerBoost: Bool) {
-            self.init(
-                stability: 0.5,
-                similarityBoost: 0.75,
-                styleExaggeration: 0,
-                speakerBoost: speakerBoost,
-                removeBackgroundNoise: false
-            )
-        }
-        
+                        
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             
@@ -106,3 +55,46 @@ extension ElevenLabs {
     }
 }
 
+// MARK: - Initializers
+
+extension ElevenLabs.VoiceSettings {
+    public init(stability: Double) {
+        self.init(
+            stability: stability,
+            similarityBoost: nil,
+            styleExaggeration: nil,
+            speakerBoost: nil,
+            removeBackgroundNoise: nil
+        )
+    }
+
+    public init(similarityBoost: Double) {
+        self.init(
+            stability: nil,
+            similarityBoost: similarityBoost,
+            styleExaggeration: nil,
+            speakerBoost: nil,
+            removeBackgroundNoise: nil
+        )
+    }
+    
+    public init(styleExaggeration: Double) {
+        self.init(
+            stability: nil,
+            similarityBoost: nil,
+            styleExaggeration: styleExaggeration,
+            speakerBoost: true,
+            removeBackgroundNoise: nil
+        )
+    }
+    
+    public init(speakerBoost: Bool) {
+        self.init(
+            stability: nil,
+            similarityBoost: nil,
+            styleExaggeration: nil,
+            speakerBoost: speakerBoost,
+            removeBackgroundNoise: nil
+        )
+    }
+}

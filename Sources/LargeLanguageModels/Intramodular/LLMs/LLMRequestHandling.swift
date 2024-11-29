@@ -21,7 +21,7 @@ public protocol LLMRequestHandling: CoreMI.RequestHandling {
     ) async throws -> AbstractLLM.ChatCompletionStream
 }
 
-extension MIContext {
+extension CoreMI._RequestHandlingContext {
     /// Complete a given prompt.
     public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,

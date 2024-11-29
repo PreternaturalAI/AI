@@ -5,19 +5,19 @@
 import CoreMI
 import CorePersistence
 
-extension OpenAI.Client: _MIService {
+extension OpenAI.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
-        account: (any _MIServiceAccount)?
+        account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {
-        let account: any _MIServiceAccount = try account.unwrap()
-        let serviceIdentifier: _MIServiceTypeIdentifier = account.serviceIdentifier
+        let account: any CoreMI._ServiceAccountProtocol = try account.unwrap()
+        let serviceVendorIdentifier: CoreMI._ServiceVendorIdentifier = try account.serviceVendorIdentifier.unwrap()
 
-        guard serviceIdentifier == _MIServiceTypeIdentifier._OpenAI else {
-            throw _MIServiceError.serviceTypeIncompatible(serviceIdentifier)
+        guard serviceVendorIdentifier == CoreMI._ServiceVendorIdentifier._OpenAI else {
+            throw CoreMI._ServiceClientError.incompatibleVendor(serviceVendorIdentifier)
         }
         
-        guard let credential = account.credential as? _MIServiceAPIKeyCredential else {
-            throw _MIServiceError.invalidCredentials(account.credential)
+        guard let credential = try account.credential as? CoreMI._ServiceCredentialTypes.APIKeyCredential else {
+            throw CoreMI._ServiceClientError.invalidCredential(try account.credential)
         }
         
         self.init(apiKey: credential.apiKey)

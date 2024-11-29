@@ -106,6 +106,36 @@ let package = Package(
             ]
         ),
         .target(
+            name: "PlayHT",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/PlayHT",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .target(
+            name: "Rime",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/Rime",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .target(
             name: "_Gemini",
             dependencies: [
                 "CorePersistence",
@@ -256,6 +286,36 @@ let package = Package(
             ]
         ),
         .target(
+            name: "HumeAI",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/HumeAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .target(
+            name: "NeetsAI",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/NeetsAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .target(
             name: "HuggingFace",
             dependencies: [
                 
@@ -278,12 +338,16 @@ let package = Package(
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
+                "PlayHT",
+                "Rime",
                 "Swallow",
                 "Jina",
                 "VoyageAI",
                 "Cohere",
                 "TogetherAI",
-                "HuggingFace"
+                "HuggingFace",
+                "HumeAI",
+                "NeetsAI"
             ],
             path: "Sources/AI",
             swiftSettings: [
@@ -368,6 +432,17 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: "PlayHTTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/PlayHT",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
             name: "JinaTests",
             dependencies: [
                 "AI",
@@ -407,6 +482,28 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/HuggingFace",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "NeetsAITests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/NeetsAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "HumeAITests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/HumeAI",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]

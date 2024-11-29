@@ -2,73 +2,40 @@
 // Copyright (c) Vatsal Manot
 //
 
-import CoreMI
 import CorePersistence
-import Foundation
+import Diagnostics
 import NetworkKit
+import Foundation
+import SwiftAPI
+import Merge
+import FoundationX
+import Swallow
 
 extension ElevenLabs {
     @RuntimeDiscoverable
-    public final class Client: ObservableObject {
-        public static var persistentTypeRepresentation: some IdentityRepresentation {
-            _MIServiceTypeIdentifier._ElevenLabs
+    public final class Client: SwiftAPI.Client, ObservableObject {
+        public typealias API = ElevenLabs.APISpecification
+        public typealias Session = HTTPSession
+        
+        public let interface: API
+        public let session: Session
+        public var sessionCache: EmptyKeyedCache<Session.Request, Session.Request.Response>
+        
+        public required init(configuration: API.Configuration) {
+            self.interface = API(configuration: configuration)
+            self.session = HTTPSession.shared
+            self.sessionCache = .init()
         }
         
-        public struct Configuration {
-            public var apiKey: String?
-        }
-        
-        public let configuration: Configuration
-        public let apiSpecification = APISpecification()
-        
-        public required init(
-            configuration: Configuration
-        ) {
-            self.configuration = configuration
-        }
-        
-        public convenience init(
-            apiKey: String?
-        ) {
+        public convenience init(apiKey: String?) {
             self.init(configuration: .init(apiKey: apiKey))
         }
     }
 }
 
-extension ElevenLabs.Client: _MIService {
-    public convenience init(
-        account: (any _MIServiceAccount)?
-    ) async throws {
-        let account = try account.unwrap()
-        
-        guard account.serviceIdentifier == _MIServiceTypeIdentifier._ElevenLabs else {
-            throw _MIServiceError.serviceTypeIncompatible(account.serviceIdentifier)
-        }
-        
-        guard let credential = account.credential as? _MIServiceAPIKeyCredential else {
-            throw _MIServiceError.invalidCredentials(account.credential)
-        }
-        
-        self.init(apiKey: credential.apiKey)
-    }
-}
-
 extension ElevenLabs.Client {
     public func availableVoices() async throws -> [ElevenLabs.Voice] {
-        let request = HTTPRequest(url: URL(string: "\(apiSpecification.host)/v1/voices")!)
-            .method(.get)
-            .header("xi-api-key", configuration.apiKey)
-            .header(.contentType(.json))
-        
-        let response = try await HTTPSession.shared.data(for: request)
-        
-        try response.validate()
-        
-        return try response.decode(
-            ElevenLabs.APISpecification.ResponseBodies.Voices.self,
-            keyDecodingStrategy: .convertFromSnakeCase
-        )
-        .voices
+        try await run(\.listVoices).voices
     }
     
     @discardableResult
@@ -78,25 +45,13 @@ extension ElevenLabs.Client {
         voiceSettings: ElevenLabs.VoiceSettings,
         model: ElevenLabs.Model
     ) async throws -> Data {
-        let request = try HTTPRequest(url: URL(string: "\(apiSpecification.host)/v1/text-to-speech/\(voiceID)")!)
-            .method(.post)
-            .header("xi-api-key", configuration.apiKey)
-            .header(.contentType(.json))
-            .header(.accept(.mpeg))
-            .jsonBody(
-                ElevenLabs.APISpecification.RequestBodies.SpeechRequest(
-                    text: text,
-                    voiceSettings: voiceSettings,
-                    model: model
-                ),
-                keyEncodingStrategy: .convertToSnakeCase
-            )
+        let requestBody = ElevenLabs.APISpecification.RequestBodies.SpeechRequest(
+            text: text,
+            voiceSettings: voiceSettings,
+            model: model
+        )
         
-        let response = try await HTTPSession.shared.data(for: request)
-        
-        try response.validate()
-        
-        return response.data
+        return try await run(\.textToSpeech, with: .init(voiceId: voiceID, requestBody: requestBody))
     }
     
     public func speechToSpeech(
@@ -105,56 +60,14 @@ extension ElevenLabs.Client {
         voiceSettings: ElevenLabs.VoiceSettings,
         model: ElevenLabs.Model
     ) async throws -> Data {
-        let boundary = UUID().uuidString
+        let input = ElevenLabs.APISpecification.RequestBodies.SpeechToSpeechInput(
+            voiceId: voiceID,
+            audioURL: inputAudioURL,
+            model: model,
+            voiceSettings: voiceSettings
+        )
         
-        var request = try URLRequest(url: URL(string: "\(apiSpecification.host)/v1/speech-to-speech/\(voiceID)/stream").unwrap())
-        
-        request.httpMethod = "POST"
-        request.setValue("audio/mpeg", forHTTPHeaderField: "accept")
-        request.setValue(configuration.apiKey, forHTTPHeaderField: "xi-api-key")
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        var data = Data()
-        
-        // Add model_id
-        data.append("--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("Content-Disposition: form-data; name=\"model_id\"\r\n\r\n".data(using: .utf8)!)
-        data.append("\(model.rawValue)\r\n".data(using: .utf8)!)
-        
-        // Add voice settings
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        let voiceSettingsData = try encoder.encode(voiceSettings)
-        let voiceSettingsString = String(data: voiceSettingsData, encoding: .utf8)!
-        
-        data.append("--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("Content-Disposition: form-data; name=\"voice_settings\"\r\n\r\n".data(using: .utf8)!)
-        data.append("\(voiceSettingsString)\r\n".data(using: .utf8)!)
-        
-        // Add audio file
-        if let fileData = createMultipartData(boundary: boundary, name: "audio", fileURL: inputAudioURL, fileType: "audio/mpeg") {
-            data.append(fileData)
-        }
-        
-        data.append("--\(boundary)--\r\n".data(using: .utf8)!)
-        
-        request.httpBody = data
-        
-        return try await withUnsafeThrowingContinuation { continuation in
-            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else if let data = data {
-                    if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-                        continuation.resume(returning: data)
-                    } else {
-                        continuation.resume(throwing: _PlaceholderError())
-                    }
-                }
-            }
-            
-            task.resume()
-        }
+        return try await run(\.speechToSpeech, with: input)
     }
     
     public func upload(
@@ -162,144 +75,35 @@ extension ElevenLabs.Client {
         description: String,
         fileURL: URL
     ) async throws -> ElevenLabs.Voice.ID {
-        let boundary = UUID().uuidString
+        let input = ElevenLabs.APISpecification.RequestBodies.AddVoiceInput(
+            name: name,
+            description: description,
+            fileURL: fileURL
+        )
         
-        var request = try URLRequest(url: URL(string: "\(apiSpecification.host)/v1/voices/add").unwrap())
-        
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "accept")
-        request.setValue(configuration.apiKey, forHTTPHeaderField: "xi-api-key")
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        var data = Data()
-        let parameters = [
-            ("name", name),
-            ("description", description),
-            ("labels", "")
-        ]
-        
-        for (key, value) in parameters {
-            data.append("--\(boundary)\r\n".data(using: .utf8)!)
-            data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
-            data.append("\(value)\r\n".data(using: .utf8)!)
-        }
-        
-        if let fileData = createMultipartData(boundary: boundary, name: "files", fileURL: fileURL, fileType: "audio/x-wav") {
-            data.append(fileData)
-        }
-        
-        data.append("--\(boundary)--\r\n".data(using: .utf8)!)
-        
-        request.httpBody = data
-        
-        let voiceID: String? = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<String?, Error>) in
-            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else if let data = data {
-                    if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-                        do {
-                            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                                guard let voiceID: String = json["voice_id"] as? String else { return }
-                                continuation.resume(returning: voiceID)
-                            } else {
-                                continuation.resume(returning: nil)
-                            }
-                        } catch {
-                            continuation.resume(throwing: _PlaceholderError())
-                        }
-                    } else {
-                        continuation.resume(throwing: _PlaceholderError())
-                    }
-                }
-            }
-            
-            task.resume()
-        }
-        
-        return try .init(rawValue: voiceID.unwrap())
+        let response = try await run(\.addVoice, with: input)
+        return .init(rawValue: response.voiceId)
     }
     
     public func edit(
         voice: ElevenLabs.Voice.ID,
         name: String,
         description: String,
-        fileURL: URL
+        fileURL: URL?
     ) async throws -> Bool {
-        let url = URL(string: "\(apiSpecification.host)/v1/voices/\(voice.rawValue)/edit")!
+        let input = ElevenLabs.APISpecification.RequestBodies.EditVoiceInput(
+            voiceId: voice.rawValue,
+            name: name,
+            description: description,
+            fileURL: fileURL
+        )
         
-        let boundary = UUID().uuidString
-        var request = URLRequest(url: url)
-        
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "accept")
-        request.setValue(configuration.apiKey, forHTTPHeaderField: "xi-api-key")
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        var data = Data()
-        let parameters = [
-            ("name", name),
-            ("description", description),
-            ("labels", "")
-        ]
-        
-        for (key, value) in parameters {
-            data.append("--\(boundary)\r\n".data(using: .utf8)!)
-            data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
-            data.append("\(value)\r\n".data(using: .utf8)!)
-        }
-        
-        if let fileData = createMultipartData(boundary: boundary, name: "files", fileURL: fileURL, fileType: "audio/x-wav") {
-            data.append(fileData)
-        }
-        
-        data.append("--\(boundary)--\r\n".data(using: .utf8)!)
-        
-        request.httpBody = data
-        
-        let response = try await HTTPSession.shared.data(for: request)
-        
-        try response.validate()
-        
-        return true
+        return try await run(\.editVoice, with: input)
     }
     
     public func delete(
         voice: ElevenLabs.Voice.ID
     ) async throws {
-        let url = try URL(string: "\(apiSpecification.host)/v1/voices/\(voice.rawValue)").unwrap()
-        
-        var request = URLRequest(url: url)
-        
-        request.httpMethod = "DELETE"
-        request.setValue("application/json", forHTTPHeaderField: "accept")
-        request.setValue(configuration.apiKey, forHTTPHeaderField: "xi-api-key")
-        
-        let response = try await HTTPSession.shared.data(for: request)
-        
-        try response.validate()
-    }
-    
-    private func createMultipartData(
-        boundary: String,
-        name: String,
-        fileURL: URL,
-        fileType: String
-    ) -> Data? {
-        var result = Data()
-        let fileName = fileURL.lastPathComponent
-        
-        result.append("--\(boundary)\r\n".data(using: .utf8)!)
-        result.append("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
-        result.append("Content-Type: \(fileType)\r\n\r\n".data(using: .utf8)!)
-        
-        guard let fileData = try? Data(contentsOf: fileURL) else {
-            return nil
-        }
-        
-        result.append(fileData)
-        result.append("\r\n".data(using: .utf8)!)
-        
-        return result
+        try await run(\.deleteVoice, with: voice.rawValue)
     }
 }

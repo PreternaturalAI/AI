@@ -20,7 +20,7 @@ extension PromptLiteralConvertible {
     }
 }
 
-// MARK: - Implemented Conformances
+// MARK: - Conformees
 
 extension String: _PromptLiteralConvertible {
     public func _toPromptLiteral() throws -> PromptLiteral {
