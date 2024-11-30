@@ -127,7 +127,7 @@ extension TogetherAI.APISpecification {
 extension TogetherAI.APISpecification.RequestBodies {
     public struct CreateEmbedding: Codable, Hashable {
         public let model: TogetherAI.Model.Embedding
-        public let input: String
+        public let input: [String]
     }
     
     public struct CreateCompletion: Codable, Hashable {

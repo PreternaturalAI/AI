@@ -14,7 +14,7 @@ extension TogetherAI.Client: _TaskDependenciesExporting {
         var result = TaskDependencies()
         
         result[\.llm] = self
-        //result[\.embedding] = self
+        result[\.embedding] = self
         
         return result
     }

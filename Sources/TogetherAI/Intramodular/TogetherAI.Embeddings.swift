@@ -15,7 +15,7 @@ extension TogetherAI {
 extension TogetherAI.Embeddings {
     public struct EmbeddingData: Codable, Hashable, Sendable {
         public let object: String
-        public let embedding: [Float]
+        public let embedding: [Double]
         public let index: Int
     }
 }

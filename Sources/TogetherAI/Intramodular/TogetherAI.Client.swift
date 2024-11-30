@@ -54,13 +54,26 @@ extension TogetherAI.Client: CoreMI._ServiceClientProtocol {
 extension TogetherAI.Client {
     public func createEmbeddings(
         for model: TogetherAI.Model.Embedding,
-        input: String
+        input: [String]
     ) async throws -> TogetherAI.Embeddings {
         try await run(
             \.createEmbeddings,
              with: .init(
                 model: model,
                 input: input
+             )
+        )
+    }
+    
+    public func createEmbeddings(
+        for model: TogetherAI.Model.Embedding,
+        input: String
+    ) async throws -> TogetherAI.Embeddings {
+        try await run(
+            \.createEmbeddings,
+             with: .init(
+                model: model,
+                input: [input]
              )
         )
     }
