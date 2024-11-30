@@ -64,4 +64,39 @@ extension TogetherAI.Client {
              )
         )
     }
+    
+    public func createCompletion(
+        for model: TogetherAI.Model.Completion,
+        prompt: String,
+        maxTokens: Int? = nil,
+        stream: Bool? = nil,
+        stop: [String]? = nil,
+        temperature: Double? = nil,
+        topP: Double? = nil,
+        topK: Double? = nil,
+        repetitionPenalty: Double? = nil,
+        logprobs: Int? = nil,
+        echo: Bool? = nil,
+        choices: Int? = nil,
+        safetyModel: String? = nil
+    ) async throws -> TogetherAI.Completion {
+        try await run(
+            \.createCompletion,
+             with: .init(
+                model: model,
+                prompt: prompt,
+                maxTokens: maxTokens,
+                stream: stream,
+                stop: stop,
+                temperature: temperature,
+                topP: topP,
+                topK: topK,
+                repetitionPenalty: repetitionPenalty,
+                logprobs: logprobs,
+                echo: echo,
+                choices: choices,
+                safetyModel: safetyModel
+             )
+        )
+    }
 }

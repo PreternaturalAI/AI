@@ -166,14 +166,14 @@ extension TogetherAI.Model {
 extension TogetherAI.Model {
     public enum Completion: String, TogetherAI._ModelType, CaseIterable {
         
-        case metaLlama2_70B = "meta-llama/Llama-2-70b-hf"
+        case llama2_70B = "meta-llama/Llama-2-70b-hf"
         case mistral7b = "mistralai/Mistral-7B-v0.1"
         case mixtral8x7b = "mistralai/Mixtral-8x7B-v0.1"
         
         public var name: String {
             switch self {
-            case .metaLlama2_70B:
-                return "Meta LLaMA-2 (70B)"
+            case .llama2_70B:
+                return "LLaMA-2 (70B)"
             case .mistral7b:
                 return "Mistral (7B)"
             case .mixtral8x7b:
@@ -183,7 +183,7 @@ extension TogetherAI.Model {
         
         public var contextSize: Int {
             switch self {
-            case .metaLlama2_70B:
+            case .llama2_70B:
                 return 4096
             case .mistral7b:
                 return 8192
@@ -195,7 +195,7 @@ extension TogetherAI.Model {
         public init?(rawValue: String) {
             switch rawValue {
             case "meta-llama/Llama-2-70b-hf":
-                self = .metaLlama2_70B
+                self = .llama2_70B
             case "mistralai/Mistral-7B-v0.1":
                 self = .mistral7b
             case "mistralai/Mixtral-8x7B-v0.1":
