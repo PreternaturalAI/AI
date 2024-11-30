@@ -225,7 +225,7 @@ extension TogetherAI.Model: ModelIdentifierRepresentable {
     }
     
     public init(from model: ModelIdentifier) throws {
-        guard model.provider == .openAI else {
+        guard model.provider == .togetherAI else {
             throw _DecodingError.invalidModelProvider
         }
         

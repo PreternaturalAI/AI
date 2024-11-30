@@ -8,7 +8,25 @@ import TogetherAI
 import XCTest
 
 final class CompletionTests: XCTestCase {
-
+    
+    func testCompletionsLLMRequest() async throws {
+        let llm: any LLMRequestHandling = client
+        
+        let prompt: AbstractLLM.TextPrompt = .init(stringLiteral: "List all of the states in the USA and their capitals in a table.")
+        let parameters: AbstractLLM.TextCompletionParameters = .init(
+            tokenLimit: .fixed(400),
+            temperature: 0.8,
+            stops: nil
+        )
+        
+        let completion = try await llm.complete(
+            prompt: prompt,
+            parameters: parameters
+        )
+        
+        print(completion)
+    }
+    
     func testCompletionsLlama() async throws {
         let completion = try await client
             .createCompletion(
