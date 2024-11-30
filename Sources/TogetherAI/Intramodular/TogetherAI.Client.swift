@@ -53,7 +53,7 @@ extension TogetherAI.Client: CoreMI._ServiceClientProtocol {
 
 extension TogetherAI.Client {
     public func createEmbeddings(
-        for model: TogetherAI.Model,
+        for model: TogetherAI.Model.Embedding,
         input: String
     ) async throws -> TogetherAI.Embeddings {
         try await run(
