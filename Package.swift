@@ -507,6 +507,17 @@ let package = Package(
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
+        ),
+        .testTarget(
+            name: "TogetherAITests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/TogetherAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
         )
     ]
 )
