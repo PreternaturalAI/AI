@@ -204,7 +204,58 @@ public extension HuggingFace.Hub.Client {
             return destination
         }
     }
+    
+    @discardableResult
+    func download(
+        from repo: Repo,
+        matching globs: [String] = [],
+        session: URLSession,
+    outputHandler: @escaping (Progress) -> Void = { _ in }
+    ) async throws {
+        let filenames = try await getFilenames(from: repo, matching: globs)
+        let progress = Progress(totalUnitCount: Int64(filenames.count))
+        let repoDestination = localRepoLocation(repo)
 
+        for filename in filenames {
+            let fileProgress = Progress(totalUnitCount: 100, parent: progress, pendingUnitCount: 1)
+            let downloader = HubFileDownloader(
+                repo: repo,
+                repoDestination: repoDestination,
+                relativeFilename: filename,
+                hfToken: hfToken,
+                endpoint: endpoint,
+                backgroundSession: useBackgroundSession
+            )
+            try await downloader.download { fractionDownloaded in
+                fileProgress.completedUnitCount = Int64(100 * fractionDownloaded)
+                outputHandler(progress)
+            }
+            fileProgress.completedUnitCount = 100
+        }
+    }
+    
+    private func formRequest(repo: HuggingFace.Hub.Repo, relativeFilename: String, authToken: String?) -> URLRequest {
+        var url: URL {
+            // https://huggingface.co/coreml-projects/Llama-2-7b-chat-coreml/resolve/main/tokenizer.json?download=true
+            var url = URL(string: endpoint)!
+            if repo.type != .models {
+                url = url.appending(component: repo.type.rawValue)
+            }
+            url = url.appending(path: repo.id)
+            url = url.appending(path: "resolve/main") // TODO: revisions
+            url = url.appending(path: relativeFilename)
+            return url
+        }
+        
+        var request = URLRequest(url: url)
+        if let authToken = authToken {
+            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        }
+        
+        return request
+    }
+
+    // main snapshot function
     @discardableResult
     func snapshot(
         from repo: Repo,
