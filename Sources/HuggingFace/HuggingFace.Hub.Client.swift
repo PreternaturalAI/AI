@@ -10,7 +10,7 @@ import Foundation
 extension HuggingFace.Hub {
     public struct Client {
         var downloadBase: URL
-        var hfToken: String?
+        public var hfToken: String?
         var endpoint: String
         var useBackgroundSession: Bool
         
@@ -205,6 +205,7 @@ public extension HuggingFace.Hub.Client {
         }
     }
     
+    /*
     @discardableResult
     func download(
         from repo: Repo,
@@ -233,8 +234,8 @@ public extension HuggingFace.Hub.Client {
             fileProgress.completedUnitCount = 100
         }
     }
-    
-    private func formRequest(repo: HuggingFace.Hub.Repo, relativeFilename: String, authToken: String?) -> URLRequest {
+    */
+    func formRequest(repo: HuggingFace.Hub.Repo, relativeFilename: String, authToken: String?) -> URLRequest {
         var url: URL {
             // https://huggingface.co/coreml-projects/Llama-2-7b-chat-coreml/resolve/main/tokenizer.json?download=true
             var url = URL(string: endpoint)!
