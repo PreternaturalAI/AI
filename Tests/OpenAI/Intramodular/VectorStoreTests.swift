@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Natasha Murashev on 5/16/24.
 //
@@ -9,31 +9,30 @@ import OpenAI
 import XCTest
 
 final class VectorStoreTests: XCTestCase {
-
-    func testCreateVectorStore() async throws {
+    func test1CreateVectorStore() async throws {
         let result = try await client.createVectorStore(name: nil, fileIDs: nil)
-
+        
         _ = result
     }
     
-    func testListVectorStore() async throws {
+    func test2ListVectorStore() async throws {
         let result = try await client.listVectorStores()
-
+        
         _ = result
     }
     
-    func testGetVectorStore() async throws {
+    func test3GetVectorStore() async throws {
         let vectorStores = try await client.listVectorStores()
-        let vectorStoreID = vectorStores.firstID!
+        let vectorStoreID = try vectorStores.firstID.unwrap()
         
         let result = try await client.getVectorStore(vectorStoreID: vectorStoreID)
         
         _ = result
     }
     
-    func testUpdateVectorStore() async throws {
+    func test4UpdateVectorStore() async throws {
         let vectorStores = try await client.listVectorStores()
-        let vectorStoreID = vectorStores.firstID!
+        let vectorStoreID = try vectorStores.firstID.unwrap()
         let newName = "myUpdatedVectorStore"
         
         let result = try await client.updateVectorStore(
@@ -45,7 +44,7 @@ final class VectorStoreTests: XCTestCase {
         _ = result
     }
     
-    func testDeleteVectorStore() async throws {
+    func test5DeleteVectorStore() async throws {
         let vectorStores = try await client.listVectorStores()
         let vectorStoreID = vectorStores.firstID!
         

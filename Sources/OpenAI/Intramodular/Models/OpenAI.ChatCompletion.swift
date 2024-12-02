@@ -26,12 +26,7 @@ extension OpenAI {
             public let index: Int
             public let finishReason: FinishReason?
         }
-        
-        public enum ResponseFormat: String, Codable, Hashable, Sendable {
-            case jsonObject = "json_object"
-        }
-        
-        
+                
         public let id: String
         public let model: OpenAI.Model
         public let createdAt: Date

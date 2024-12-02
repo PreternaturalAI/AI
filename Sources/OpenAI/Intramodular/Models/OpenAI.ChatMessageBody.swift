@@ -34,6 +34,19 @@ extension OpenAI {
         case functionCall(FunctionCall)
         /// The result of a function call of a function that was provided to the LLM.
         case functionInvocation(FunctionInvocation)
+        
+        public var plainText: String{
+            get throws {
+                switch self {
+                    case .text(let text):
+                        return text
+                    case .content:
+                        throw Never.Reason.unimplemented
+                    case .functionCall, .functionInvocation:
+                        throw Never.Reason.invalid
+                }
+            }
+        }
     }
 }
 
