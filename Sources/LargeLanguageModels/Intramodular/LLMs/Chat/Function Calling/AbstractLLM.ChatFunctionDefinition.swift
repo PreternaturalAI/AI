@@ -10,9 +10,9 @@ extension AbstractLLM {
         public typealias ID = _TypeAssociatedID<Self, AnyPersistentIdentifier>
         
         public let id: ID
-        public let name: AbstractLLM.ChatFunction.Name
-        public let context: String
-        public let parameters: JSONSchema
+        public var name: AbstractLLM.ChatFunction.Name
+        public var context: String
+        public var parameters: JSONSchema
         
         public init(
             id: AnyPersistentIdentifier? = nil,

@@ -8,8 +8,8 @@ extension AbstractLLM {
     /// A function available to a chat-interface LLM.
     public struct ChatFunction: _opaque_DynamicPromptVariable, HashEquatable, @unchecked Sendable {
         public let id: AnyHashable
-        public let definition: AbstractLLM.ChatFunctionDefinition
-        public let body: (ChatFunctionCall) async throws -> AbstractLLM.ResultOfFunctionCall.FunctionResult
+        public var definition: AbstractLLM.ChatFunctionDefinition
+        public var body: (ChatFunctionCall) async throws -> AbstractLLM.ResultOfFunctionCall.FunctionResult
                 
         public var promptLiteral: PromptLiteral {
             get throws {
