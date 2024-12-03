@@ -645,7 +645,7 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    struct CreateImageEdit: Codable {
+    struct CreateImageEdit: Codable, HTTPRequest.Multipart.ContentConvertible {
         enum CodingKeys: String, CodingKey {
             case image
             case prompt
@@ -684,6 +684,76 @@ extension OpenAI.APISpecification.RequestBodies {
             self.size = size
             self.responseFormat = responseFormat
             self.user = user
+        }
+        
+        func __conversion() -> HTTPRequest.Multipart.Content {
+            var result = HTTPRequest.Multipart.Content()
+            
+            result.append(
+                .file(
+                    named: "image",
+                    data: image,
+                    filename: "image.png",
+                    contentType: .custom("image/png")
+                )
+            )
+            
+            result.append(
+                .text(
+                    named: "prompt",
+                    value: prompt
+                )
+            )
+            
+            if let mask = mask {
+                result.append(
+                    .file(
+                        named: "mask",
+                        data: mask,
+                        filename: "mask.png",
+                        contentType: .custom("image/png")
+                    )
+                )
+            }
+            
+            result.append(
+                .text(
+                    named: "model",
+                    value: model.rawValue
+                )
+            )
+            
+            result.append(
+                .text(
+                    named: "n",
+                    value: String(numberOfImages)
+                )
+            )
+            
+            result.append(
+                .text(
+                    named: "size",
+                    value: size.rawValue
+                )
+            )
+            
+            result.append(
+                .text(
+                    named: "response_format",
+                    value: responseFormat.rawValue
+                )
+            )
+            
+            if let user = user {
+                result.append(
+                    .text(
+                        named: "user",
+                        value: user
+                    )
+                )
+            }
+            
+            return result
         }
     }
 }
@@ -861,7 +931,7 @@ extension OpenAI.APISpecification.RequestBodies {
         /// The seed controls the reproducibility of the job. Passing in the same seed and job parameters should produce the same results, but may differ in rare cases. If a seed is not specified, one will be generated for you.
         let seed: Int?
     }
-
+    
 }
 
 extension OpenAI.APISpecification.RequestBodies {

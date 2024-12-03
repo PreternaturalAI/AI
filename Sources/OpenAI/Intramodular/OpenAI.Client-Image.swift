@@ -43,9 +43,18 @@ extension OpenAI.Client {
     }
     
     public func createImageEdit(
-        image: _AnyImage,
+        image: Data,
         prompt: String
-    ) {
+    ) async throws -> OpenAI.List<OpenAI.Image> {
+        let requestBody = OpenAI.APISpecification.RequestBodies.CreateImageEdit(
+            image: image,
+            prompt: prompt
+        )
         
+        let response = try await run(\.createImageEdit, with: requestBody)
+        
+        print(response)
+        
+        return response
     }
 }

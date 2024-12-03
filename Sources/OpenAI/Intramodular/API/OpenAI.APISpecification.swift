@@ -203,6 +203,11 @@ extension OpenAI {
         @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
         var createImage = Endpoint<RequestBodies.CreateImage, OpenAI.List<OpenAI.Image>, Void>()
         
+        @POST
+        @Path("/v1/images/edits")
+        @Body(multipart: .input)
+        var createImageEdit = Endpoint<RequestBodies.CreateImageEdit, OpenAI.List<OpenAI.Image>, Void>()
+        
         // Vector Store
         @Header(["OpenAI-Beta": "assistants=v2"])
         @POST
@@ -354,6 +359,9 @@ extension OpenAI.APISpecification {
             context: DecodeOutputContext
         ) throws -> Output {
             do {
+                
+                print(response)
+                
                 try response.validate()
             } catch {
                 let apiError: Error
