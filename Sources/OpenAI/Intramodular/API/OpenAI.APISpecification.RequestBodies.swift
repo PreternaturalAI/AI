@@ -645,6 +645,50 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
+    struct CreateImageEdit: Codable {
+        enum CodingKeys: String, CodingKey {
+            case image
+            case prompt
+            case mask
+            case model
+            case numberOfImages = "n"
+            case size
+            case responseFormat = "response_format"
+            case user
+        }
+        
+        let image: Data
+        let prompt: String
+        let mask: Data?
+        let model: OpenAI.Model.DALL_E
+        let numberOfImages: Int
+        let size: OpenAI.Image.Size
+        let responseFormat: OpenAI.Client.ImageResponseFormat
+        let user: String?
+        
+        init(
+            image: Data,
+            prompt: String,
+            mask: Data? = nil,
+            model: OpenAI.Model.DALL_E = .dalle2,
+            numberOfImages: Int = 1,
+            size: OpenAI.Image.Size = .w1024h1024,
+            responseFormat: OpenAI.Client.ImageResponseFormat = .ephemeralURL,
+            user: String? = nil
+        ) {
+            self.image = image
+            self.prompt = prompt
+            self.mask = mask
+            self.model = model
+            self.numberOfImages = numberOfImages
+            self.size = size
+            self.responseFormat = responseFormat
+            self.user = user
+        }
+    }
+}
+
+extension OpenAI.APISpecification.RequestBodies {
     struct CreateVectorStore: Codable {
         enum CodingKeys: String, CodingKey {
             case name
