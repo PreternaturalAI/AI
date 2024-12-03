@@ -99,6 +99,7 @@ extension OpenAI.Client {
         return try await run(\.createCompletions, with: requestBody)
     }
     
+    @_disfavoredOverload
     public func createChatCompletion(
         messages: [OpenAI.ChatMessage],
         model: OpenAI.Model,

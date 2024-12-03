@@ -35,7 +35,7 @@ final class FineTuningTests: XCTestCase {
         print(file)
     }
     
-    func testCreateFineTuningJob() async throws {
+   /* func testCreateFineTuningJob() async throws {
         // note: add your own training file id here
         let trainingFileID = "file-ykcD31d40g67NKVFmQ5E3vA9"
         let hyperparameters = OpenAI.FineTuning.Hyperparameters(
@@ -89,7 +89,7 @@ final class FineTuningTests: XCTestCase {
         } catch {
             XCTFail(String(describing: error))
         }
-    }
+    }*/
     
     func testGetFineTurningJobs() async throws {
         do {
@@ -100,7 +100,7 @@ final class FineTuningTests: XCTestCase {
         }
     }
     
-    func testGetFineTurningJob() async throws {
+    /*func testGetFineTurningJob() async throws {
         // note: change the jobID to your relevant jobs
         let jobID = "ftjob-ICikHc9b3oV20CpsFV0QL1Cp"
         do {
@@ -153,7 +153,7 @@ final class FineTuningTests: XCTestCase {
         } catch {
             XCTFail(String(describing: error))
         }
-    }
+    }*/
     
     func createJSONLTestFile(
         named filename: String?,

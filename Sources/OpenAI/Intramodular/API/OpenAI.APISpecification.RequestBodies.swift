@@ -104,7 +104,7 @@ extension OpenAI.APISpecification.RequestBodies {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    struct CreateChatCompletion: Codable, Hashable {
+    public struct CreateChatCompletion: Codable, Hashable {
         private enum CodingKeys: String, CodingKey {
             case user
             case messages
@@ -145,7 +145,7 @@ extension OpenAI.APISpecification.RequestBodies {
         let functions: [OpenAI.ChatFunctionDefinition]?
         let functionCallingStrategy: OpenAI.FunctionCallingStrategy?
         
-        init(
+        public init(
             messages: [OpenAI.ChatMessage],
             model: OpenAI.Model,
             frequencyPenalty: Double? = nil,
@@ -185,7 +185,7 @@ extension OpenAI.APISpecification.RequestBodies {
             self.functionCallingStrategy = functionCallingStrategy
         }
         
-        init(
+        public init(
             user: String?,
             messages: [OpenAI.ChatMessage],
             functions: [OpenAI.ChatFunctionDefinition]?,
@@ -198,7 +198,8 @@ extension OpenAI.APISpecification.RequestBodies {
             stop: [String]?,
             maxTokens: Int?,
             presencePenalty: Double?,
-            frequencyPenalty: Double?
+            frequencyPenalty: Double?,
+            responseFormat: OpenAI.ChatCompletion.ResponseFormat?
         ) {
             self.user = user
             self.messages = messages
@@ -213,15 +214,14 @@ extension OpenAI.APISpecification.RequestBodies {
             self.maxTokens = maxTokens
             self.presencePenalty = presencePenalty
             self.frequencyPenalty = frequencyPenalty
-            
             self.logitBias = nil
             self.logprobs = nil
             self.topLogprobs = nil
-            self.responseFormat = nil
+            self.responseFormat = responseFormat
             self.seed = nil
         }
         
-        init(
+        public init(
             messages: [OpenAI.ChatMessage],
             model: OpenAI.Model,
             parameters: OpenAI.Client.ChatCompletionParameters,
@@ -241,7 +241,8 @@ extension OpenAI.APISpecification.RequestBodies {
                 stop: parameters.stop,
                 maxTokens: parameters.maxTokens,
                 presencePenalty: parameters.presencePenalty,
-                frequencyPenalty: parameters.frequencyPenalty
+                frequencyPenalty: parameters.frequencyPenalty,
+                responseFormat: parameters.responseFormat
             )
         }
     }
