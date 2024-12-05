@@ -220,31 +220,6 @@ extension OpenAI.APISpecification.RequestBodies {
             self.responseFormat = responseFormat
             self.seed = nil
         }
-        
-        public init(
-            messages: [OpenAI.ChatMessage],
-            model: OpenAI.Model,
-            parameters: OpenAI.Client.ChatCompletionParameters,
-            user: String? = nil,
-            stream: Bool
-        ) {
-            self.init(
-                user: user,
-                messages: messages,
-                functions: parameters.functions,
-                functionCallingStrategy: parameters.functionCallingStrategy,
-                model: model,
-                temperature: parameters.temperature,
-                topProbabilityMass: parameters.topProbabilityMass,
-                choices: parameters.choices,
-                stream: stream,
-                stop: parameters.stop,
-                maxTokens: parameters.maxTokens,
-                presencePenalty: parameters.presencePenalty,
-                frequencyPenalty: parameters.frequencyPenalty,
-                responseFormat: parameters.responseFormat
-            )
-        }
     }
 }
 

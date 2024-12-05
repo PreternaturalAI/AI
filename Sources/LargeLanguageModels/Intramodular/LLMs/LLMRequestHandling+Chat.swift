@@ -207,7 +207,7 @@ extension LLMRequestHandling {
     public func complete<Result: AbstractLLM.ChatCompletionDecodable>(
         _ messages: [AbstractLLM.ChatMessage],
         functions: [AbstractLLM.ChatFunctionDefinition],
-        as resultType: ChatCompletionDecodableResultType<Result>
+        as resultType: AbstractLLM.ChatCompletionDecodableResultType<Result>
     ) async throws -> Result {
         try await complete(
             messages,
@@ -235,7 +235,7 @@ extension LLMRequestHandling {
         _ messages: [AbstractLLM.ChatMessage],
         parameters: AbstractLLM.ChatCompletionParameters,
         model: some ModelIdentifierConvertible,
-        as resultType: ChatCompletionDecodableResultType<Result>
+        as resultType: AbstractLLM.ChatCompletionDecodableResultType<Result>
     ) async throws -> Result {
         try await complete(
             messages,
@@ -272,7 +272,7 @@ extension LLMRequestHandling {
     public func complete<Result: AbstractLLM.ChatCompletionDecodable>(
         _ messages: [AbstractLLM.ChatMessage],
         model: some ModelIdentifierConvertible,
-        as resultType: ChatCompletionDecodableResultType<Result>
+        as resultType: AbstractLLM.ChatCompletionDecodableResultType<Result>
     ) async throws -> Result {
         try await complete(
             messages,
@@ -293,7 +293,7 @@ extension LLMRequestHandling {
     
     public func complete<Result: AbstractLLM.ChatCompletionDecodable>(
         _ messages: [AbstractLLM.ChatMessage],
-        as resultType: ChatCompletionDecodableResultType<Result>
+        as resultType: AbstractLLM.ChatCompletionDecodableResultType<Result>
     ) async throws -> Result {
         try await complete(
             messages
