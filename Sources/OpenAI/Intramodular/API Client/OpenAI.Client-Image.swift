@@ -53,8 +53,6 @@ extension OpenAI.Client {
         
         let response = try await run(\.createImageEdit, with: requestBody)
         
-        print(response)
-        
         return response
     }
 }

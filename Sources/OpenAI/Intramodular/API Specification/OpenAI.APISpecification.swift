@@ -359,9 +359,6 @@ extension OpenAI.APISpecification {
             context: DecodeOutputContext
         ) throws -> Output {
             do {
-                
-                print(response)
-                
                 try response.validate()
             } catch {
                 let apiError: Error
