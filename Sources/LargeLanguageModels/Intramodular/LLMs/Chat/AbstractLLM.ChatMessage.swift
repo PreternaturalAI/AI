@@ -24,6 +24,9 @@ extension AbstractLLM {
 }
 
 extension AbstractLLM {
+    /// A type that represents a generic chat-message suitable for use with a language-model.
+    ///
+    /// See `OpenAI.ChatMessage+LargeLanguageModels.swift` in the `OpenAI` module for an example for how to convert an `AbstractLLM.ChatMessage` to a provider-specific message type.
     public struct ChatMessage: Codable, Hashable, Identifiable, Sendable {
         public var id: AnyPersistentIdentifier?
         public var role: ChatRole

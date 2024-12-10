@@ -70,3 +70,11 @@ extension String {
         self = try promptLiteral._stripToText()
     }
 }
+
+extension String {
+    public init(_ message: AbstractLLM.ChatMessage) throws {
+        let content: PromptLiteral = message.content
+        
+        try self.init(content)
+    }
+}

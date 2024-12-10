@@ -52,7 +52,15 @@ extension AbstractLLM.ChatFunctionCall: AbstractLLM.ChatCompletionDecodable {
         _ type: Self.Type,
         from completion: AbstractLLM.ChatCompletion
     ) async throws -> Self {
-        try completion._allFunctionCalls.toCollectionOfOne().first
+        enum DecodingError: Error {
+            case noFunctionCalls
+        }
+
+        guard !completion._allFunctionCalls.isEmpty else {
+            throw DecodingError.noFunctionCalls
+        }
+        
+        return try completion._allFunctionCalls.toCollectionOfOne().first
     }
     
     public static func decode(

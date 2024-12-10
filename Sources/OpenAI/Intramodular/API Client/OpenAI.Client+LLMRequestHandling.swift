@@ -257,31 +257,23 @@ extension OpenAI.Client {
         for prompt: AbstractLLM.ChatPrompt,
         parameters: AbstractLLM.ChatCompletionParameters?
     ) throws -> OpenAI.Model {
-        var prompt = prompt
-        
         if let modelIdentifierScope = prompt.context.get(\.modelIdentifier) {
             return try OpenAI.Model(from: try! modelIdentifierScope._oneValue)
-        }
-        
-        let result: OpenAI.Model
-        
-        let containsImage = try prompt.messages.contains(where: { try $0.content._containsImages })
-        
-        if containsImage {
-            result = .chat(.gpt_4_vision_preview)
         } else {
-            result = .chat(.gpt_4_turbo)
+            let result: OpenAI.Model
+            
+            let containsImage = try prompt.messages.contains(where: { try $0.content._containsImages })
+            
+            if containsImage {
+                result = .chat(.gpt_4o)
+            } else {
+                result = .chat(.gpt_4o)
+            }
+            
+            runtimeIssue("No model provided, defaulting to \(result)")
+            
+            return result
         }
-        
-        if result == .chat(.gpt_3_5_turbo) {
-            prompt.messages._forEach(mutating: {
-                if $0.role == .system {
-                    $0 = .init(role: .user, content: $0.content)
-                }
-            })
-        }
-        
-        return result
     }
     
     private func tokenizer(

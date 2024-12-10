@@ -65,8 +65,12 @@ extension AbstractLLM.ChatFunction: CustomStringConvertible {
 // MARK: - Auxiliary
 
 extension AbstractLLM.ChatFunction {
-    public struct Name: Codable, ExpressibleByStringLiteral, Hashable, Sendable {
+    public struct Name: Codable, CustomStringConvertible, ExpressibleByStringLiteral, Hashable, Sendable {
         public let rawValue: String
+        
+        public var description: String {
+            rawValue
+        }
         
         public init(rawValue: String) {
             self.rawValue = rawValue

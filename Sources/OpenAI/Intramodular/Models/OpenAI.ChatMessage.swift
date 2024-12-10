@@ -36,19 +36,7 @@ extension OpenAI {
             self.body = body
         }
     }
-    
-    public struct ChatFunctionDefinition: Codable, Hashable, Sendable {
-        public let name: String
-        public let description: String
-        public let parameters: JSONSchema
         
-        public init(name: String, description: String, parameters: JSONSchema) {
-            self.name = name
-            self.description = description
-            self.parameters = parameters
-        }
-    }
-    
     public enum FunctionCallingStrategy: Codable, Hashable, Sendable {
         enum CodingKeys: String, CodingKey {
             case none = "none"
