@@ -148,6 +148,13 @@ extension PromptLiteral.StringInterpolation {
         appendInterpolation(PromptLiteral(stringLiteral: interpolation))
     }
     
+    @_transparent
+    public mutating func appendInterpolation(
+        _ interpolation: AbstractLLM.ChatFunction.Name
+    ) {
+        appendInterpolation(PromptLiteral(stringLiteral: interpolation.description))
+    }
+    
     @_disfavoredOverload
     @_transparent
     public mutating func appendInterpolation(
@@ -170,6 +177,13 @@ extension PromptLiteral.StringInterpolation {
     @_transparent
     public mutating func appendLiteral(
         _ literal: PromptLiteral
+    ) {
+        appendInterpolation(literal)
+    }
+    
+    @_transparent
+    public mutating func appendLiteral(
+        _ literal: AbstractLLM.ChatFunction.Name
     ) {
         appendInterpolation(literal)
     }
