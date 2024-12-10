@@ -71,7 +71,7 @@ She no went to the market.
                     ])
                 ),                
             ],
-            model: .chat(.gpt_4_vision_preview),
+            model: .chat(.gpt_4o),
             parameters: .init()
         )
         

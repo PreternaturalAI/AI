@@ -1,5 +1,5 @@
 {
-  "originHash" : "43bc324f7aba4797f38e1f72595973383d186932faefc9a4b3698c64d5b9cb44",
+  "originHash" : "83853ba40d0163bfd6b0d04a734383c75479cd9c8a0fc3cc071250b3e5259dc4",
   "pins" : [
     {
       "identity" : "corepersistence",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/vmanot/CorePersistence.git",
       "state" : {
         "branch" : "main",
-        "revision" : "e5026e82410d4140aa5468fe98069e4f5c4fa5cf"
+        "revision" : "302f6123b17047b5ea8f91b06b7440370ff13d9f"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/vmanot/Merge.git",
       "state" : {
         "branch" : "master",
-        "revision" : "2a47b62831164bea212a1616cfe3d4da32902f7f"
+        "revision" : "e06fe31d67b5b2addb49d896437aade25323ef69"
       }
     },
     {
@@ -34,7 +34,7 @@
       "location" : "https://github.com/vmanot/Swallow.git",
       "state" : {
         "branch" : "master",
-        "revision" : "f91811c49863ed506da4f3aed21f6c216a258ca0"
+        "revision" : "e1831bd9e9f9392be901c6fffee8e236a91ba044"
       }
     },
     {
@@ -70,7 +70,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX.git",
       "state" : {
         "branch" : "master",
-        "revision" : "275be4fd06b570b71fe1eb47b4246f4c4285b177"
+        "revision" : "a68663989c8aaae013c4104c6a4aa2f35afe1000"
       }
     }
   ],

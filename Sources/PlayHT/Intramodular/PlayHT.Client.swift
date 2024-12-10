@@ -37,7 +37,7 @@ extension PlayHT {
     }
 }
 
-extension PlayHT.Client: _MIService {
+extension PlayHT.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

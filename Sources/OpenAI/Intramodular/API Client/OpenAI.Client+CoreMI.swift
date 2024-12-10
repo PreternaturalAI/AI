@@ -5,7 +5,7 @@
 import CoreMI
 import CorePersistence
 
-extension OpenAI.Client: _MIService {
+extension OpenAI.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

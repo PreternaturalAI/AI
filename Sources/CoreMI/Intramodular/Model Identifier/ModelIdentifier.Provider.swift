@@ -168,21 +168,21 @@ extension ModelIdentifier.Provider: RawRepresentable {
             case ._Jina:
                 return "jina"
             case ._VoyageAI:
-                return "voyageai"
+                return "voyageAI"
             case ._Cohere:
                 return "cohere"
             case ._ElevenLabs:
                 return "elevenlabs"
             case ._TogetherAI:
-                return "togetherai"
+                return "togetherAI"
             case ._PlayHT:
-                return "playht"
+                return "playHT"
             case ._Rime:
                 return "rime"
             case ._HumeAI:
-                return "humeai"
+                return "humeAI"
             case ._NeetsAI:
-                return "neetsai"
+                return "neetsAI"
             case .unknown(let provider):
                 return provider
         }

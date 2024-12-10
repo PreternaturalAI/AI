@@ -6,7 +6,7 @@ import CoreMI
 import NetworkKit
 import Swallow
 
-extension Anthropic.Client: _MIService {
+extension Anthropic.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

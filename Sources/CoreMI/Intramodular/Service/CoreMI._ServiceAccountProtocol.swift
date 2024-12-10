@@ -12,7 +12,7 @@ extension CoreMI {
         var credential: (any CoreMI._ServiceCredentialProtocol)? { get throws }
     }
     
-    public struct _AnyServiceAccount: _MIServiceAccount {
+    public struct _AnyServiceAccount: CoreMI._ServiceAccountProtocol {
         public let serviceVendorIdentifier: CoreMI._ServiceVendorIdentifier?
         @_HashableExistential
         public var credential: (any CoreMI._ServiceCredentialProtocol)?

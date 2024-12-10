@@ -16,7 +16,7 @@ public protocol TextEmbeddingsRequestHandling {
     ) async throws -> TextEmbeddings
 }
 
-extension MIContext {
+extension CoreMI._RequestHandlingContext {
     /// Complete a given prompt.
     public func fulfill(
         _ request: TextEmbeddingsRequest

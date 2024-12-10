@@ -35,11 +35,21 @@ let package = Package(
         ),
         .library(
             name: "Anthropic",
-            targets: ["Anthropic"]
+            targets: [
+                "Anthropic"
+            ]
         ),
         .library(
             name: "OpenAI",
-            targets: ["OpenAI"]
+            targets: [
+                "OpenAI"
+            ]
+        ),
+        .library(
+            name: "Perplexity",
+            targets: [
+                "Perplexity"
+            ]
         )
     ],
     dependencies: [
@@ -330,24 +340,24 @@ let package = Package(
             dependencies: [
                 "CoreMI",
                 "LargeLanguageModels",
-                "Anthropic",
-                "ElevenLabs",
-                "Mistral",
                 "_Gemini",
+                "Anthropic",
+                "Cohere",
+                "ElevenLabs",
                 "Groq",
+                "HuggingFace",
+                "HumeAI",
+                "Jina",
+                "NeetsAI",
+                "Mistral",
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
                 "PlayHT",
                 "Rime",
                 "Swallow",
-                "Jina",
-                "VoyageAI",
-                "Cohere",
                 "TogetherAI",
-                "HuggingFace",
-                "HumeAI",
-                "NeetsAI"
+                "VoyageAI",
             ],
             path: "Sources/AI",
             swiftSettings: [
@@ -510,3 +520,4 @@ let package = Package(
         )
     ]
 )
+

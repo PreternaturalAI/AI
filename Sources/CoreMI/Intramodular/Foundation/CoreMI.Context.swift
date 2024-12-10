@@ -8,7 +8,7 @@ import SwiftDI
 
 extension CoreMI {
     /// A context for machine intelligence.
-    public final class Context: ObservableObject {
+    public final class _RequestHandlingContext: ObservableObject {
         @Published public var handlers: [any CoreMI.RequestHandling] = []
         
         public func add<T: CoreMI.RequestHandling>(_ x: T) {

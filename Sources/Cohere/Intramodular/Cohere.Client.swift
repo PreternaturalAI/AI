@@ -32,7 +32,7 @@ extension Cohere {
     }
 }
 
-extension Cohere.Client: _MIService {
+extension Cohere.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

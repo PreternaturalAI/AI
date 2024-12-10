@@ -5,6 +5,7 @@
 import CorePersistence
 import LargeLanguageModels
 import NetworkKit
+import OpenAI
 import Swallow
 
 extension Perplexity.Client: _TaskDependenciesExporting {
@@ -21,7 +22,7 @@ extension Perplexity.Client: LLMRequestHandling {
     public var _availableModels: [ModelIdentifier]? {
         Perplexity.Model.allCases.map({ $0.__conversion() })
     }
-
+    
     public func complete<Prompt: AbstractLLM.Prompt>(
         prompt: Prompt,
         parameters: Prompt.CompletionParameters
@@ -62,8 +63,8 @@ extension Perplexity.Client: LLMRequestHandling {
             \.chatCompletions,
              with: .init(
                 model: _model(for: prompt, parameters: parameters),
-                messages: try prompt.messages.map {
-                    try Perplexity.ChatMessage(from: $0)
+                messages: try await prompt.messages.asyncMap {
+                    try await Perplexity.ChatMessage(from: $0)
                 },
                 temperature: parameters.temperatureOrTopP?.temperature,
                 topP: parameters.temperatureOrTopP?.topProbabilityMass,
@@ -79,7 +80,7 @@ extension Perplexity.Client: LLMRequestHandling {
         
         assert(response.choices.count == 1)
         
-        let message = try AbstractLLM.ChatMessage(from: response, choiceIndex: 0)
+        let message = try AbstractLLM.ChatMessage(from: response.choices[0])
         
         return AbstractLLM.ChatCompletion(
             prompt: prompt.messages,
@@ -92,52 +93,17 @@ extension Perplexity.Client: LLMRequestHandling {
         for prompt: AbstractLLM.ChatPrompt,
         parameters: AbstractLLM.ChatCompletionParameters?
     ) throws -> Perplexity.Model {
-        try prompt.context.get(\.modelIdentifier)?.as(Perplexity.Model.self) ?? .llama3SonarSmall32kOnline
+        try prompt.context.get(\.modelIdentifier)?.as(Perplexity.Model.self) ?? .llamaSonarSmall128kOnline
     }
 }
 
 // MARK: - Auxiliary
 
-extension AbstractLLM.ChatRole {
-    public init(
-        from role: Perplexity.ChatMessage.Role
-    ) throws {
-        switch role {
-            case .system:
-                self = .system
-            case .user:
-                self = .user
-            case .assistant:
-                self = .assistant
-        }
-    }
-}
-
 extension AbstractLLM.ChatMessage {
     public init(
-        from completion: Perplexity.APISpecification.ResponseBodies.ChatCompletion,
-        choiceIndex: Int
+        from completion: Perplexity.APISpecification.ResponseBodies.ChatCompletion.Choice
     ) throws {
-        let choice = completion.choices[choiceIndex]
-        
-        self.init(
-            id: AnyPersistentIdentifier(erasing: "\(completion.id)_\(choiceIndex.description)"),
-            role: try AbstractLLM.ChatRole(from: choice.message.role),
-            content: PromptLiteral(choice.message.content)
-        )
-    }
-}
-
-extension Perplexity.ChatMessage {
-    public init(
-        from message: AbstractLLM.ChatMessage
-    ) throws {
-        self.init(
-            role: try Perplexity.ChatMessage.Role(
-                from: message.role
-            ),
-            content: try message.content._stripToText()
-        )
+        try self.init(from: completion.message)
     }
 }
 

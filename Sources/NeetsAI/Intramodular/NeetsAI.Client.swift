@@ -81,7 +81,7 @@ extension NeetsAI.Client {
 
 // MARK: - Conformances
 
-extension NeetsAI.Client: _MIService {
+extension NeetsAI.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {

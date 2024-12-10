@@ -17,22 +17,32 @@ extension Perplexity {
         case llama370bInstruct = "llama-3-70b-instruct"
         case mixtral8x7bInstruct = "mixtral-8x7b-instruct"
         
+        case llamaSonarSmall128kOnline = "llama-3.1-sonar-small-128k-online"
+        case llamaSonarLarge128kOnline = "llama-3.1-sonar-large-128k-online"
+        case llamaSonarHuge128kOnline = "llama-3.1-sonar-huge-128k-online"
+        
         public var name: String {
             switch self {
-            case .llama3SonarSmall32kChat:
-                return "Llama 3 Sonar Small 32K (Chat)"
-            case .llama3SonarSmall32kOnline:
-                return "Llama 3 Sonar Small 32K (Online)"
-            case .llama3SonarLarge32kChat:
-                return "Llama 3 Sonar Large 32K (Chat)"
-            case .llama3SonarLarge32kOnline:
-                return "Llama 3 Sonar Large 32K (Online)"
-            case .llama38bInstruct:
-                return "Llama 3 8B Instruct"
-            case .llama370bInstruct:
-                return "Llama 3 70B Instruct"
-            case .mixtral8x7bInstruct:
-                return "Mixtral 8x7B Instruct"
+                case .llama3SonarSmall32kChat:
+                    return "Llama 3 Sonar Small 32K (Chat)"
+                case .llama3SonarSmall32kOnline:
+                    return "Llama 3 Sonar Small 32K (Online)"
+                case .llama3SonarLarge32kChat:
+                    return "Llama 3 Sonar Large 32K (Chat)"
+                case .llama3SonarLarge32kOnline:
+                    return "Llama 3 Sonar Large 32K (Online)"
+                case .llama38bInstruct:
+                    return "Llama 3 8B Instruct"
+                case .llama370bInstruct:
+                    return "Llama 3 70B Instruct"
+                case .mixtral8x7bInstruct:
+                    return "Mixtral 8x7B Instruct"
+                case .llamaSonarSmall128kOnline:
+                    return "Llama 3.1 Sonar Small 128K Online"
+                case .llamaSonarLarge128kOnline:
+                    return "Llama 3.1 Sonar Large 128K Online"
+                case .llamaSonarHuge128kOnline:
+                    return "Llama 3.1 Sonar Huge 128K Online"
             }
         }
     }

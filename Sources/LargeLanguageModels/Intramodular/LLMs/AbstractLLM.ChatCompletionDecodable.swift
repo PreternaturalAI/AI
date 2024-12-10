@@ -52,7 +52,15 @@ extension AbstractLLM.ChatFunctionCall: AbstractLLM.ChatCompletionDecodable {
         _ type: Self.Type,
         from completion: AbstractLLM.ChatCompletion
     ) async throws -> Self {
-        try completion._allFunctionCalls.toCollectionOfOne().first
+        enum DecodingError: Error {
+            case noFunctionCalls
+        }
+
+        guard !completion._allFunctionCalls.isEmpty else {
+            throw DecodingError.noFunctionCalls
+        }
+        
+        return try completion._allFunctionCalls.toCollectionOfOne().first
     }
     
     public static func decode(
@@ -60,6 +68,22 @@ extension AbstractLLM.ChatFunctionCall: AbstractLLM.ChatCompletionDecodable {
         from completion: AbstractLLM.ChatCompletion
     ) async throws -> Array<Self> {
         completion._allFunctionCalls
+    }
+}
+
+extension AbstractLLM.ChatMessage: AbstractLLM.ChatCompletionDecodable {
+    public static func decode(
+        _ type: Self.Type,
+        from completion: AbstractLLM.ChatCompletion
+    ) async throws -> Self {
+        completion.message
+    }
+    
+    public static func decode(
+        _ type: Array<Self>.Type,
+        from completion: AbstractLLM.ChatCompletion
+    ) async throws -> Array<Self> {
+        [completion.message]
     }
 }
 
@@ -108,6 +132,30 @@ extension SwiftUIX._AnyImage: AbstractLLM.ChatCompletionDecodable {
                 return try await image._toAppKitOrUIKitImage()
             })
             .unwrap()
+    }
+}
+
+extension Either: AbstractLLM.ChatCompletionDecodable where LeftValue: AbstractLLM.ChatCompletionDecodable, RightValue: AbstractLLM.ChatCompletionDecodable {
+    public static func decode(
+        _ type: Self.Type,
+        from completion: AbstractLLM.ChatCompletion
+    ) async throws -> Self {
+        do {
+            return try await .left(LeftValue.decode(LeftValue.self, from: completion))
+        } catch {
+            return try await .right(RightValue.decode(RightValue.self, from: completion))
+        }
+    }
+    
+    public static func decode(
+        _ type: Array<Self>.Type,
+        from completion: AbstractLLM.ChatCompletion
+    ) async throws -> Array<Self> {
+        do {
+            return try await LeftValue.decode([LeftValue].self, from: completion).map({ Self.left($0) })
+        } catch {
+            return try await RightValue.decode([RightValue].self, from: completion).map({ Self.right($0) })
+        }
     }
 }
 

@@ -32,7 +32,7 @@ extension VoyageAI {
     }
 }
 
-extension VoyageAI.Client: _MIService {
+extension VoyageAI.Client: CoreMI._ServiceClientProtocol {
     public convenience init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {
