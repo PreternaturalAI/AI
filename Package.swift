@@ -35,12 +35,20 @@ let package = Package(
         ),
         .library(
             name: "Anthropic",
-            targets: ["Anthropic"]
+            targets: [
+                "Anthropic"
+            ]
         ),
         .library(
             name: "OpenAI",
             targets: [
                 "OpenAI"
+            ]
+        ),
+        .library(
+            name: "Perplexity",
+            targets: [
+                "Perplexity"
             ]
         )
     ],

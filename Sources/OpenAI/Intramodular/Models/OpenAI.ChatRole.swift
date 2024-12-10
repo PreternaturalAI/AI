@@ -14,7 +14,9 @@ extension OpenAI {
         case assistant
         case function
         
-        public init(from role: AbstractLLM.ChatRole) {
+        public init(
+            from role: AbstractLLM.ChatRole
+        ) {
             switch role {
                 case .system:
                     self = .system
@@ -40,4 +42,10 @@ extension OpenAI {
             }
         }
     }
+}
+
+// MARK: - Supplementary
+
+extension OpenAI.ChatMessage {
+    public typealias Role = OpenAI.ChatRole
 }
