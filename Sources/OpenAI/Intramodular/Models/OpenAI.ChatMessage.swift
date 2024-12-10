@@ -91,16 +91,6 @@ extension OpenAI {
 
 // MARK: - Conformances
 
-extension OpenAI.ChatMessage: AbstractLLM.ChatMessageConvertible {
-    public func __conversion() throws -> AbstractLLM.ChatMessage {
-        .init(
-            id: .init(rawValue: id),
-            role: try role.__conversion(),
-            content: try PromptLiteral(from: self)
-        )
-    }
-}
-
 extension OpenAI.ChatMessage: Codable {
     public enum CodingKeys: CodingKey {
         case id

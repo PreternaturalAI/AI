@@ -6,6 +6,16 @@ import CorePersistence
 import FoundationX
 @_spi(Internal) import LargeLanguageModels
 
+extension OpenAI.ChatMessage: AbstractLLM.ChatMessageConvertible {
+    public func __conversion() throws -> AbstractLLM.ChatMessage {
+        .init(
+            id: .init(rawValue: id),
+            role: try role.__conversion(),
+            content: try PromptLiteral(from: self)
+        )
+    }
+}
+
 extension OpenAI.ChatMessage: _PromptLiteralEncodingContainer {
     public mutating func encode(
         _ component: PromptLiteral._Degenerate.Component

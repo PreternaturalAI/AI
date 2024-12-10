@@ -35,7 +35,7 @@ extension Perplexity.APISpecification.ResponseBodies {
         public var id: String
         public var object: String
         public var created: Date
-        public var model: OpenAI.ObjectType
+        public var model: Perplexity.Model
         public var choices: [Choice]
         public let usage: Usage
     }
