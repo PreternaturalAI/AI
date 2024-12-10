@@ -5,7 +5,7 @@
 import Perplexity
 
 public var PERPLEXITY_API_KEY: String {
-    "API_KEY "
+    "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"
 }
 
 public var client: Perplexity.Client {
