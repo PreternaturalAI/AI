@@ -55,8 +55,9 @@ final class CompletionTests: XCTestCase {
             AbstractLLM.ChatMessage(
                 role: .user,
                 body: "Sup?"
-            )
+            ),
         ]
+        AbstractLLM.ChatCompletionStream
         
         let result: String = try await llm.complete(
             messages,

@@ -1,7 +1,3 @@
-//
-// Copyright (c) Vatsal Manot
-//
-
 import Foundation
 
 extension Perplexity.APISpecification.RequestBodies {
@@ -25,11 +21,17 @@ extension Perplexity.APISpecification.RequestBodies {
         /// The maximum number of completion tokens returned by the API. The total number of tokens requested in max_tokens plus the number of prompt tokens sent in messages must not exceed the context window token limit of model requested. If left unspecified, then the model will generate tokens until either it reaches its stop token or the end of its context window.
         public var maxTokens: Int?
         
-        /// Determines whether or not a request to an online model should return citations. Citations are in closed beta access. To gain access, apply at https://perplexity.typeform.com/to/j50rnNiB
-        public var returnCitations: Bool?
+        /// Given a list of domains, limit the citations used by the online model to URLs from the specified domains. Currently limited to only 3 domains for whitelisting and blacklisting.
+        public var searchDomainFilter: [String]?
         
-        /// Determines whether or not a request to an online model should return images. Images are in closed beta access. To gain access, apply at https://perplexity.typeform.com/to/j50rnNiB
+        /// Determines whether or not a request to an online model should return images. Images are in closed beta.
         public var returnImages: Bool?
+        
+        /// Determines whether or not a request to an online model should return related questions. Related questions are in closed beta.
+        public var returnRelatedQuestions: Bool?
+        
+        /// Returns search results within the specified time interval - does not apply to images. Values include `month`, `week`, `day`, `hour`.
+        public var searchRecencyFilter: String?
         
         /// Determines whether or not to incrementally stream the response with server-sent events with content-type: text/event-stream.
         public var stream: Bool?
@@ -39,5 +41,35 @@ extension Perplexity.APISpecification.RequestBodies {
         
         /// A multiplicative penalty greater than 0. Values greater than 1.0 penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim. A value of 1.0 means no penalty. Incompatible with presence_penalty.
         public var frequencyPenalty: Double?
+        
+        public init(
+            model: Perplexity.Model,
+            messages: [Perplexity.ChatMessage],
+            temperature: Double? = nil,
+            topP: Double? = nil,
+            topK: Int? = nil,
+            maxTokens: Int? = nil,
+            searchDomainFilter: [String]? = nil,
+            returnImages: Bool? = nil,
+            returnRelatedQuestions: Bool? = nil,
+            searchRecencyFilter: String? = nil,
+            stream: Bool? = nil,
+            presencePenalty: Double? = nil,
+            frequencyPenalty: Double? = nil
+        ) {
+            self.model = model
+            self.messages = messages
+            self.temperature = temperature
+            self.topP = topP
+            self.topK = topK
+            self.maxTokens = maxTokens
+            self.searchDomainFilter = searchDomainFilter
+            self.returnImages = returnImages
+            self.returnRelatedQuestions = returnRelatedQuestions
+            self.searchRecencyFilter = searchRecencyFilter
+            self.stream = stream
+            self.presencePenalty = presencePenalty
+            self.frequencyPenalty = frequencyPenalty
+        }
     }
 }

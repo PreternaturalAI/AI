@@ -8,7 +8,7 @@ import NetworkKit
 import OpenAI
 import Swallow
 
-extension Perplexity.Client: _TaskDependenciesExporting {
+extension XAI.Client: _TaskDependenciesExporting {
     public var _exportedTaskDependencies: TaskDependencies {
         var result = TaskDependencies()
         
@@ -18,9 +18,9 @@ extension Perplexity.Client: _TaskDependenciesExporting {
     }
 }
 
-extension Perplexity.Client: LLMRequestHandling {
+extension XAI.Client: LLMRequestHandling {
     public var _availableModels: [ModelIdentifier]? {
-        Perplexity.Model.allCases.map({ $0.__conversion() })
+        XAI.Model.allCases.map({ $0.__conversion() })
     }
     
     public func complete<Prompt: AbstractLLM.Prompt>(
@@ -59,21 +59,15 @@ extension Perplexity.Client: LLMRequestHandling {
         prompt: AbstractLLM.ChatPrompt,
         parameters: AbstractLLM.ChatCompletionParameters
     ) async throws -> AbstractLLM.ChatCompletion {
-        let response: Perplexity.APISpecification.ResponseBodies.ChatCompletion = try await run(
+        let response: XAI.APISpecification.ResponseBodies.ChatCompletion = try await run(
             \.chatCompletions,
              with: .init(
-                model: _model(for: prompt, parameters: parameters),
                 messages: try await prompt.messages.asyncMap {
-                    try await Perplexity.ChatMessage(from: $0)
+                    try await XAI.ChatMessage(from: $0)
                 },
-                temperature: parameters.temperatureOrTopP?.temperature,
-                topP: parameters.temperatureOrTopP?.topProbabilityMass,
-                topK: nil,
+                model: _model(for: prompt, parameters: parameters),
                 maxTokens: parameters.tokenLimit?.fixedValue,
-                returnImages: nil,
-                stream: false,
-                presencePenalty: nil,
-                frequencyPenalty: nil
+                temperature: parameters.temperatureOrTopP?.temperature
              )
         )
         
@@ -91,8 +85,8 @@ extension Perplexity.Client: LLMRequestHandling {
     private func _model(
         for prompt: AbstractLLM.ChatPrompt,
         parameters: AbstractLLM.ChatCompletionParameters?
-    ) throws -> Perplexity.Model {
-        try prompt.context.get(\.modelIdentifier)?.as(Perplexity.Model.self) ?? .llamaSonarSmall128kOnline
+    ) throws -> XAI.Model {
+        try prompt.context.get(\.modelIdentifier)?.as(XAI.Model.self) ?? XAI.Model.grokBeta
     }
 }
 
@@ -100,13 +94,13 @@ extension Perplexity.Client: LLMRequestHandling {
 
 extension AbstractLLM.ChatMessage {
     public init(
-        from completion: Perplexity.APISpecification.ResponseBodies.ChatCompletion.Choice
+        from completion: XAI.APISpecification.ResponseBodies.ChatCompletion.Choice
     ) throws {
         try self.init(from: completion.message)
     }
 }
 
-extension Perplexity.ChatMessage.Role {
+extension XAI.ChatMessage.Role {
     public init(
         from role: AbstractLLM.ChatRole
     ) throws {

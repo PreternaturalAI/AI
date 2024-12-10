@@ -28,6 +28,7 @@ extension ModelIdentifier {
         case _Rime
         case _HumeAI
         case _NeetsAI
+        case _xAI
         
         case unknown(String)
         
@@ -138,6 +139,8 @@ extension ModelIdentifier.Provider: CustomStringConvertible {
                 return "HumeAI"
             case ._NeetsAI:
                 return "NeetsAI"
+            case ._xAI:
+                return "xAI"
             case .unknown(let provider):
                 return provider
         }
@@ -183,6 +186,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 return "humeAI"
             case ._NeetsAI:
                 return "neetsAI"
+            case ._xAI:
+                return "xAI"
             case .unknown(let provider):
                 return provider
         }

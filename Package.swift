@@ -28,6 +28,7 @@ let package = Package(
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
+                "XAI",
                 "TogetherAI",
                 "VoyageAI",
                 "AI",
@@ -49,6 +50,12 @@ let package = Package(
             name: "Perplexity",
             targets: [
                 "Perplexity"
+            ]
+        ),
+        .library(
+            name: "XAI",
+            targets: [
+                "XAI"
             ]
         )
     ],
@@ -236,6 +243,22 @@ let package = Package(
             ]
         ),
         .target(
+            name: "XAI",
+            dependencies: [
+                "CorePersistence",
+                "CoreMI",
+                "LargeLanguageModels",
+                "OpenAI",
+                "Merge",
+                "NetworkKit",
+                "Swallow"
+            ],
+            path: "Sources/XAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .target(
             name: "Jina",
             dependencies: [
                 "CorePersistence",
@@ -353,6 +376,7 @@ let package = Package(
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
+                "XAI",
                 "PlayHT",
                 "Rime",
                 "Swallow",
@@ -415,6 +439,17 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/Groq",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "XAITests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/XAI",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
