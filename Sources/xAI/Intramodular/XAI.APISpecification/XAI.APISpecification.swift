@@ -41,8 +41,12 @@ extension XAI {
         }
         
         @POST
-        @Path("v1/chat/completions")
-        public var chatCompletions = Endpoint<RequestBodies.CreateChatCompletion, ResponseBodies.ChatCompletion, Void>()
+        @Path("/v1/chat/completions")
+        @Body(json: .input, keyEncodingStrategy: .convertToSnakeCase)
+        var createChatCompletions = Endpoint<RequestBodies.CreateChatCompletion, OpenAI.ChatCompletion, Void>()
+
+        
+        
     }
 }
 
