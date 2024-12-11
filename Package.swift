@@ -365,6 +365,17 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: "_GeminiTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/_Gemini",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
             name: "LargeLanguageModelsTests",
             dependencies: [
                 "AI",
