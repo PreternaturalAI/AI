@@ -30,6 +30,12 @@ let package = Package(
             ]
         ),
         .library(
+            name: "_Gemini",
+            targets: [
+                "_Gemini"
+            ]
+        ),
+        .library(
             name: "Anthropic",
             targets: [
                 "Anthropic"
@@ -397,6 +403,17 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/LargeLanguageModels",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "_GeminiTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/_Gemini",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
