@@ -1,14 +1,14 @@
 //
-//  Hub.swift
-//  
-//
-//  Created by Pedro Cuenca on 18/5/23.
+// Copyright (c) Preternatural AI, Inc.
 //
 
-import Foundation
+import FoundationX
+import Swallow
 
 extension HuggingFace {
-    public struct Hub {}
+    public struct Hub {
+        
+    }
 }
 
 public extension HuggingFace.Hub {
@@ -19,15 +19,15 @@ public extension HuggingFace.Hub {
         case httpStatusCode(Int)
     }
     
-    enum RepoType: String {
+    enum RepoType: String, Codable {
         case models
         case datasets
         case spaces
     }
     
-    struct Repo {
-        let id: String
-        let type: RepoType
+    struct Repo: Codable {
+        public let id: String
+        public let type: RepoType
         
         public init(id: String, type: RepoType = .models) {
             self.id = id
