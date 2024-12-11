@@ -7,7 +7,7 @@ import Swallow
 
 extension CoreMI {
     /// A client for an AI/ML service.
-    public protocol _ServiceClientProtocol: PersistentlyRepresentableType {
+    public protocol _ServiceClientProtocol: AnyObject, PersistentlyRepresentableType {
         init(account: (any CoreMI._ServiceAccountProtocol)?) async throws
     }
     

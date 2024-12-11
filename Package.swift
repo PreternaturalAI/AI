@@ -18,19 +18,14 @@ let package = Package(
                 "CoreMI",
                 "LargeLanguageModels",
                 "Anthropic",
-                "Cohere",
                 "ElevenLabs",
                 "_Gemini",
                 "Groq",
                 "HuggingFace",
-                "Jina",
                 "Mistral",
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
-                "XAI",
-                "TogetherAI",
-                "VoyageAI",
                 "AI",
             ]
         ),
@@ -38,6 +33,18 @@ let package = Package(
             name: "Anthropic",
             targets: [
                 "Anthropic"
+            ]
+        ),
+        .library(
+            name: "Cohere",
+            targets: [
+                "Cohere"
+            ]
+        ),
+        .library(
+            name: "HumeAI",
+            targets: [
+                "HumeAI"
             ]
         ),
         .library(
@@ -53,9 +60,21 @@ let package = Package(
             ]
         ),
         .library(
-            name: "XAI",
+            name: "Jina",
             targets: [
-                "XAI"
+                "Jina"
+            ]
+        ),
+        .library(
+            name: "TogetherAI",
+            targets: [
+                "TogetherAI"
+            ]
+        ),
+        .library(
+            name: "VoyageAI",
+            targets: [
+                "VoyageAI"
             ]
         )
     ],
@@ -243,22 +262,6 @@ let package = Package(
             ]
         ),
         .target(
-            name: "XAI",
-            dependencies: [
-                "CorePersistence",
-                "CoreMI",
-                "LargeLanguageModels",
-                "OpenAI",
-                "Merge",
-                "NetworkKit",
-                "Swallow"
-            ],
-            path: "Sources/XAI",
-            swiftSettings: [
-                .enableExperimentalFeature("AccessLevelOnImport")
-            ]
-        ),
-        .target(
             name: "Jina",
             dependencies: [
                 "CorePersistence",
@@ -376,7 +379,6 @@ let package = Package(
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
-                "XAI",
                 "PlayHT",
                 "Rime",
                 "Swallow",
@@ -439,17 +441,6 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/Groq",
-            swiftSettings: [
-                .enableExperimentalFeature("AccessLevelOnImport")
-            ]
-        ),
-        .testTarget(
-            name: "XAITests",
-            dependencies: [
-                "AI",
-                "Swallow"
-            ],
-            path: "Tests/XAI",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
