@@ -18,25 +18,39 @@ let package = Package(
                 "CoreMI",
                 "LargeLanguageModels",
                 "Anthropic",
-                "Cohere",
                 "ElevenLabs",
                 "_Gemini",
                 "Groq",
                 "HuggingFace",
-                "Jina",
                 "Mistral",
                 "Ollama",
                 "OpenAI",
                 "Perplexity",
-                "TogetherAI",
-                "VoyageAI",
                 "AI",
+            ]
+        ),
+        .library(
+            name: "_Gemini",
+            targets: [
+                "_Gemini"
             ]
         ),
         .library(
             name: "Anthropic",
             targets: [
                 "Anthropic"
+            ]
+        ),
+        .library(
+            name: "Cohere",
+            targets: [
+                "Cohere"
+            ]
+        ),
+        .library(
+            name: "HumeAI",
+            targets: [
+                "HumeAI"
             ]
         ),
         .library(
@@ -49,6 +63,24 @@ let package = Package(
             name: "Perplexity",
             targets: [
                 "Perplexity"
+            ]
+        ),
+        .library(
+            name: "Jina",
+            targets: [
+                "Jina"
+            ]
+        ),
+        .library(
+            name: "TogetherAI",
+            targets: [
+                "TogetherAI"
+            ]
+        ),
+        .library(
+            name: "VoyageAI",
+            targets: [
+                "VoyageAI"
             ]
         )
     ],
@@ -328,7 +360,7 @@ let package = Package(
         .target(
             name: "HuggingFace",
             dependencies: [
-                
+              "Swallow"
             ],
             path: "Sources/HuggingFace",
             swiftSettings: [
@@ -371,6 +403,17 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/LargeLanguageModels",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "_GeminiTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/_Gemini",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
