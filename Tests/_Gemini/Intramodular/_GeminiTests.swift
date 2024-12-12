@@ -38,12 +38,10 @@ private final class BundleHelper {}
     
     @Test func testVideoContentGeneration() async throws {
         do {
-            let videoData = try loadTestFile(named: "LintMySwiftSmall", fileExtension: "mov")
-            print("Successfully loaded video data: \(videoData.count) bytes")
+            let file = try await createFile(type: .video)
             
             let response = try await client.generateContent(
-                data: videoData,
-                type: .custom("video/quicktime"),
+                file: file,
                 prompt: "What is happening in this video?",
                 model: .gemini_1_5_flash
             )
@@ -64,11 +62,10 @@ private final class BundleHelper {}
     
     @Test func testAudioContentGeneration() async throws {
         do {
-            let audioData = try loadTestFile(named: "LintMySwift2", fileExtension: "m4a")
+            let file = try await createFile(type: .audio)
             
             let response = try await client.generateContent(
-                data: audioData,
-                type: .custom("audio/x-m4a"),
+                file: file,
                 prompt: "What is being said in this audio?",
                 model: .gemini_1_5_flash
             )
@@ -85,7 +82,7 @@ private final class BundleHelper {}
     
     @Test func testFileUpload() async throws {
         do {
-            let _ = try await createFile(string: "Test")
+            let file = try await createFile(type: .audio)
             #expect(true)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
@@ -97,7 +94,7 @@ private final class BundleHelper {}
     
     @Test func testGetFile() async throws {
         do {
-            let file = try await createFile(string: "Test")
+            let file = try await createFile(type: .audio)
             let _ = try await client.getFile(name: file.name ?? "")
             #expect(true)
         } catch let error as GeminiTestError {
@@ -110,7 +107,7 @@ private final class BundleHelper {}
     
     @Test func testFileDelete() async throws {
         do {
-            let file = try await createFile(string: "Test")
+            let file = try await createFile(type: .audio)
             try await client.deleteFile(fileURL: file.uri)
             #expect(true)
         } catch let error as GeminiTestError {
@@ -121,21 +118,36 @@ private final class BundleHelper {}
         }
     }
     
-    func createFile(string: String) async throws -> _Gemini.File {
+    func createFile(type: TestFileType) async throws -> _Gemini.File {
         do {
-            let audioData = try loadTestFile(named: "LintMySwift2", fileExtension: "m4a")
-            print(audioData)
-            
-            return try await client.uploadFile(
-                fileData: audioData,
-                mimeType: .custom("audio/x-m4a"),
-                displayName: "Hello World"
-            )
+            switch type {
+                case .audio:
+                    let audioData = try loadTestFile(named: "LintMySwift2", fileExtension: "m4a")
+                    
+                    return try await client.uploadFile(
+                        fileData: audioData,
+                        mimeType: .custom("audio/x-m4a"),
+                        displayName: UUID().uuidString
+                    )
+                case .video:
+                    let videoData = try loadTestFile(named: "LintMySwiftSmall", fileExtension: "mov")
+                    
+                    return try await client.uploadFile(
+                        fileData: videoData,
+                        mimeType: .custom("video/quicktime"),
+                        displayName: UUID().uuidString
+                    )
+            }
         } catch let error as GeminiTestError {
             throw error
         } catch {
             throw GeminiTestError.fileUploadError(error)
         }
+    }
+    
+    enum TestFileType {
+        case audio
+        case video
     }
 }
 // Error Handling

@@ -65,36 +65,22 @@ extension _Gemini.Client {
     }
     
     public func generateContent(
-        data: Data,
-        type: HTTPMediaType,
+        file: _Gemini.File,
         prompt: String,
         model: _Gemini.Model
     ) async throws -> _Gemini.APISpecification.ResponseBodies.GenerateContent {
-        print("Uploading file with MIME type: \(type.rawValue)")
-        
-        let uploadedFile = try await uploadFile(
-            fileData: data,
-            mimeType: type,
-            displayName: "Test"
-        )
-        
-        print("Uploaded file response: \(uploadedFile)")
-        
-        guard let fileName = uploadedFile.name else {
-            throw _Gemini.APIError.unknown(message: "File name missing from upload response")
-        }
-        
+
         do {
             
             print("Waiting for file processing...")
-            let processedFile = try await waitForFileProcessing(name: fileName)
+            let processedFile = try await waitForFileProcessing(name: file.name ?? "")
             print("File processing complete: \(processedFile)")
             
             // Create content request matching the expected format
             let fileContent = _Gemini.APISpecification.RequestBodies.Content(
                 role: "user",
                 parts: [
-                    .file(url: processedFile.uri, mimeType: type.rawValue),
+                    .file(url: processedFile.uri, mimeType: file.mimeType ?? ""),
                 ]
             )
             
