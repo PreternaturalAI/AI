@@ -41,24 +41,11 @@ extension _Gemini.Client {
         with body: _Gemini.APISpecification.RequestBodies.SpeechRequest
     ) async throws -> _Gemini.APISpecification.ResponseBodies.GenerateContent {
         let input = _Gemini.APISpecification.RequestBodies.GenerateContentInput(
-            model: "gemini-pro",
+            model: .gemini_1_5_pro,
             requestBody: body
         )
         
         return try await run(\.generateContent, with: input)
-    }
-    
-    public func uploadFile(
-        fileData: Data,
-        mimeType: String
-    ) async throws -> _Gemini.File {
-        let input = _Gemini.APISpecification.RequestBodies.FileUploadInput(
-            fileData: fileData,
-            mimeType: mimeType
-        )
-        
-        let response = try await run(\.uploadFile, with: input)
-        return response.file
     }
     
     public func deleteFile(
@@ -66,5 +53,27 @@ extension _Gemini.Client {
     ) async throws {
         let input = _Gemini.APISpecification.RequestBodies.DeleteFileInput(fileURL: fileURL)
         try await run(\.deleteFile, with: input)
+    }
+    
+    public func uploadFile(
+        fileData: Data,
+        mimeType: String,
+        displayName: String
+    ) async throws -> _Gemini.File {
+        let initiateInput = _Gemini.APISpecification.RequestBodies.InitiateUploadInput(
+            file: .init(displayName: displayName),
+            contentLength: fileData.count,
+            mimeType: mimeType
+        )
+        
+        let initiation = try await run(\.initiateUpload, with: initiateInput)
+        
+        let completeInput = _Gemini.APISpecification.RequestBodies.CompleteUploadInput(
+            uploadURL: initiation.uploadURL,
+            fileData: fileData
+        )
+        
+        let response = try await run(\.completeUpload, with: completeInput)
+        return response.file
     }
 }

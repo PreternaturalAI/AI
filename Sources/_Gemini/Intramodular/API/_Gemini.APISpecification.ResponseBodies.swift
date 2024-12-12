@@ -55,5 +55,9 @@ extension _Gemini.APISpecification {
         public struct FileUpload: Codable {
             public let file: _Gemini.File
         }
+        
+        public struct UploadInitiation: Decodable {
+            public let uploadURL: URL
+        }
     }
 }

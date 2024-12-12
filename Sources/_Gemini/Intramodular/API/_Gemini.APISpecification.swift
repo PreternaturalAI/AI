@@ -72,11 +72,26 @@ extension _Gemini {
         @Body(json: \.requestBody, keyEncodingStrategy: .convertToSnakeCase)
         var generateContent = Endpoint<RequestBodies.GenerateContentInput, ResponseBodies.GenerateContent, Void>()
         
-        // File Upload endpoint
+        // Initial Upload Request endpoint
         @POST
         @Path("/upload/v1beta/files")
-        @Body(multipart: .input)
-        var uploadFile = Endpoint<RequestBodies.FileUploadInput, ResponseBodies.FileUpload, Void>()
+        @Header([
+            "X-Goog-Upload-Protocol": "resumable",
+            "X-Goog-Upload-Command": "start",
+            "Content-Type": "application/json"
+        ])
+        var initiateUpload = Endpoint<RequestBodies.InitiateUploadInput, ResponseBodies.UploadInitiation, Void>()
+        
+        // Complete Upload endpoint
+        @POST
+        @Header([
+            "X-Goog-Upload-Command": "upload, finalize"
+        ])
+        @Path({ context -> String in
+            context.input.uploadURL.absoluteString
+        })
+        @Body(json: \.input)
+        var completeUpload = Endpoint<RequestBodies.CompleteUploadInput, ResponseBodies.FileUpload, Void>()
         
         // Delete File endpoint
         @DELETE
@@ -93,6 +108,7 @@ extension _Gemini.APISpecification {
             from input: Input,
             context: BuildRequestContext
         ) throws -> Request {
+            
             var request = try super.buildRequestBase(
                 from: input,
                 context: context
@@ -102,6 +118,17 @@ extension _Gemini.APISpecification {
                 request = request.header("Authorization", "Bearer \(apiKey)")
             }
             
+            if let uploadInput = input as? RequestBodies.InitiateUploadInput {
+                request = request.header("X-Goog-Upload-Header-Content-Length", "\(uploadInput.contentLength)")
+                request = request.header("X-Goog-Upload-Header-Content-Type", uploadInput.mimeType)
+            }
+            
+            if let completeInput = input as? RequestBodies.CompleteUploadInput {
+                request = request.header("Content-Length", "\(completeInput.fileData.count)")
+                request = request.header("X-Goog-Upload-Offset", "\(completeInput.offset)")
+            }
+            print(request)
+
             return request
         }
         
@@ -109,6 +136,8 @@ extension _Gemini.APISpecification {
             from response: Request.Response,
             context: DecodeOutputContext
         ) throws -> Output {
+            
+            print(response)
             try response.validate()
             
             if Output.self == Data.self {

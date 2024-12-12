@@ -8,12 +8,38 @@ import Foundation
 
 extension _Gemini.APISpecification {
     public enum RequestBodies {
+        
+        public struct InitiateUploadInput: Codable {
+            public let file: FileMetadata
+            public let contentLength: Int
+            public let mimeType: String
+            
+            public struct FileMetadata: Codable {
+                public let displayName: String
+                
+                private enum CodingKeys: String, CodingKey {
+                    case displayName = "display_name"
+                }
+            }
+        }
+        
+        public struct CompleteUploadInput: Codable {
+            public let uploadURL: URL
+            public let fileData: Data
+            public let offset: Int
+            
+            public init(uploadURL: URL, fileData: Data, offset: Int = 0) {
+                self.uploadURL = uploadURL
+                self.fileData = fileData
+                self.offset = offset
+            }
+        }
         public struct GenerateContentInput: Codable {
             public let model: String
             public let requestBody: SpeechRequest
             
-            public init(model: String, requestBody: SpeechRequest) {
-                self.model = model
+            public init(model: _Gemini.Model, requestBody: SpeechRequest) {
+                self.model = model.rawValue
                 self.requestBody = requestBody
             }
         }
@@ -111,22 +137,22 @@ extension _Gemini.APISpecification {
                 public func encode(to encoder: Encoder) throws {
                     var container = encoder.container(keyedBy: CodingKeys.self)
                     switch self {
-                    case .text(let txt):
-                        try container.encode(txt, forKey: .text)
-                    case .inline(data: let data, mimeType: let mimeType):
-                        var nestedContainer = container.nestedContainer(
-                            keyedBy: InlineDataNestedKeys.self,
-                            forKey: .inlineData
-                        )
-                        try nestedContainer.encode(data.base64EncodedString(), forKey: .data)
-                        try nestedContainer.encode(mimeType, forKey: .mimeType)
-                    case .file(url: let url, mimeType: let mimeType):
-                        var nestedContainer = container.nestedContainer(
-                            keyedBy: FileDataNestedKeys.self,
-                            forKey: .fileData
-                        )
-                        try nestedContainer.encode(url, forKey: .fileUri)
-                        try nestedContainer.encode(mimeType, forKey: .mimeType)
+                        case .text(let txt):
+                            try container.encode(txt, forKey: .text)
+                        case .inline(data: let data, mimeType: let mimeType):
+                            var nestedContainer = container.nestedContainer(
+                                keyedBy: InlineDataNestedKeys.self,
+                                forKey: .inlineData
+                            )
+                            try nestedContainer.encode(data.base64EncodedString(), forKey: .data)
+                            try nestedContainer.encode(mimeType, forKey: .mimeType)
+                        case .file(url: let url, mimeType: let mimeType):
+                            var nestedContainer = container.nestedContainer(
+                                keyedBy: FileDataNestedKeys.self,
+                                forKey: .fileData
+                            )
+                            try nestedContainer.encode(url, forKey: .fileUri)
+                            try nestedContainer.encode(mimeType, forKey: .mimeType)
                     }
                 }
             }
@@ -160,10 +186,16 @@ extension _Gemini.APISpecification {
         public struct FileUploadInput: Codable, HTTPRequest.Multipart.ContentConvertible {
             public let fileData: Data
             public let mimeType: String
+            public let model: String
             
-            public init(fileData: Data, mimeType: String) {
+            public init(
+                fileData: Data,
+                mimeType: String,
+                model: _Gemini.Model
+            ) {
                 self.fileData = fileData
                 self.mimeType = mimeType
+                self.model = model.rawValue
             }
             
             public func __conversion() throws -> HTTPRequest.Multipart.Content {

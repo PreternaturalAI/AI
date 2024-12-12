@@ -5,12 +5,12 @@
 //  Created by Jared Davidson on 12/11/24.
 //
 
-import Anthropic
-import LargeLanguageModels
-import XCTest
+import AI
+@testable import _Gemini
 
 public var GEMINI_API_KEY: String {
-    ""
+    // Add your API key here or load from environment
+    "AIzaSyBmz1E3wsIm93XpxSByWVurLiWqNXLZ_hQ"
 }
 
 public var client: _Gemini.Client {

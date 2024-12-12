@@ -7,6 +7,7 @@ import Swift
 
 extension _Gemini {
     public enum Model: String, CaseIterable, Codable, Hashable, Sendable {
+        case gemini_2_0_flash_exp = "gemini-2.0-flash-exp"
         case gemini_1_5_pro = "gemini-1.5-pro"
         case gemini_1_5_pro_latest = "gemini-1.5-pro-latest"
         case gemini_1_5_flash = "gemini-1.5-flash"
@@ -15,6 +16,8 @@ extension _Gemini {
         
         public var maximumContextLength: Int {
             switch self {
+                case .gemini_2_0_flash_exp:
+                    return 1048576
                 case .gemini_1_5_pro:
                     return 1048576
                 case .gemini_1_5_pro_latest:
