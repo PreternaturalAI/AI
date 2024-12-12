@@ -79,7 +79,7 @@ extension _Gemini.Client {
         type: HTTPMediaType,
         prompt: String,
         model: _Gemini.Model
-    ) async throws -> _Gemini.APISpecification.ResponseBodies.GenerateContent {
+    ) async throws -> _Gemini.Content {
         do {
             let data = try Data(contentsOf: url)
             
@@ -105,7 +105,7 @@ extension _Gemini.Client {
         file: _Gemini.File,
         prompt: String,
         model: _Gemini.Model
-    ) async throws -> _Gemini.APISpecification.ResponseBodies.GenerateContent {
+    ) async throws -> _Gemini.Content {
         guard let fileName = file.name else {
             throw FileProcessingError.invalidFileName
         }
@@ -151,7 +151,10 @@ extension _Gemini.Client {
             
             print(input)
             
-            return try await run(\.generateContent, with: input)
+            let response = try await run(\.generateContent, with: input)
+            
+            return try _Gemini.Content.init(apiResponse: response)
+
         } catch let error as FileProcessingError {
             throw error
         } catch {

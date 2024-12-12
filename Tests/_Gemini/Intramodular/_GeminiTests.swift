@@ -10,8 +10,6 @@ import SwiftUIX
 import Foundation
 import _Gemini
 
-private final class BundleHelper {}
-
 @Suite struct GeminiTests {
     func loadTestFileURL(named filename: String, fileExtension: String) throws -> URL {
         let sourceFile = #file
@@ -46,17 +44,19 @@ private final class BundleHelper {}
         do {
             let file = try await createFile(type: .video)
             
-            let response = try await client.generateContent(
+            let content = try await client.generateContent(
                 file: file,
                 prompt: "What is happening in this video?",
                 model: .gemini_1_5_flash
             )
             
-            #expect(response.candidates != nil)
-            #expect(!response.candidates!.isEmpty)
+            #expect(!content.text.isEmpty)
+            #expect(content.finishReason != nil)
+            #expect(!content.safetyRatings.isEmpty)
             
-            if let textContent = response.candidates?.first?.content?.parts?.first {
-                print("Response: \(textContent)")
+            print("Response text: \(content.text)")
+            if let tokenUsage = content.tokenUsage {
+                print("Token usage - Total: \(tokenUsage.total)")
             }
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
@@ -70,16 +70,17 @@ private final class BundleHelper {}
         do {
             let file = try await createFile(type: .audio)
             
-            let response = try await client.generateContent(
+            let content = try await client.generateContent(
                 file: file,
                 prompt: "What is being said in this audio?",
                 model: .gemini_1_5_flash
             )
             
-            print(response)
+            print("Generated content: \(content)")
             
-            #expect(response.candidates != nil)
-            #expect(!response.candidates!.isEmpty)
+            #expect(!content.text.isEmpty)
+            #expect(content.finishReason != nil)
+            #expect(!content.safetyRatings.isEmpty)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
             #expect(false, "Audio content generation failed: \(error)")
@@ -92,41 +93,41 @@ private final class BundleHelper {}
         do {
             let file = try await createFile(type: .image)
             
-            let response = try await client.generateContent(
+            let content = try await client.generateContent(
                 file: file,
                 prompt: "What is this the shape of this image?",
                 model: .gemini_1_5_flash
             )
             
-            print(response)
+            print("Generated content: \(content)")
             
-            #expect(response.candidates != nil)
-            #expect(!response.candidates!.isEmpty)
+            #expect(!content.text.isEmpty)
+            #expect(content.finishReason != nil)
+            #expect(!content.safetyRatings.isEmpty)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
-            #expect(false, "Audio content generation failed: \(error)")
+            #expect(false, "Image content generation failed: \(error)")
         } catch {
-            throw GeminiTestError.audioProcessingError(error)
+            throw GeminiTestError.imageProcessingError(error)
         }
     }
     
-    @Test func testaImageContentGenerationWithURL() async throws {
+    @Test func testImageContentGenerationWithURL() async throws {
         do {
             let url = try loadTestFileURL(named: "LintMySwift2", fileExtension: "m4a")
-            let response = try await client.generateContent(
+            let content = try await client.generateContent(
                 url: url,
                 type: .custom("audio/x-m4a"),
                 prompt: "What does this audio say?",
                 model: .gemini_1_5_flash
             )
             
-            print(response)
+            print("Generated content: \(content)")
             
-            #expect(response.candidates != nil)
-            #expect(!response.candidates!.isEmpty)
+            #expect(!content.text.isEmpty)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
-            #expect(false, "Audio content generation failed: \(error)")
+            #expect(false, "URL content generation failed: \(error)")
         } catch {
             throw GeminiTestError.audioProcessingError(error)
         }
@@ -135,7 +136,9 @@ private final class BundleHelper {}
     @Test func testFileUpload() async throws {
         do {
             let file = try await createFile(type: .audio)
-            #expect(true)
+            #expect(file.name != nil)
+            #expect(file.mimeType != nil)
+            #expect(file.state == .active || file.state == .processing)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
             #expect(false, "File upload failed: \(error)")
@@ -147,8 +150,10 @@ private final class BundleHelper {}
     @Test func testGetFile() async throws {
         do {
             let file = try await createFile(type: .audio)
-            let _ = try await client.getFile(name: file.name ?? "")
-            #expect(true)
+            let retrievedFile = try await client.getFile(name: file.name ?? "")
+            #expect(retrievedFile.name == file.name)
+            #expect(retrievedFile.mimeType == file.mimeType)
+            #expect(retrievedFile.uri == file.uri)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
             #expect(false, "File retrieval failed: \(error)")
@@ -198,7 +203,6 @@ private final class BundleHelper {}
                         mimeType: .custom("image/png"),
                         displayName: "Test"
                     )
-                    
             }
         } catch let error as GeminiTestError {
             throw error
@@ -213,14 +217,15 @@ private final class BundleHelper {}
         case image
     }
 }
-// Error Handling
 
+// Error Handling
 fileprivate enum GeminiTestError: LocalizedError {
     case fileNotFound(String)
     case invalidFileURL(String)
     case fileLoadError(Error)
     case videoProcessingError(Error)
     case audioProcessingError(Error)
+    case imageProcessingError(Error)
     case fileUploadError(Error)
     case fileDeleteError(Error)
     case fileRetrievalError(Error)
@@ -237,6 +242,8 @@ fileprivate enum GeminiTestError: LocalizedError {
                 return "Failed to process video content: \(error.localizedDescription)"
             case .audioProcessingError(let error):
                 return "Failed to process audio content: \(error.localizedDescription)"
+            case .imageProcessingError(let error):
+                return "Failed to process image content: \(error.localizedDescription)"
             case .fileUploadError(let error):
                 return "Failed to upload file: \(error.localizedDescription)"
             case .fileDeleteError(let error):
