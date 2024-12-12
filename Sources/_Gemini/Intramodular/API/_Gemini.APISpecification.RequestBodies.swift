@@ -164,10 +164,33 @@ extension _Gemini.APISpecification {
                 
                 // Add metadata as JSON
                 let metadata = ["file": ["display_name": displayName]]
-                let metadataData = try JSONSerialization.data(withJSONObject: metadata)
 
-                let fileExtension = mimeType.split(separator: "/").last == "quicktime" ? "mov" :
-                                              String(mimeType.split(separator: "/").last ?? "bin")
+                let fileExtension: String = {
+                    guard let subtype = mimeType.split(separator: "/").last else {
+                        return "bin"
+                    }
+                    
+                    switch subtype {
+                    case "quicktime":
+                        return "mov"
+                    case "x-m4a":
+                        return "m4a"
+                    case "mp4":
+                        return "mp4"
+                    case "jpeg", "jpg":
+                        return "jpg"
+                    case "png":
+                        return "png"
+                    case "gif":
+                        return "gif"
+                    case "webp":
+                        return "webp"
+                    case "pdf":
+                        return "pdf"
+                    default:
+                        return String(subtype)
+                    }
+                }()
                 
                 result.append(
                     .file(

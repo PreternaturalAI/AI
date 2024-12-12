@@ -43,25 +43,62 @@ extension _Gemini.Client {
         delaySeconds: Double = 1.0
     ) async throws -> _Gemini.File {
         guard !name.isEmpty else {
-            throw _Gemini.APIError.unknown(message: "Invalid file name")
+            throw FileProcessingError.invalidFileName
         }
         
         for attempt in 1...maxAttempts {
-            let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
-            let fileStatus = try await run(\.getFile, with: input)
-            
-            print("File status attempt \(attempt): \(fileStatus.state)")
-            
-            if fileStatus.state == .active {
-                return fileStatus
-            }
-            
-            if attempt < maxAttempts {
-                try await Task.sleep(nanoseconds: UInt64(delaySeconds * 1_000_000_000))
+            do {
+                let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
+                let fileStatus = try await run(\.getFile, with: input)
+                
+                print("File status attempt \(attempt): \(fileStatus.state)")
+                
+                switch fileStatus.state {
+                case .active:
+                    return fileStatus
+                case .processing:
+                    break
+                }
+                
+                if attempt < maxAttempts {
+                    try await Task.sleep(nanoseconds: UInt64(delaySeconds * 1_000_000_000))
+                }
+            } catch {
+                if attempt == maxAttempts {
+                    throw error
+                }
+                continue
             }
         }
         
-        throw _Gemini.APIError.unknown(message: "File processing timeout")
+        throw FileProcessingError.processingTimeout(fileName: name)
+    }
+    
+    public func generateContent(
+        url: URL,
+        type: HTTPMediaType,
+        prompt: String,
+        model: _Gemini.Model
+    ) async throws -> _Gemini.APISpecification.ResponseBodies.GenerateContent {
+        do {
+            let data = try Data(contentsOf: url)
+            
+            let uploadedFile = try await uploadFile(
+                fileData: data,
+                mimeType: type,
+                displayName: "Test"
+            )
+            
+            return try await self.generateContent(
+                file: uploadedFile,
+                prompt: prompt,
+                model: model
+            )
+        } catch let error as NSError where error.domain == NSCocoaErrorDomain {
+            throw _Gemini.APIError.unknown(message: "Failed to read file: \(error.localizedDescription)")
+        } catch {
+            throw error
+        }
     }
     
     public func generateContent(
@@ -69,18 +106,25 @@ extension _Gemini.Client {
         prompt: String,
         model: _Gemini.Model
     ) async throws -> _Gemini.APISpecification.ResponseBodies.GenerateContent {
-
+        guard let fileName = file.name else {
+            throw FileProcessingError.invalidFileName
+        }
+        
         do {
-            
             print("Waiting for file processing...")
-            let processedFile = try await waitForFileProcessing(name: file.name ?? "")
+            let processedFile = try await waitForFileProcessing(name: fileName)
             print("File processing complete: \(processedFile)")
             
-            // Create content request matching the expected format
+            guard let mimeType = file.mimeType else {
+                throw _Gemini.APIError.unknown(message: "Invalid MIME type")
+            }
+            
+            let fileUri = processedFile.uri
+            
             let fileContent = _Gemini.APISpecification.RequestBodies.Content(
                 role: "user",
                 parts: [
-                    .file(url: processedFile.uri, mimeType: file.mimeType ?? ""),
+                    .file(url: fileUri, mimeType: mimeType),
                 ]
             )
             
@@ -105,9 +149,13 @@ extension _Gemini.Client {
                 )
             )
             
+            print(input)
+            
             return try await run(\.generateContent, with: input)
-        } catch {
+        } catch let error as FileProcessingError {
             throw error
+        } catch {
+            throw _Gemini.APIError.unknown(message: "Content generation failed: \(error.localizedDescription)")
         }
     }
     
@@ -116,28 +164,56 @@ extension _Gemini.Client {
         mimeType: HTTPMediaType,
         displayName: String
     ) async throws -> _Gemini.File {
-        let input = _Gemini.APISpecification.RequestBodies.FileUploadInput(
-            fileData: fileData,
-            mimeType: mimeType.rawValue,
-            displayName: displayName
-        )
+        guard !displayName.isEmpty else {
+            throw FileProcessingError.invalidFileName
+        }
         
-        let response = try await run(\.uploadFile, with: input)
-        return response.file
+        do {
+            let input = _Gemini.APISpecification.RequestBodies.FileUploadInput(
+                fileData: fileData,
+                mimeType: mimeType.rawValue,
+                displayName: displayName
+            )
+            
+            let response = try await run(\.uploadFile, with: input)
+            return response.file
+        } catch {
+            throw _Gemini.APIError.unknown(message: "File upload failed: \(error.localizedDescription)")
+        }
     }
     
     public func getFile(
         name: String
     ) async throws -> _Gemini.File {
-        let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
-        let file = try await run(\.getFile, with: input)
-        return file
+        guard !name.isEmpty else {
+            throw FileProcessingError.invalidFileName
+        }
+        
+        do {
+            let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
+            return try await run(\.getFile, with: input)
+        } catch {
+            throw _Gemini.APIError.unknown(message: "Failed to get file status: \(error.localizedDescription)")
+        }
     }
     
     public func deleteFile(
         fileURL: URL
     ) async throws {
-        let input = _Gemini.APISpecification.RequestBodies.DeleteFileInput(fileURL: fileURL)
-        try await run(\.deleteFile, with: input)
+        do {
+            let input = _Gemini.APISpecification.RequestBodies.DeleteFileInput(fileURL: fileURL)
+            try await run(\.deleteFile, with: input)
+        } catch {
+            throw _Gemini.APIError.unknown(message: "Failed to delete file: \(error.localizedDescription)")
+        }
     }
+}
+
+// Error Handling
+
+fileprivate enum FileProcessingError: Error {
+    case invalidFileName
+    case processingTimeout(fileName: String)
+    case invalidFileState(state: String)
+    case fileNotFound(name: String)
 }

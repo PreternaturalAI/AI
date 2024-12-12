@@ -6,6 +6,7 @@
 //
 
 import Testing
+import SwiftUIX
 import Foundation
 import _Gemini
 
@@ -70,6 +71,30 @@ private final class BundleHelper {}
                 model: .gemini_1_5_flash
             )
             
+            print(response)
+            
+            #expect(response.candidates != nil)
+            #expect(!response.candidates!.isEmpty)
+        } catch let error as GeminiTestError {
+            print("Detailed error: \(error.localizedDescription)")
+            #expect(false, "Audio content generation failed: \(error)")
+        } catch {
+            throw GeminiTestError.audioProcessingError(error)
+        }
+    }
+    
+    @Test func testImageContentGeneration() async throws {
+        do {
+            let file = try await createFile(type: .image)
+            
+            let response = try await client.generateContent(
+                file: file,
+                prompt: "What is this the shape of this image?",
+                model: .gemini_1_5_flash
+            )
+            
+            print(response)
+            
             #expect(response.candidates != nil)
             #expect(!response.candidates!.isEmpty)
         } catch let error as GeminiTestError {
@@ -127,7 +152,7 @@ private final class BundleHelper {}
                     return try await client.uploadFile(
                         fileData: audioData,
                         mimeType: .custom("audio/x-m4a"),
-                        displayName: UUID().uuidString
+                        displayName: "Test"
                     )
                 case .video:
                     let videoData = try loadTestFile(named: "LintMySwiftSmall", fileExtension: "mov")
@@ -135,8 +160,18 @@ private final class BundleHelper {}
                     return try await client.uploadFile(
                         fileData: videoData,
                         mimeType: .custom("video/quicktime"),
-                        displayName: UUID().uuidString
+                        displayName: "Test"
                     )
+                case .image:
+                    let image = AppKitOrUIKitImage(_SwiftUIX_systemName: "arrow.up", withConfiguration: .init(pointSize: 50))
+                    guard let imageData = image?.data(using: .png) else { throw GeminiTestError.fileNotFound("System Symbol")}
+                    
+                    return try await client.uploadFile(
+                        fileData: imageData,
+                        mimeType: .custom("image/png"),
+                        displayName: "Test"
+                    )
+                    
             }
         } catch let error as GeminiTestError {
             throw error
@@ -148,6 +183,7 @@ private final class BundleHelper {}
     enum TestFileType {
         case audio
         case video
+        case image
     }
 }
 // Error Handling
