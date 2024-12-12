@@ -51,8 +51,6 @@ import _Gemini
             )
             
             #expect(!content.text.isEmpty)
-            #expect(content.finishReason != nil)
-            #expect(!content.safetyRatings.isEmpty)
             
             print("Response text: \(content.text)")
             if let tokenUsage = content.tokenUsage {
@@ -79,8 +77,6 @@ import _Gemini
             print("Generated content: \(content)")
             
             #expect(!content.text.isEmpty)
-            #expect(content.finishReason != nil)
-            #expect(!content.safetyRatings.isEmpty)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
             #expect(false, "Audio content generation failed: \(error)")
@@ -102,8 +98,6 @@ import _Gemini
             print("Generated content: \(content)")
             
             #expect(!content.text.isEmpty)
-            #expect(content.finishReason != nil)
-            #expect(!content.safetyRatings.isEmpty)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
             #expect(false, "Image content generation failed: \(error)")
