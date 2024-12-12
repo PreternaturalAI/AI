@@ -162,9 +162,9 @@ extension _Gemini.APISpecification {
             public func __conversion() throws -> HTTPRequest.Multipart.Content {
                 var result = HTTPRequest.Multipart.Content()
                 
-                // Add metadata as JSON
                 let metadata = ["file": ["display_name": displayName]]
 
+                // TODO: - Add this to `HTTPMediaType` @jared @vmanot
                 let fileExtension: String = {
                     guard let subtype = mimeType.split(separator: "/").last else {
                         return "bin"

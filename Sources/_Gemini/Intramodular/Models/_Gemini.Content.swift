@@ -49,7 +49,6 @@ extension _Gemini {
             public let total: Int
         }
         
-        // Custom initializer for API response
         init(apiResponse response: _Gemini.APISpecification.ResponseBodies.GenerateContent) throws {
             guard let candidate = response.candidates?.first,
                   let content = candidate.content,
@@ -57,7 +56,6 @@ extension _Gemini {
                 throw _Gemini.APIError.unknown(message: "Invalid response format")
             }
             
-            // Combine all text parts
             self.text = parts.compactMap { part -> String? in
                 if case .text(let text) = part {
                     return text
@@ -65,14 +63,12 @@ extension _Gemini {
                 return nil
             }.joined(separator: " ")
             
-            // Map finish reason
             if let finishReasonStr = candidate.finishReason {
                 self.finishReason = FinishReason(rawValue: finishReasonStr)
             } else {
                 self.finishReason = nil
             }
             
-            // Map safety ratings
             self.safetyRatings = (candidate.safetyRatings ?? []).compactMap { rating -> SafetyRating? in
                 guard let category = rating.category,
                       let probability = rating.probability else {
@@ -86,7 +82,6 @@ extension _Gemini {
                 )
             }
             
-            // Map token usage
             if let usage = response.usageMetadata {
                 self.tokenUsage = TokenUsage(
                     prompt: usage.promptTokenCount ?? 0,
@@ -98,10 +93,7 @@ extension _Gemini {
             }
         }
         
-        // Required Decodable implementation
         public init(from decoder: Decoder) throws {
-            // This would be implemented if we need to decode Content directly from JSON
-            // For now, we'll throw an error as we expect to create Content from our API response
             throw _Gemini.APIError.unknown(message: "Direct decoding not supported")
         }
     }
