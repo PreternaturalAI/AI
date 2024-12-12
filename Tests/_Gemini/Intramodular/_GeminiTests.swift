@@ -13,7 +13,7 @@ import _Gemini
 private final class BundleHelper {}
 
 @Suite struct GeminiTests {
-    func loadTestFile(named filename: String, fileExtension: String) throws -> Data {
+    func loadTestFileURL(named filename: String, fileExtension: String) throws -> URL {
         let sourceFile = #file
         let packageRoot = URL(fileURLWithPath: sourceFile)
             .deletingLastPathComponent()
@@ -30,8 +30,13 @@ private final class BundleHelper {}
             throw GeminiTestError.fileNotFound(resourcePath.path)
         }
         
+        return resourcePath
+    }
+    
+    func loadTestFile(named filename: String, fileExtension: String) throws -> Data {
+        let url = try loadTestFileURL(named: filename, fileExtension: fileExtension)
         do {
-            return try Data(contentsOf: resourcePath)
+            return try Data(contentsOf: url)
         } catch {
             throw GeminiTestError.fileLoadError(error)
         }
@@ -90,6 +95,28 @@ private final class BundleHelper {}
             let response = try await client.generateContent(
                 file: file,
                 prompt: "What is this the shape of this image?",
+                model: .gemini_1_5_flash
+            )
+            
+            print(response)
+            
+            #expect(response.candidates != nil)
+            #expect(!response.candidates!.isEmpty)
+        } catch let error as GeminiTestError {
+            print("Detailed error: \(error.localizedDescription)")
+            #expect(false, "Audio content generation failed: \(error)")
+        } catch {
+            throw GeminiTestError.audioProcessingError(error)
+        }
+    }
+    
+    @Test func testaImageContentGenerationWithURL() async throws {
+        do {
+            let url = try loadTestFileURL(named: "LintMySwift2", fileExtension: "m4a")
+            let response = try await client.generateContent(
+                url: url,
+                type: .custom("audio/x-m4a"),
+                prompt: "What does this audio say?",
                 model: .gemini_1_5_flash
             )
             
