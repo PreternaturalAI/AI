@@ -67,15 +67,15 @@ extension _Gemini.Client {
     public func generateContent(
         data: Data,
         type: HTTPMediaType,
-        prompt: String
+        prompt: String,
+        model: _Gemini.Model
     ) async throws -> _Gemini.APISpecification.ResponseBodies.GenerateContent {
         print("Uploading file with MIME type: \(type.rawValue)")
         
-        // Upload file with correct headers and format
         let uploadedFile = try await uploadFile(
             fileData: data,
-            mimeType: type.rawValue,
-            displayName: UUID().uuidString
+            mimeType: type,
+            displayName: "Test"
         )
         
         print("Uploaded file response: \(uploadedFile)")
@@ -95,13 +95,28 @@ extension _Gemini.Client {
                 role: "user",
                 parts: [
                     .file(url: processedFile.uri, mimeType: type.rawValue),
+                ]
+            )
+            
+            let promptContent = _Gemini.APISpecification.RequestBodies.Content(
+                role: "user",
+                parts: [
                     .text(prompt)
                 ]
             )
             
             let input = _Gemini.APISpecification.RequestBodies.GenerateContentInput(
-                model: .gemini_1_5_flash,
-                requestBody: .init(contents: [fileContent])
+                model: model,
+                requestBody: .init(
+                    contents: [fileContent, promptContent],
+                    generationConfig: .init(
+                        maxOutputTokens: 8192,
+                        temperature: 1,
+                        topP: 0.95,
+                        topK: 40,
+                        responseMimeType: "text/plain"
+                    )
+                )
             )
             
             return try await run(\.generateContent, with: input)
@@ -112,12 +127,12 @@ extension _Gemini.Client {
     
     public func uploadFile(
         fileData: Data,
-        mimeType: String,
+        mimeType: HTTPMediaType,
         displayName: String
     ) async throws -> _Gemini.File {
         let input = _Gemini.APISpecification.RequestBodies.FileUploadInput(
             fileData: fileData,
-            mimeType: mimeType,
+            mimeType: mimeType.rawValue,
             displayName: displayName
         )
         

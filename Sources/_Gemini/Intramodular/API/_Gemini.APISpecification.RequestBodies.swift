@@ -35,19 +35,25 @@ extension _Gemini.APISpecification {
         
         public struct ContentBody: Codable {
             public let contents: [Content]
+            public let cachedContent: String?
+            public let generationConfig: GenerationConfig?
             
             public init(
-                contents: [Content]
+                contents: [Content],
+                cachedContent: String? = nil,
+                generationConfig: GenerationConfig? = nil
             ) {
                 self.contents = contents
+                self.cachedContent = cachedContent
+                self.generationConfig = generationConfig
             }
         }
         
         public struct Content: Codable {
-            public let role: String?
+            public let role: String
             public let parts: [Part]
             
-            public init(role: String? = nil, parts: [Part]) {
+            public init(role: String, parts: [Part]) {
                 self.role = role
                 self.parts = parts
             }
@@ -142,22 +148,10 @@ extension _Gemini.APISpecification {
             }
         }
         
-        public struct FileUploadInput: Codable {
+        public struct FileUploadInput: Codable, HTTPRequest.Multipart.ContentConvertible {
             public let fileData: Data
             public let mimeType: String
             public let displayName: String
-            
-            public struct Metadata: Codable {
-                public let file: File
-                
-                public struct File: Codable {
-                    let displayName: String
-                    
-                    private enum CodingKeys: String, CodingKey {
-                        case displayName = "display_name"
-                    }
-                }
-            }
             
             public init(fileData: Data, mimeType: String, displayName: String) {
                 self.fileData = fileData
@@ -165,26 +159,28 @@ extension _Gemini.APISpecification {
                 self.displayName = displayName
             }
             
-            private enum CodingKeys: String, CodingKey {
-                case file
-                case fileData
-                case mimeType
-                case displayName
-            }
-            
-            public func encode(to encoder: Encoder) throws {
-                // Encode only the metadata part as JSON
-                var container = encoder.container(keyedBy: CodingKeys.self)
-                let metadata = Metadata(file: .init(displayName: displayName))
-                try container.encode(metadata.file, forKey: .file)
-            }
-            
-            public init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                let metadata = try container.decode(Metadata.self, forKey: .file)
-                self.displayName = metadata.file.displayName
-                self.fileData = try container.decode(Data.self, forKey: .fileData)
-                self.mimeType = try container.decode(String.self, forKey: .mimeType)
+            public func __conversion() throws -> HTTPRequest.Multipart.Content {
+                var result = HTTPRequest.Multipart.Content()
+                
+                // Add metadata as JSON
+                let metadata = ["file": ["display_name": displayName]]
+                let metadataData = try JSONSerialization.data(withJSONObject: metadata)
+
+                let fileExtension = mimeType.split(separator: "/").last == "quicktime" ? "mov" :
+                                              String(mimeType.split(separator: "/").last ?? "bin")
+                
+                result.append(
+                    .file(
+                        named: "file",
+                        data: fileData,
+                        filename: "\(displayName).\(fileExtension)",
+                        contentType: .init(rawValue: mimeType)
+                    )
+                )
+                
+                
+                print("BODY", result)
+                return result
             }
         }
         

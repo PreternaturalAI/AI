@@ -11,7 +11,7 @@ import _Gemini
 
 @Suite struct GeminiTests {
     func loadTestFile(named filename: String) throws -> Data {
-        #warning("FIX ME")
+#warning("FIX ME")
         let baseDirectory = "/Users/jareddavidson/Documents/Preternatural/AI"
         let testFilesPath = "\(baseDirectory)/Tests/_Gemini/Intramodular/TestFiles"
         let fileURL = URL(fileURLWithPath: testFilesPath)
@@ -32,28 +32,29 @@ import _Gemini
         return try Data(contentsOf: fileURL)
     }
     
-        @Test func testVideoContentGeneration() async throws {
-            do {
-                let videoData = try loadTestFile(named: "LintMySwiftSmall.mov")
-                print("Successfully loaded video data: \(videoData.count) bytes")
-    
-                let response = try await client.generateContent(
-                    data: videoData,
-                    type: .custom("video/quicktime"),
-                    prompt: "What is happening in this video?"
-                )
-    
-                #expect(response.candidates != nil)
-                #expect(!response.candidates!.isEmpty)
-    
-                if let textContent = response.candidates?.first?.content?.parts?.first {
-                    print("Response: \(textContent)")
-                }
-            } catch {
-                print("Detailed error: \(String(describing: error))")
-                #expect(false, "Video content generation failed: \(error)")
+    @Test func testVideoContentGeneration() async throws {
+        do {
+            let videoData = try loadTestFile(named: "LintMySwiftSmall.mov")
+            print("Successfully loaded video data: \(videoData.count) bytes")
+            
+            let response = try await client.generateContent(
+                data: videoData,
+                type: .custom("video/quicktime"),
+                prompt: "What is happening in this video?",
+                model: .gemini_1_5_flash
+            )
+            
+            #expect(response.candidates != nil)
+            #expect(!response.candidates!.isEmpty)
+            
+            if let textContent = response.candidates?.first?.content?.parts?.first {
+                print("Response: \(textContent)")
             }
+        } catch {
+            print("Detailed error: \(String(describing: error))")
+            #expect(false, "Video content generation failed: \(error)")
         }
+    }
     
     
     @Test func testAudioContentGeneration() async throws {
@@ -63,7 +64,8 @@ import _Gemini
             let response = try await client.generateContent(
                 data: audioData,
                 type: .custom("audio/x-m4a"),
-                prompt: "What is being said in this audio?"
+                prompt: "What is being said in this audio?",
+                model: .gemini_1_5_flash
             )
             
             #expect(response.candidates != nil)
@@ -104,9 +106,13 @@ import _Gemini
     
     
     func createFile(string: String) async throws -> _Gemini.File {
+        let audioData = try loadTestFile(named: "LintMySwift2.m4a")
+
+        print(audioData)
+        
         return try await client.uploadFile(
-            fileData: string.data(using: .utf8)!,
-            mimeType: "text/plain",
+            fileData: audioData,
+            mimeType: .custom("audio/x-m4a"),
             displayName: "Hello World"
         )
     }

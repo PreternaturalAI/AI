@@ -69,7 +69,7 @@ extension _Gemini {
         @Path({ context -> String in
             "/v1beta/models/\(context.input.model):generateContent"
         })
-        @Body(json: \.requestBody, keyEncodingStrategy: .convertToSnakeCase)
+        @Body(json: \.requestBody)
         var generateContent = Endpoint<RequestBodies.GenerateContentInput, ResponseBodies.GenerateContent, Void>()
         
         // Initial Upload Request endpoint
@@ -78,7 +78,7 @@ extension _Gemini {
         @Header([
             "X-Goog-Upload-Command": "start, upload, finalize"
         ])
-        @Body(json: .input)
+        @Body(multipart: .input)
         var uploadFile = Endpoint<RequestBodies.FileUploadInput, ResponseBodies.FileUpload, Void>()
         
         // File Status endpoint
@@ -111,19 +111,6 @@ extension _Gemini.APISpecification {
             if let apiKey = context.root.configuration.apiKey {
                 request = request.query([.init(name: "key", value: apiKey)])
             }
-            
-            if let uploadInput = input as? RequestBodies.FileUploadInput {
-                request = request.header("Content-Type", uploadInput.mimeType)
-                let metadata = ["file": ["display_name": uploadInput.displayName]]
-                let jsonData = try JSONSerialization.data(withJSONObject: metadata)
-                
-                var combinedData = jsonData
-                combinedData.append(uploadInput.fileData)
-                
-                request = request.body(.data(combinedData))
-            }
-            
-            print(request)
             
             return request
         }
