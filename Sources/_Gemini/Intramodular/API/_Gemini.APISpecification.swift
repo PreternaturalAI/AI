@@ -86,7 +86,7 @@ extension _Gemini {
         @Path({ context -> String in
             "/v1beta/\(context.input.name)"
         })
-        var getFileStatus = Endpoint<RequestBodies.FileStatusInput, _Gemini.File, Void>()
+        var getFile = Endpoint<RequestBodies.FileStatusInput, _Gemini.File, Void>()
         
         // Delete File endpoint
         @DELETE

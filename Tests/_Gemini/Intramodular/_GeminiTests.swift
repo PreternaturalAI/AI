@@ -11,7 +11,7 @@ import _Gemini
 
 @Suite struct GeminiTests {
     func loadTestFile(named filename: String) throws -> Data {
-        // Using absolute path for now
+        #warning("FIX ME")
         let baseDirectory = "/Users/jareddavidson/Documents/Preternatural/AI"
         let testFilesPath = "\(baseDirectory)/Tests/_Gemini/Intramodular/TestFiles"
         let fileURL = URL(fileURLWithPath: testFilesPath)
@@ -76,6 +76,16 @@ import _Gemini
     @Test func testFileUpload() async throws {
         do {
             let _ = try await createFile(string: "Test")
+            #expect(true)
+        } catch {
+            #expect(false, "File upload failed: \(error)")
+        }
+    }
+    
+    @Test func testGetFile() async throws {
+        do {
+            let file = try await createFile(string: "Test")
+            let _ = try await client.getFile(name: file.name ?? "")
             #expect(true)
         } catch {
             #expect(false, "File upload failed: \(error)")

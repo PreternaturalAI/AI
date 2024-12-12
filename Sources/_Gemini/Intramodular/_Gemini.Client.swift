@@ -48,7 +48,7 @@ extension _Gemini.Client {
         
         for attempt in 1...maxAttempts {
             let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
-            let fileStatus = try await run(\.getFileStatus, with: input)
+            let fileStatus = try await run(\.getFile, with: input)
             
             print("File status attempt \(attempt): \(fileStatus.state)")
             
@@ -123,6 +123,14 @@ extension _Gemini.Client {
         
         let response = try await run(\.uploadFile, with: input)
         return response.file
+    }
+    
+    public func getFile(
+        name: String
+    ) async throws -> _Gemini.File {
+        let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
+        let file = try await run(\.getFile, with: input)
+        return file
     }
     
     public func deleteFile(
