@@ -9,32 +9,36 @@ import Testing
 import Foundation
 import _Gemini
 
+private final class BundleHelper {}
+
 @Suite struct GeminiTests {
-    func loadTestFile(named filename: String) throws -> Data {
-#warning("FIX ME")
-        let baseDirectory = "/Users/jareddavidson/Documents/Preternatural/AI"
-        let testFilesPath = "\(baseDirectory)/Tests/_Gemini/Intramodular/TestFiles"
-        let fileURL = URL(fileURLWithPath: testFilesPath)
-            .appendingPathComponent(filename)
+    func loadTestFile(named filename: String, fileExtension: String) throws -> Data {
+        let sourceFile = #file
+        let packageRoot = URL(fileURLWithPath: sourceFile)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
         
-        print("Attempting to load file from: \(fileURL.path)")
+        let resourcePath = packageRoot
+            .appendingPathComponent("_Gemini")
+            .appendingPathComponent("Intramodular")
+            .appendingPathComponent("Resources")
+            .appendingPathComponent("\(filename).\(fileExtension)")
         
-        guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            throw NSError(
-                domain: "TestError",
-                code: 1,
-                userInfo: [
-                    NSLocalizedDescriptionKey: "File not found at path: \(fileURL.path)"
-                ]
-            )
+        guard FileManager.default.fileExists(atPath: resourcePath.path) else {
+            throw GeminiTestError.fileNotFound(resourcePath.path)
         }
         
-        return try Data(contentsOf: fileURL)
+        do {
+            return try Data(contentsOf: resourcePath)
+        } catch {
+            throw GeminiTestError.fileLoadError(error)
+        }
     }
     
     @Test func testVideoContentGeneration() async throws {
         do {
-            let videoData = try loadTestFile(named: "LintMySwiftSmall.mov")
+            let videoData = try loadTestFile(named: "LintMySwiftSmall", fileExtension: "mov")
             print("Successfully loaded video data: \(videoData.count) bytes")
             
             let response = try await client.generateContent(
@@ -50,16 +54,17 @@ import _Gemini
             if let textContent = response.candidates?.first?.content?.parts?.first {
                 print("Response: \(textContent)")
             }
-        } catch {
-            print("Detailed error: \(String(describing: error))")
+        } catch let error as GeminiTestError {
+            print("Detailed error: \(error.localizedDescription)")
             #expect(false, "Video content generation failed: \(error)")
+        } catch {
+            throw GeminiTestError.videoProcessingError(error)
         }
     }
     
-    
     @Test func testAudioContentGeneration() async throws {
         do {
-            let audioData = try loadTestFile(named: "LintMySwift2.m4a")
+            let audioData = try loadTestFile(named: "LintMySwift2", fileExtension: "m4a")
             
             let response = try await client.generateContent(
                 data: audioData,
@@ -70,8 +75,11 @@ import _Gemini
             
             #expect(response.candidates != nil)
             #expect(!response.candidates!.isEmpty)
-        } catch {
+        } catch let error as GeminiTestError {
+            print("Detailed error: \(error.localizedDescription)")
             #expect(false, "Audio content generation failed: \(error)")
+        } catch {
+            throw GeminiTestError.audioProcessingError(error)
         }
     }
     
@@ -79,8 +87,11 @@ import _Gemini
         do {
             let _ = try await createFile(string: "Test")
             #expect(true)
-        } catch {
+        } catch let error as GeminiTestError {
+            print("Detailed error: \(error.localizedDescription)")
             #expect(false, "File upload failed: \(error)")
+        } catch {
+            throw GeminiTestError.fileUploadError(error)
         }
     }
     
@@ -89,8 +100,11 @@ import _Gemini
             let file = try await createFile(string: "Test")
             let _ = try await client.getFile(name: file.name ?? "")
             #expect(true)
+        } catch let error as GeminiTestError {
+            print("Detailed error: \(error.localizedDescription)")
+            #expect(false, "File retrieval failed: \(error)")
         } catch {
-            #expect(false, "File upload failed: \(error)")
+            throw GeminiTestError.fileRetrievalError(error)
         }
     }
     
@@ -99,21 +113,61 @@ import _Gemini
             let file = try await createFile(string: "Test")
             try await client.deleteFile(fileURL: file.uri)
             #expect(true)
+        } catch let error as GeminiTestError {
+            print("Detailed error: \(error.localizedDescription)")
+            #expect(false, "File deletion failed: \(error)")
         } catch {
-            #expect(false, "File delete failed: \(error)")
+            throw GeminiTestError.fileDeleteError(error)
         }
     }
     
-    
     func createFile(string: String) async throws -> _Gemini.File {
-        let audioData = try loadTestFile(named: "LintMySwift2.m4a")
+        do {
+            let audioData = try loadTestFile(named: "LintMySwift2", fileExtension: "m4a")
+            print(audioData)
+            
+            return try await client.uploadFile(
+                fileData: audioData,
+                mimeType: .custom("audio/x-m4a"),
+                displayName: "Hello World"
+            )
+        } catch let error as GeminiTestError {
+            throw error
+        } catch {
+            throw GeminiTestError.fileUploadError(error)
+        }
+    }
+}
+// Error Handling
 
-        print(audioData)
-        
-        return try await client.uploadFile(
-            fileData: audioData,
-            mimeType: .custom("audio/x-m4a"),
-            displayName: "Hello World"
-        )
+fileprivate enum GeminiTestError: LocalizedError {
+    case fileNotFound(String)
+    case invalidFileURL(String)
+    case fileLoadError(Error)
+    case videoProcessingError(Error)
+    case audioProcessingError(Error)
+    case fileUploadError(Error)
+    case fileDeleteError(Error)
+    case fileRetrievalError(Error)
+    
+    var errorDescription: String? {
+        switch self {
+            case .fileNotFound(let path):
+                return "File not found at path: \(path)"
+            case .invalidFileURL(let filename):
+                return "Could not create URL for file: \(filename)"
+            case .fileLoadError(let error):
+                return "Failed to load file: \(error.localizedDescription)"
+            case .videoProcessingError(let error):
+                return "Failed to process video content: \(error.localizedDescription)"
+            case .audioProcessingError(let error):
+                return "Failed to process audio content: \(error.localizedDescription)"
+            case .fileUploadError(let error):
+                return "Failed to upload file: \(error.localizedDescription)"
+            case .fileDeleteError(let error):
+                return "Failed to delete file: \(error.localizedDescription)"
+            case .fileRetrievalError(let error):
+                return "Failed to retrieve file: \(error.localizedDescription)"
+        }
     }
 }
