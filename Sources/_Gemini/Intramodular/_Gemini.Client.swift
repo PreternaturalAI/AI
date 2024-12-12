@@ -85,7 +85,7 @@ extension _Gemini.Client {
         }
         
         do {
-            // Wait for file processing to complete
+            
             print("Waiting for file processing...")
             let processedFile = try await waitForFileProcessing(name: fileName)
             print("File processing complete: \(processedFile)")
@@ -94,18 +94,14 @@ extension _Gemini.Client {
             let fileContent = _Gemini.APISpecification.RequestBodies.Content(
                 role: "user",
                 parts: [
-                    .file(url: processedFile.uri, mimeType: type.rawValue)
+                    .file(url: processedFile.uri, mimeType: type.rawValue),
+                    .text(prompt)
                 ]
-            )
-            
-            let promptContent = _Gemini.APISpecification.RequestBodies.Content(
-                role: "user",
-                parts: [.text(prompt)]
             )
             
             let input = _Gemini.APISpecification.RequestBodies.GenerateContentInput(
                 model: .gemini_1_5_flash,
-                requestBody: .init(contents: [fileContent, promptContent])
+                requestBody: .init(contents: [fileContent])
             )
             
             return try await run(\.generateContent, with: input)

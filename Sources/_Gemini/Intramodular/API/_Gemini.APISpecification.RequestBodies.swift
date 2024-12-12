@@ -59,13 +59,13 @@ extension _Gemini.APISpecification {
                 
                 private enum CodingKeys: String, CodingKey {
                     case text
-                    case inlineData = "inlineData"
-                    case fileData = "fileData"
+                    case inlineData
+                    case fileData
                 }
                 
                 private enum FileDataKeys: String, CodingKey {
-                    case fileUri = "fileUri"
-                    case mimeType = "mimeType"
+                    case fileUri
+                    case mimeType
                 }
                 
                 public func encode(to encoder: Encoder) throws {
