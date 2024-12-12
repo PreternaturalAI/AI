@@ -22,19 +22,23 @@ final class FunctionCallingTests: XCTestCase {
         let functionCall1: AbstractLLM.ChatFunctionCall = try await llm.complete(
             messages,
             functions: [makeGetWeatherFunction1()],
+            model: OpenAI.Model.chat(.gpt_4o),
             as: .functionCall
         )
+//        
+//        let functionCall2: AbstractLLM.ChatFunctionCall = try await llm.complete(
+//            messages,
+//            functions: [makeGetWeatherFunction1()],
+//            as: .functionCall
+//        )
         
-        let functionCall2: AbstractLLM.ChatFunctionCall = try await llm.complete(
-            messages,
-            functions: [makeGetWeatherFunction2()],
-            as: .functionCall
-        )
+        dump(functionCall1)
         
         let result1 = try functionCall1.decode(GetWeatherParameters.self)
-        let result2 = try functionCall2.decode(GetWeatherParameters.self)
+//        let result2 = try functionCall2.decode(GetWeatherParameters.self)
         
-        print(result1, result2)
+        XCTAssert(result1.weather.first?.unit_fahrenheit != nil)
+        print(result1)
     }
     
     private func makeGetWeatherFunction1() -> AbstractLLM.ChatFunctionDefinition {
@@ -51,7 +55,10 @@ final class FunctionCallingTests: XCTestCase {
                     description: "The unit of temperature in 'fahrenheit'"
                 )
             ],
-            required: true
+            required: [
+                "location",
+                "unit_fahrenheit"
+            ]
         )
         
         let getWeatherFunction: AbstractLLM.ChatFunctionDefinition = AbstractLLM.ChatFunctionDefinition(
@@ -59,10 +66,10 @@ final class FunctionCallingTests: XCTestCase {
             context: "Get the current weather in a given location",
             parameters: JSONSchema(
                 type: .object,
-                description: "Weather data for a given location in fahrenheit",
                 properties: [
                     "weather": .array(weatherObjectSchema)
-                ]
+                ],
+                required: ["weather"]
             )
         )
         
@@ -75,32 +82,49 @@ final class FunctionCallingTests: XCTestCase {
     
     struct WeatherObject: Codable, Hashable, Sendable {
         let location: String
-        let unit_fahrenheit: Double?
+        let unit_fahrenheit: Double
     }
     
-    private func makeGetWeatherFunction2() throws -> AbstractLLM.ChatFunctionDefinition {
-        let getWeatherFunction: AbstractLLM.ChatFunctionDefinition = AbstractLLM.ChatFunctionDefinition(
-            name: "get_weather",
-            context: "Get the current weather in a given location",
-            parameters: JSONSchema(
-                type: .object,
-                description: "Weather data for a given location in fahrenheit",
-                properties: [
-                    "weather": try .array {
-                        try JSONSchema(
-                            type: WeatherObject.self,
-                            description: "Weather in a certain location",
-                            propertyDescriptions: [
-                                "location": "The city and state, e.g. San Francisco, CA",
-                                "unit_fahrenheit": "The unit of temperature in 'fahrenheit'"
-                            ]
-                        )
-                    }
-                ]
-            )
-        )
-        
-        return getWeatherFunction
-    }
+//    private func makeGetWeatherFunction2() throws -> AbstractLLM.ChatFunctionDefinition {
+//        
+//        let weatherObjectSchema = JSONSchema(
+//            type: .object,
+//            description: "Weather in a certain location",
+//            properties: [
+//                "location": JSONSchema(
+//                    type: .string,
+//                    description: "The city and state, e.g. San Francisco, CA"
+//                ),
+//                "unit_fahrenheit" : JSONSchema(
+//                    type: .number,
+//                    description: "The unit of temperature in 'fahrenheit'"
+//                )
+//            ],
+//            required: true
+//        )
+//        
+//        let getWeatherFunction: AbstractLLM.ChatFunctionDefinition = AbstractLLM.ChatFunctionDefinition(
+//            name: "get_weather",
+//            context: "Get the current weather in a given location",
+//            parameters: JSONSchema(
+//                type: .object,
+//                description: "Weather data for a given location in fahrenheit",
+//                properties: [
+//                    "weather": try .array {
+//                        try JSONSchema(
+//                            type: WeatherObject.self,
+//                            description: "Weather in a certain location",
+//                            propertyDescriptions: [
+//                                "location": "The city and state, e.g. San Francisco, CA",
+//                                "unit_fahrenheit": "The unit of temperature in 'fahrenheit'"
+//                            ]
+//                        )
+//                    }
+//                ]
+//            )
+//        )
+//        
+//        return getWeatherFunction
+//    }
 }
 
