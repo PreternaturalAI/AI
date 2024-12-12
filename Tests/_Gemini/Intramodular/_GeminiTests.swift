@@ -10,38 +10,72 @@ import Foundation
 import _Gemini
 
 @Suite struct GeminiTests {
-//    @Test func testGenerateContent() async throws {
-//        
-//        let content = _Gemini.APISpecification.RequestBodies.Content(
-//            role: "user",
-//            parts: [.text("What is the weather like?")]
-//        )
-//        
-//        let request = _Gemini.APISpecification.RequestBodies.SpeechRequest(
-//            contents: [content],
-//            generationConfig: .init(
-//                temperature: 0.7,
-//                maxTokens: 100
-//            )
-//        )
-//        
-//        do {
-//            let _ = try await client.generateContent(with: request)
-//            #expect(true)
-//        } catch {
-//            #expect(false, "Generate content request failed: \(error)")
-//        }
-//    }
+    func loadTestFile(named filename: String) throws -> Data {
+        // Using absolute path for now
+        let baseDirectory = "/Users/jareddavidson/Documents/Preternatural/AI"
+        let testFilesPath = "\(baseDirectory)/Tests/_Gemini/Intramodular/TestFiles"
+        let fileURL = URL(fileURLWithPath: testFilesPath)
+            .appendingPathComponent(filename)
+        
+        print("Attempting to load file from: \(fileURL.path)")
+        
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            throw NSError(
+                domain: "TestError",
+                code: 1,
+                userInfo: [
+                    NSLocalizedDescriptionKey: "File not found at path: \(fileURL.path)"
+                ]
+            )
+        }
+        
+        return try Data(contentsOf: fileURL)
+    }
+    
+    //    @Test func testVideoContentGeneration() async throws {
+    //        do {
+    //            let videoData = try loadTestFile(named: "LintMySwiftSmall.mov")
+    //            print("Successfully loaded video data: \(videoData.count) bytes")
+    //
+    //            let response = try await client.generateContent(
+    //                data: videoData,
+    //                type: .mov,
+    //                prompt: "What is happening in this video?"
+    //            )
+    //
+    //            #expect(response.candidates != nil)
+    //            #expect(!response.candidates!.isEmpty)
+    //
+    //            if let textContent = response.candidates?.first?.content?.parts?.first {
+    //                print("Response: \(textContent)")
+    //            }
+    //        } catch {
+    //            print("Detailed error: \(String(describing: error))")
+    //            #expect(false, "Video content generation failed: \(error)")
+    //        }
+    //    }
+    
+    
+    @Test func testAudioContentGeneration() async throws {
+        do {
+            let audioData = try loadTestFile(named: "LintMySwift2.m4a")
+            
+            let response = try await client.generateContent(
+                data: audioData,
+                type: .m4v,
+                prompt: "What is being said in this audio?"
+            )
+            
+            #expect(response.candidates != nil)
+            #expect(!response.candidates!.isEmpty)
+        } catch {
+            #expect(false, "Audio content generation failed: \(error)")
+        }
+    }
     
     @Test func testFileUpload() async throws {
-        let testData = "test file content".data(using: .utf8)!
-        
         do {
-            let _ = try await client.uploadFile(
-                fileData: testData,
-                mimeType: "text/plain",
-                displayName: "Hello World"
-            )
+            let _ = try await createFile(string: "Test")
             #expect(true)
         } catch {
             #expect(false, "File upload failed: \(error)")
@@ -49,13 +83,21 @@ import _Gemini
     }
     
     @Test func testFileDelete() async throws {
-        let testURL = URL(string: "https://generativelanguage.googleapis.com/v1beta/files/test")!
-        
         do {
-            try await client.deleteFile(fileURL: testURL)
-            #expect(true) // If we get here, request was properly formed
+            let file = try await createFile(string: "Test")
+            try await client.deleteFile(fileURL: file.uri)
+            #expect(true)
         } catch {
             #expect(false, "File delete failed: \(error)")
         }
+    }
+    
+    
+    func createFile(string: String) async throws -> _Gemini.File {
+        return try await client.uploadFile(
+            fileData: string.data(using: .utf8)!,
+            mimeType: "text/plain",
+            displayName: "Hello World"
+        )
     }
 }

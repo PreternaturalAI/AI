@@ -76,22 +76,17 @@ extension _Gemini {
         @POST
         @Path("/upload/v1beta/files")
         @Header([
-            "X-Goog-Upload-Protocol": "resumable",
-            "X-Goog-Upload-Command": "start",
-            "Content-Type": "application/json"
+            "X-Goog-Upload-Command": "start, upload, finalize"
         ])
-        var initiateUpload = Endpoint<RequestBodies.InitiateUploadInput, ResponseBodies.UploadInitiation, Void>()
+        @Body(json: .input)
+        var uploadFile = Endpoint<RequestBodies.FileUploadInput, ResponseBodies.FileUpload, Void>()
         
-        // Complete Upload endpoint
-        @POST
-        @Header([
-            "X-Goog-Upload-Command": "upload, finalize"
-        ])
+        // File Status endpoint
+        @GET
         @Path({ context -> String in
-            context.input.uploadURL.absoluteString
+            "/v1beta/\(context.input.name)"
         })
-        @Body(json: \.input)
-        var completeUpload = Endpoint<RequestBodies.CompleteUploadInput, ResponseBodies.FileUpload, Void>()
+        var getFileStatus = Endpoint<RequestBodies.FileStatusInput, _Gemini.File, Void>()
         
         // Delete File endpoint
         @DELETE
@@ -108,27 +103,26 @@ extension _Gemini.APISpecification {
             from input: Input,
             context: BuildRequestContext
         ) throws -> Request {
-            
             var request = try super.buildRequestBase(
                 from: input,
                 context: context
             )
             
             if let apiKey = context.root.configuration.apiKey {
-                request = request.header("Authorization", "Bearer \(apiKey)")
+                request = request.query([.init(name: "key", value: apiKey)])
             }
             
-            if let uploadInput = input as? RequestBodies.InitiateUploadInput {
-                request = request.header("X-Goog-Upload-Header-Content-Length", "\(uploadInput.contentLength)")
-                request = request.header("X-Goog-Upload-Header-Content-Type", uploadInput.mimeType)
+            if let uploadInput = input as? RequestBodies.FileUploadInput {
+                request = request.header("Content-Type", uploadInput.mimeType)
+                let metadata = ["file": ["display_name": uploadInput.displayName]]
+                let jsonData = try JSONSerialization.data(withJSONObject: metadata)
+                
+                var combinedData = jsonData
+                combinedData.append(uploadInput.fileData)
+                
+                request = request.body(.data(combinedData))
             }
             
-            if let completeInput = input as? RequestBodies.CompleteUploadInput {
-                request = request.header("Content-Length", "\(completeInput.fileData.count)")
-                request = request.header("X-Goog-Upload-Offset", "\(completeInput.offset)")
-            }
-            print(request)
-
             return request
         }
         
@@ -136,13 +130,7 @@ extension _Gemini.APISpecification {
             from response: Request.Response,
             context: DecodeOutputContext
         ) throws -> Output {
-            
-            print(response)
             try response.validate()
-            
-            if Output.self == Data.self {
-                return response.data as! Output
-            }
             
             return try response.decode(
                 Output.self,

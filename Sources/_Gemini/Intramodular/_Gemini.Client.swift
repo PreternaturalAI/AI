@@ -37,15 +37,86 @@ extension _Gemini {
 }
 
 extension _Gemini.Client {
+    private func waitForFileProcessing(
+        name: String,
+        maxAttempts: Int = 10,
+        delaySeconds: Double = 1.0
+    ) async throws -> _Gemini.File {
+        for attempt in 1...maxAttempts {
+            let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
+            let fileStatus = try await run(\.getFileStatus, with: input)
+            
+            print("File status attempt \(attempt): \(fileStatus.state)")
+            
+            if fileStatus.state == .active {
+                return fileStatus
+            }
+            
+            if attempt < maxAttempts {
+                try await Task.sleep(nanoseconds: UInt64(delaySeconds * 1_000_000_000))
+            }
+        }
+        
+        throw _Gemini.APIError.unknown(message: "File processing timeout")
+    }
+    
     public func generateContent(
-        with body: _Gemini.APISpecification.RequestBodies.SpeechRequest
+        data: Data,
+        type: _MediaAssetFileType,
+        prompt: String
     ) async throws -> _Gemini.APISpecification.ResponseBodies.GenerateContent {
-        let input = _Gemini.APISpecification.RequestBodies.GenerateContentInput(
-            model: .gemini_1_5_pro,
-            requestBody: body
+        print("Uploading file with MIME type: \(type.mimeType)")
+        
+        // Upload file
+        let uploadedFile = try await uploadFile(
+            fileData: data,
+            mimeType: type.mimeType,
+            displayName: "\(UUID().uuidString).\(type.fileExtension)"
         )
         
-        return try await run(\.generateContent, with: input)
+        print("Uploaded file response: \(uploadedFile)")
+        
+        do {
+            // Wait for file processing to complete
+            print("Waiting for file processing...")
+            let processedFile = try await waitForFileProcessing(name: uploadedFile.name ?? "")
+            print("File processing complete: \(processedFile)")
+            
+            // Create the file content
+            let fileContent = _Gemini.APISpecification.RequestBodies.Content(
+                role: "user",
+                parts: [
+                    .file(url: processedFile.uri, mimeType: type.mimeType)
+                ]
+            )
+            
+            let promptContent = _Gemini.APISpecification.RequestBodies.Content(
+                role: "user",
+                parts: [.text(prompt)]
+            )
+            
+            let speechRequest = _Gemini.APISpecification.RequestBodies.SpeechRequest(
+                contents: [fileContent, promptContent],
+                generationConfig: .init(
+                    maxOutputTokens: 8192,
+                    temperature: 1.0,
+                    topP: 0.95,
+                    topK: 40,
+                    responseMimeType: "text/plain"
+                )
+            )
+            
+            let input = _Gemini.APISpecification.RequestBodies.GenerateContentInput(
+                model: .gemini_1_5_flash,
+                requestBody: speechRequest
+            )
+            
+            return try await run(\.generateContent, with: input)
+        } catch {
+            // Ensure we try to delete the file even if processing fails
+//            try? await deleteFile(fileURL: uploadedFile.uri)
+            throw error
+        }
     }
     
     public func deleteFile(
@@ -60,20 +131,13 @@ extension _Gemini.Client {
         mimeType: String,
         displayName: String
     ) async throws -> _Gemini.File {
-        let initiateInput = _Gemini.APISpecification.RequestBodies.InitiateUploadInput(
-            file: .init(displayName: displayName),
-            contentLength: fileData.count,
-            mimeType: mimeType
+        let input = _Gemini.APISpecification.RequestBodies.FileUploadInput(
+            fileData: fileData,
+            mimeType: mimeType,
+            displayName: displayName
         )
         
-        let initiation = try await run(\.initiateUpload, with: initiateInput)
-        
-        let completeInput = _Gemini.APISpecification.RequestBodies.CompleteUploadInput(
-            uploadURL: initiation.uploadURL,
-            fileData: fileData
-        )
-        
-        let response = try await run(\.completeUpload, with: completeInput)
+        let response = try await run(\.uploadFile, with: input)
         return response.file
     }
 }

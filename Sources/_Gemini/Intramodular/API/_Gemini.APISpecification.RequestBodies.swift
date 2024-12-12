@@ -8,21 +8,6 @@ import Foundation
 
 extension _Gemini.APISpecification {
     public enum RequestBodies {
-        
-        public struct InitiateUploadInput: Codable {
-            public let file: FileMetadata
-            public let contentLength: Int
-            public let mimeType: String
-            
-            public struct FileMetadata: Codable {
-                public let displayName: String
-                
-                private enum CodingKeys: String, CodingKey {
-                    case displayName = "display_name"
-                }
-            }
-        }
-        
         public struct CompleteUploadInput: Codable {
             public let uploadURL: URL
             public let fileData: Data
@@ -34,6 +19,7 @@ extension _Gemini.APISpecification {
                 self.offset = offset
             }
         }
+        
         public struct GenerateContentInput: Codable {
             public let model: String
             public let requestBody: SpeechRequest
@@ -102,6 +88,28 @@ extension _Gemini.APISpecification {
                     case mimeType
                 }
                 
+                public func encode(to encoder: Encoder) throws {
+                    var container = encoder.container(keyedBy: CodingKeys.self)
+                    switch self {
+                        case .text(let txt):
+                            try container.encode(txt, forKey: .text)
+                        case .inline(data: let data, mimeType: let mimeType):
+                            var nestedContainer = container.nestedContainer(
+                                keyedBy: InlineDataNestedKeys.self,
+                                forKey: .inlineData
+                            )
+                            try nestedContainer.encode(data.base64EncodedString(), forKey: .data)
+                            try nestedContainer.encode(mimeType, forKey: .mimeType)
+                        case .file(url: let url, mimeType: let mimeType):
+                            var nestedContainer = container.nestedContainer(
+                                keyedBy: FileDataNestedKeys.self,
+                                forKey: .fileData
+                            )
+                            try nestedContainer.encode(url.absoluteString, forKey: .fileUri)
+                            try nestedContainer.encode(mimeType, forKey: .mimeType)
+                    }
+                }
+                
                 public init(from decoder: Decoder) throws {
                     let container = try decoder.container(keyedBy: CodingKeys.self)
                     
@@ -120,10 +128,12 @@ extension _Gemini.APISpecification {
                     }
                     
                     if let fileContainer = try? container.nestedContainer(keyedBy: FileDataNestedKeys.self, forKey: .fileData) {
-                        let url = try fileContainer.decode(URL.self, forKey: .fileUri)
+                        let urlString = try fileContainer.decode(String.self, forKey: .fileUri)
                         let mimeType = try fileContainer.decode(String.self, forKey: .mimeType)
-                        self = .file(url: url, mimeType: mimeType)
-                        return
+                        if let url = URL(string: urlString) {
+                            self = .file(url: url, mimeType: mimeType)
+                            return
+                        }
                     }
                     
                     throw DecodingError.dataCorrupted(
@@ -133,95 +143,80 @@ extension _Gemini.APISpecification {
                         )
                     )
                 }
-                
-                public func encode(to encoder: Encoder) throws {
-                    var container = encoder.container(keyedBy: CodingKeys.self)
-                    switch self {
-                        case .text(let txt):
-                            try container.encode(txt, forKey: .text)
-                        case .inline(data: let data, mimeType: let mimeType):
-                            var nestedContainer = container.nestedContainer(
-                                keyedBy: InlineDataNestedKeys.self,
-                                forKey: .inlineData
-                            )
-                            try nestedContainer.encode(data.base64EncodedString(), forKey: .data)
-                            try nestedContainer.encode(mimeType, forKey: .mimeType)
-                        case .file(url: let url, mimeType: let mimeType):
-                            var nestedContainer = container.nestedContainer(
-                                keyedBy: FileDataNestedKeys.self,
-                                forKey: .fileData
-                            )
-                            try nestedContainer.encode(url, forKey: .fileUri)
-                            try nestedContainer.encode(mimeType, forKey: .mimeType)
-                    }
-                }
             }
         }
         
         public struct GenerationConfig: Codable {
-            public let maxTokens: Int?
+            public let maxOutputTokens: Int?
             public let temperature: Double?
             public let topP: Double?
             public let topK: Int?
             public let presencePenalty: Double?
             public let frequencyPenalty: Double?
+            public let responseMimeType: String?
             
             public init(
-                maxTokens: Int? = nil,
+                maxOutputTokens: Int? = nil,
                 temperature: Double? = nil,
                 topP: Double? = nil,
                 topK: Int? = nil,
                 presencePenalty: Double? = nil,
-                frequencyPenalty: Double? = nil
+                frequencyPenalty: Double? = nil,
+                responseMimeType: String? = nil
             ) {
-                self.maxTokens = maxTokens
+                self.maxOutputTokens = maxOutputTokens
                 self.temperature = temperature
                 self.topP = topP
                 self.topK = topK
                 self.presencePenalty = presencePenalty
                 self.frequencyPenalty = frequencyPenalty
+                self.responseMimeType = responseMimeType
             }
         }
         
-        public struct FileUploadInput: Codable, HTTPRequest.Multipart.ContentConvertible {
+        public struct FileUploadInput: Codable {
             public let fileData: Data
             public let mimeType: String
-            public let model: String
+            public let displayName: String
             
-            public init(
-                fileData: Data,
-                mimeType: String,
-                model: _Gemini.Model
-            ) {
-                self.fileData = fileData
-                self.mimeType = mimeType
-                self.model = model.rawValue
+            public struct Metadata: Codable {
+                public let file: File
+                
+                public struct File: Codable {
+                    let displayName: String
+                    
+                    private enum CodingKeys: String, CodingKey {
+                        case displayName = "display_name"
+                    }
+                }
             }
             
-            public func __conversion() throws -> HTTPRequest.Multipart.Content {
-                var result = HTTPRequest.Multipart.Content()
-                
-                // Add the JSON part
-                let jsonBody = ["file": ["mimeType": self.mimeType]]
-                let jsonData = try JSONSerialization.data(withJSONObject: jsonBody)
-                result.append(
-                    .text(
-                        named: "metadata",
-                        value: String(data: jsonData, encoding: .utf8) ?? ""
-                    )
-                )
-                
-                // Add the file part
-                result.append(
-                    .file(
-                        named: "file",
-                        data: fileData,
-                        filename: "file",
-                        contentType: .init(rawValue: mimeType)
-                    )
-                )
-                
-                return result
+            public init(fileData: Data, mimeType: String, displayName: String) {
+                self.fileData = fileData
+                self.mimeType = mimeType
+                self.displayName = displayName
+            }
+            
+            private enum CodingKeys: String, CodingKey {
+                case file
+                case fileData
+                case mimeType
+                case displayName
+            }
+            
+            public func encode(to encoder: Encoder) throws {
+                // Encode only the metadata part as JSON
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                let metadata = Metadata(file: .init(displayName: displayName))
+                try container.encode(metadata.file, forKey: .file)
+            }
+            
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                let metadata = try container.decode(Metadata.self, forKey: .file)
+                self.displayName = metadata.file.displayName
+                self.fileData = try container.decode(Data.self, forKey: .fileData)
+                self.mimeType = try container.decode(String.self, forKey: .mimeType)
             }
         }
         
@@ -231,6 +226,10 @@ extension _Gemini.APISpecification {
             public init(fileURL: URL) {
                 self.fileURL = fileURL
             }
+        }
+        
+        public struct FileStatusInput: Codable {
+            public let name: String
         }
     }
 }
