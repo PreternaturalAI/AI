@@ -123,6 +123,8 @@ extension _Gemini.APISpecification {
                 request = request.body(.data(combinedData))
             }
             
+            print(request)
+            
             return request
         }
         
@@ -130,8 +132,9 @@ extension _Gemini.APISpecification {
             from response: Request.Response,
             context: DecodeOutputContext
         ) throws -> Output {
+            print(response)
             try response.validate()
-            
+                        
             return try response.decode(
                 Output.self,
                 keyDecodingStrategy: .convertFromSnakeCase

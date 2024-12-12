@@ -32,28 +32,28 @@ import _Gemini
         return try Data(contentsOf: fileURL)
     }
     
-    //    @Test func testVideoContentGeneration() async throws {
-    //        do {
-    //            let videoData = try loadTestFile(named: "LintMySwiftSmall.mov")
-    //            print("Successfully loaded video data: \(videoData.count) bytes")
-    //
-    //            let response = try await client.generateContent(
-    //                data: videoData,
-    //                type: .mov,
-    //                prompt: "What is happening in this video?"
-    //            )
-    //
-    //            #expect(response.candidates != nil)
-    //            #expect(!response.candidates!.isEmpty)
-    //
-    //            if let textContent = response.candidates?.first?.content?.parts?.first {
-    //                print("Response: \(textContent)")
-    //            }
-    //        } catch {
-    //            print("Detailed error: \(String(describing: error))")
-    //            #expect(false, "Video content generation failed: \(error)")
-    //        }
-    //    }
+        @Test func testVideoContentGeneration() async throws {
+            do {
+                let videoData = try loadTestFile(named: "LintMySwiftSmall.mov")
+                print("Successfully loaded video data: \(videoData.count) bytes")
+    
+                let response = try await client.generateContent(
+                    data: videoData,
+                    type: .custom("video/quicktime"),
+                    prompt: "What is happening in this video?"
+                )
+    
+                #expect(response.candidates != nil)
+                #expect(!response.candidates!.isEmpty)
+    
+                if let textContent = response.candidates?.first?.content?.parts?.first {
+                    print("Response: \(textContent)")
+                }
+            } catch {
+                print("Detailed error: \(String(describing: error))")
+                #expect(false, "Video content generation failed: \(error)")
+            }
+        }
     
     
     @Test func testAudioContentGeneration() async throws {
@@ -62,7 +62,7 @@ import _Gemini
             
             let response = try await client.generateContent(
                 data: audioData,
-                type: .m4v,
+                type: .custom("audio/x-m4a"),
                 prompt: "What is being said in this audio?"
             )
             

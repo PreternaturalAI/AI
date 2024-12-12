@@ -22,39 +22,24 @@ extension _Gemini.APISpecification {
         
         public struct GenerateContentInput: Codable {
             public let model: String
-            public let requestBody: SpeechRequest
+            public let requestBody: ContentBody
             
-            public init(model: _Gemini.Model, requestBody: SpeechRequest) {
+            public init(
+                model: _Gemini.Model,
+                requestBody: ContentBody
+            ) {
                 self.model = model.rawValue
                 self.requestBody = requestBody
             }
         }
         
-        public struct SpeechRequest: Codable {
+        public struct ContentBody: Codable {
             public let contents: [Content]
-            public let cachedContent: String?
-            public let generationConfig: GenerationConfig?
-            public let safetySettings: [_Gemini.SafetySetting]?
-            public let systemInstruction: _Gemini.SystemInstruction?
-            public let tools: [_Gemini.Tool]?
-            public let toolConfig: _Gemini.ToolConfig?
             
             public init(
-                contents: [Content],
-                cachedContent: String? = nil,
-                generationConfig: GenerationConfig? = nil,
-                safetySettings: [_Gemini.SafetySetting]? = nil,
-                systemInstruction: _Gemini.SystemInstruction? = nil,
-                tools: [_Gemini.Tool]? = nil,
-                toolConfig: _Gemini.ToolConfig? = nil
+                contents: [Content]
             ) {
                 self.contents = contents
-                self.cachedContent = cachedContent
-                self.generationConfig = generationConfig
-                self.safetySettings = safetySettings
-                self.systemInstruction = systemInstruction
-                self.tools = tools
-                self.toolConfig = toolConfig
             }
         }
         
@@ -74,39 +59,31 @@ extension _Gemini.APISpecification {
                 
                 private enum CodingKeys: String, CodingKey {
                     case text
-                    case inlineData
-                    case fileData
+                    case inlineData = "inlineData"
+                    case fileData = "fileData"
                 }
                 
-                private enum InlineDataNestedKeys: String, CodingKey {
-                    case data
-                    case mimeType
-                }
-                
-                private enum FileDataNestedKeys: String, CodingKey {
-                    case fileUri
-                    case mimeType
+                private enum FileDataKeys: String, CodingKey {
+                    case fileUri = "fileUri"
+                    case mimeType = "mimeType"
                 }
                 
                 public func encode(to encoder: Encoder) throws {
                     var container = encoder.container(keyedBy: CodingKeys.self)
+                    
                     switch self {
-                        case .text(let txt):
-                            try container.encode(txt, forKey: .text)
+                        case .text(let text):
+                            try container.encode(text, forKey: .text)
+                            
                         case .inline(data: let data, mimeType: let mimeType):
-                            var nestedContainer = container.nestedContainer(
-                                keyedBy: InlineDataNestedKeys.self,
-                                forKey: .inlineData
-                            )
-                            try nestedContainer.encode(data.base64EncodedString(), forKey: .data)
-                            try nestedContainer.encode(mimeType, forKey: .mimeType)
+                            var nested = container.nestedContainer(keyedBy: FileDataKeys.self, forKey: .inlineData)
+                            try nested.encode(data.base64EncodedString(), forKey: .fileUri)
+                            try nested.encode(mimeType, forKey: .mimeType)
+                            
                         case .file(url: let url, mimeType: let mimeType):
-                            var nestedContainer = container.nestedContainer(
-                                keyedBy: FileDataNestedKeys.self,
-                                forKey: .fileData
-                            )
-                            try nestedContainer.encode(url.absoluteString, forKey: .fileUri)
-                            try nestedContainer.encode(mimeType, forKey: .mimeType)
+                            var nested = container.nestedContainer(keyedBy: FileDataKeys.self, forKey: .fileData)
+                            try nested.encode(url.absoluteString, forKey: .fileUri)
+                            try nested.encode(mimeType, forKey: .mimeType)
                     }
                 }
                 
@@ -118,19 +95,10 @@ extension _Gemini.APISpecification {
                         return
                     }
                     
-                    if let inlineContainer = try? container.nestedContainer(keyedBy: InlineDataNestedKeys.self, forKey: .inlineData) {
-                        let base64Data = try inlineContainer.decode(String.self, forKey: .data)
-                        let mimeType = try inlineContainer.decode(String.self, forKey: .mimeType)
-                        if let data = Data(base64Encoded: base64Data) {
-                            self = .inline(data: data, mimeType: mimeType)
-                            return
-                        }
-                    }
-                    
-                    if let fileContainer = try? container.nestedContainer(keyedBy: FileDataNestedKeys.self, forKey: .fileData) {
-                        let urlString = try fileContainer.decode(String.self, forKey: .fileUri)
-                        let mimeType = try fileContainer.decode(String.self, forKey: .mimeType)
-                        if let url = URL(string: urlString) {
+                    if let nested = try? container.nestedContainer(keyedBy: FileDataKeys.self, forKey: .fileData) {
+                        let uri = try nested.decode(String.self, forKey: .fileUri)
+                        let mimeType = try nested.decode(String.self, forKey: .mimeType)
+                        if let url = URL(string: uri) {
                             self = .file(url: url, mimeType: mimeType)
                             return
                         }
@@ -139,7 +107,7 @@ extension _Gemini.APISpecification {
                     throw DecodingError.dataCorrupted(
                         DecodingError.Context(
                             codingPath: decoder.codingPath,
-                            debugDescription: "Unable to decode Part"
+                            debugDescription: "Could not decode Part"
                         )
                     )
                 }
