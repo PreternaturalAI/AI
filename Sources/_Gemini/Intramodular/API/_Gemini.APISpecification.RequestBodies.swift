@@ -37,15 +37,33 @@ extension _Gemini.APISpecification {
             public let contents: [Content]
             public let cachedContent: String?
             public let generationConfig: GenerationConfig?
+            public let tools: [Tool]?
+            public let toolConfig: _Gemini.ToolConfig?
+            public let systemInstruction: Content?
+            
+            private enum CodingKeys: String, CodingKey {
+                case contents
+                case cachedContent
+                case generationConfig
+                case tools
+                case toolConfig = "tool_config"
+                case systemInstruction = "system_instruction"
+            }
             
             public init(
                 contents: [Content],
                 cachedContent: String? = nil,
-                generationConfig: GenerationConfig? = nil
+                generationConfig: GenerationConfig? = nil,
+                tools: [Tool]? = nil,
+                toolConfig: _Gemini.ToolConfig? = nil,
+                systemInstruction: Content? = nil
             ) {
                 self.contents = contents
                 self.cachedContent = cachedContent
                 self.generationConfig = generationConfig
+                self.tools = tools
+                self.toolConfig = toolConfig
+                self.systemInstruction = systemInstruction
             }
         }
         
@@ -163,7 +181,7 @@ extension _Gemini.APISpecification {
                 var result = HTTPRequest.Multipart.Content()
                 
                 let metadata = ["file": ["display_name": displayName]]
-
+                
                 // TODO: - Add this to `HTTPMediaType` @jared @vmanot
                 let fileExtension: String = {
                     guard let subtype = mimeType.split(separator: "/").last else {
@@ -171,24 +189,24 @@ extension _Gemini.APISpecification {
                     }
                     
                     switch subtype {
-                    case "quicktime":
-                        return "mov"
-                    case "x-m4a":
-                        return "m4a"
-                    case "mp4":
-                        return "mp4"
-                    case "jpeg", "jpg":
-                        return "jpg"
-                    case "png":
-                        return "png"
-                    case "gif":
-                        return "gif"
-                    case "webp":
-                        return "webp"
-                    case "pdf":
-                        return "pdf"
-                    default:
-                        return String(subtype)
+                        case "quicktime":
+                            return "mov"
+                        case "x-m4a":
+                            return "m4a"
+                        case "mp4":
+                            return "mp4"
+                        case "jpeg", "jpg":
+                            return "jpg"
+                        case "png":
+                            return "png"
+                        case "gif":
+                            return "gif"
+                        case "webp":
+                            return "webp"
+                        case "pdf":
+                            return "pdf"
+                        default:
+                            return String(subtype)
                     }
                 }()
                 
@@ -204,6 +222,18 @@ extension _Gemini.APISpecification {
                 
                 print("BODY", result)
                 return result
+            }
+        }
+        
+        public struct Tool: Codable {
+            private enum CodingKeys: String, CodingKey {
+                case functionDeclarations = "function_declarations"
+            }
+            
+            public let functionDeclarations: [_Gemini.FunctionDefinition]?
+            
+            public init(functionDeclarations: [_Gemini.FunctionDefinition]? = nil) {
+                self.functionDeclarations = functionDeclarations
             }
         }
         

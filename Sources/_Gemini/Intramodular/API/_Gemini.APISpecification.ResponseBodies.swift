@@ -18,6 +18,7 @@ extension _Gemini.APISpecification {
                 public let finishReason: String?
                 public let index: Int?
                 public let safetyRatings: [SafetyRating]?
+                public let functionCall: _Gemini.FunctionCall?
                 
                 public struct Content: Decodable {
                     public let parts: [Part]?
@@ -25,14 +26,32 @@ extension _Gemini.APISpecification {
                     
                     public enum Part: Decodable {
                         case text(String)
+                        case functionCall(_Gemini.FunctionCall)
                         
                         private enum CodingKeys: String, CodingKey {
                             case text
+                            case functionCall
                         }
                         
                         public init(from decoder: Decoder) throws {
                             let container = try decoder.container(keyedBy: CodingKeys.self)
-                            self = .text(try container.decode(String.self, forKey: .text))
+                            
+                            if let text = try? container.decode(String.self, forKey: .text) {
+                                self = .text(text)
+                                return
+                            }
+                            
+                            if let functionCall = try? container.decode(_Gemini.FunctionCall.self, forKey: .functionCall) {
+                                self = .functionCall(functionCall)
+                                return
+                            }
+                            
+                            throw DecodingError.dataCorrupted(
+                                DecodingError.Context(
+                                    codingPath: decoder.codingPath,
+                                    debugDescription: "Could not decode Part"
+                                )
+                            )
                         }
                     }
                 }
