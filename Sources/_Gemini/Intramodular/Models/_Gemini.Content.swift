@@ -15,6 +15,7 @@ extension _Gemini {
         public let tokenUsage: TokenUsage?
         public let role: String? = nil
         public let parts: [Part]
+        public let groundingMetadata: GroundingMetadata?
         
         public enum Part {
             case text(String)
@@ -58,20 +59,50 @@ extension _Gemini {
             public let total: Int
         }
         
+        public struct GroundingMetadata: Decodable {
+            public let searchEntryPoint: SearchEntryPoint?
+            public let groundingChunks: [WebSource]
+            public let groundingSupports: [GroundingSupport]
+            public let webSearchQueries: [String]
+            
+            public struct SearchEntryPoint: Decodable {
+                public let renderedContent: String
+            }
+            
+            public struct WebSource: Decodable {
+                public let web: WebInfo
+                
+                public struct WebInfo: Decodable {
+                    public let uri: String
+                    public let title: String
+                }
+            }
+            
+            public struct GroundingSupport: Decodable {
+                public let segment: Segment
+                public let groundingChunkIndices: [Int]
+                public let confidenceScores: [Double]
+                
+                public struct Segment: Decodable {
+                    public let startIndex: Int?
+                    public let endIndex: Int
+                    public let text: String
+                }
+            }
+        }
+        
         public init(from decoder: Decoder) throws {
-            // Initialize all required properties before throwing
             self.text = ""
             self.finishReason = nil
             self.safetyRatings = []
             self.tokenUsage = nil
             self.parts = []
+            self.groundingMetadata = nil
             
             throw _Gemini.APIError.unknown(message: "Direct decoding not supported")
         }
     }
 }
-
-// Initializers
 
 extension _Gemini.Content {
     init(apiResponse response: _Gemini.APISpecification.ResponseBodies.GenerateContent) throws {
@@ -84,7 +115,6 @@ extension _Gemini.Content {
         var parts: [Part] = []
         var textParts: [String] = []
         
-        // Process all part types
         for part in responseParts {
             switch part {
             case .text(let text):
@@ -132,6 +162,42 @@ extension _Gemini.Content {
             )
         } else {
             self.tokenUsage = nil
+        }
+        
+        if let metadata = candidate.groundingMetadata {
+            let searchEntryPoint = metadata.searchEntryPoint.map {
+                GroundingMetadata.SearchEntryPoint(renderedContent: $0.renderedContent)
+            }
+            
+            let groundingChunks = (metadata.groundingChunks ?? []).map {
+                GroundingMetadata.WebSource(
+                    web: .init(
+                        uri: $0.web.uri,
+                        title: $0.web.title
+                    )
+                )
+            }
+            
+            let groundingSupports = (metadata.groundingSupports ?? []).map {
+                GroundingMetadata.GroundingSupport(
+                    segment: .init(
+                        startIndex: $0.segment.startIndex,
+                        endIndex: $0.segment.endIndex,
+                        text: $0.segment.text
+                    ),
+                    groundingChunkIndices: $0.groundingChunkIndices,
+                    confidenceScores: $0.confidenceScores
+                )
+            }
+            
+            self.groundingMetadata = GroundingMetadata(
+                searchEntryPoint: searchEntryPoint,
+                groundingChunks: groundingChunks,
+                groundingSupports: groundingSupports,
+                webSearchQueries: metadata.webSearchQueries ?? []
+            )
+        } else {
+            self.groundingMetadata = nil
         }
     }
 }

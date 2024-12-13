@@ -19,6 +19,7 @@ extension _Gemini.APISpecification {
                 public let index: Int?
                 public let safetyRatings: [SafetyRating]?
                 public let functionCall: _Gemini.FunctionCall?
+                public let groundingMetadata: GroundingMetadata?
                 
                 public struct Content: Decodable {
                     public let parts: [Part]?
@@ -88,6 +89,38 @@ extension _Gemini.APISpecification {
                     public let blocked: Bool?
                     public let category: String?
                     public let probability: String?
+                }
+                
+                public struct GroundingMetadata: Decodable {
+                    public let webSearchQueries: [String]?
+                    public let searchEntryPoint: SearchEntryPoint?
+                    public let groundingChunks: [WebSource]?
+                    public let groundingSupports: [GroundingSupport]?
+                    
+                    public struct SearchEntryPoint: Decodable {
+                        public let renderedContent: String
+                    }
+                    
+                    public struct WebSource: Decodable {
+                        public let web: WebInfo
+                        
+                        public struct WebInfo: Decodable {
+                            public let uri: String
+                            public let title: String
+                        }
+                    }
+                    
+                    public struct GroundingSupport: Decodable {
+                        public let segment: Segment
+                        public let groundingChunkIndices: [Int]
+                        public let confidenceScores: [Double]
+                        
+                        public struct Segment: Decodable {
+                            public let startIndex: Int?
+                            public let endIndex: Int
+                            public let text: String
+                        }
+                    }
                 }
             }
             
