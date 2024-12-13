@@ -10,7 +10,7 @@ import AI
 
 public var GEMINI_API_KEY: String {
     // Add your API key here or load from environment
-    "AIzaSyDouxE00ZxyWdVQEQIl7viX9mpQJ9ciZ_Q"
+    ""
 }
 
 public var client: _Gemini.Client {
