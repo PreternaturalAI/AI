@@ -13,6 +13,7 @@ extension _Gemini {
         public let finishReason: FinishReason?
         public let safetyRatings: [SafetyRating]
         public let tokenUsage: TokenUsage?
+        public let role: String? = nil
         
         public enum FinishReason: String, Decodable {
             case maxTokens = "MAX_TOKENS"
