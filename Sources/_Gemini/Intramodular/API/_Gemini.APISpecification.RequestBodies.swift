@@ -219,8 +219,6 @@ extension _Gemini.APISpecification {
                     )
                 )
                 
-                
-                print("BODY", result)
                 return result
             }
         }
@@ -228,12 +226,36 @@ extension _Gemini.APISpecification {
         public struct Tool: Codable {
             private enum CodingKeys: String, CodingKey {
                 case functionDeclarations = "function_declarations"
+                case codeExecution = "code_execution"
             }
             
             public let functionDeclarations: [_Gemini.FunctionDefinition]?
+            public let codeExecutionEnabled: Bool
             
             public init(functionDeclarations: [_Gemini.FunctionDefinition]? = nil) {
                 self.functionDeclarations = functionDeclarations
+                self.codeExecutionEnabled = false
+            }
+            
+            public init(codeExecutionEnabled: Bool = true) {
+                self.functionDeclarations = nil
+                self.codeExecutionEnabled = codeExecutionEnabled
+            }
+            
+            public func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                try container.encodeIfPresent(functionDeclarations, forKey: .functionDeclarations)
+                if codeExecutionEnabled {
+                    // Encode as empty dictionary for code execution
+                    try container.encode([String: String](), forKey: .codeExecution)
+                }
+            }
+            
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                self.functionDeclarations = try container.decodeIfPresent([_Gemini.FunctionDefinition].self, forKey: .functionDeclarations)
+                // We don't need to decode code_execution since it's only used in requests
+                self.codeExecutionEnabled = false
             }
         }
         

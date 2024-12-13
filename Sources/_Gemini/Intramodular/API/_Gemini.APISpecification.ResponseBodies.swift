@@ -27,10 +27,24 @@ extension _Gemini.APISpecification {
                     public enum Part: Decodable {
                         case text(String)
                         case functionCall(_Gemini.FunctionCall)
+                        case executableCode(language: String, code: String)
+                        case codeExecutionResult(outcome: String, output: String)
                         
                         private enum CodingKeys: String, CodingKey {
                             case text
                             case functionCall
+                            case executableCode = "executableCode"
+                            case codeExecutionResult = "codeExecutionResult"
+                        }
+                        
+                        private enum ExecutableCodeKeys: String, CodingKey {
+                            case language
+                            case code
+                        }
+                        
+                        private enum CodeExecutionResultKeys: String, CodingKey {
+                            case outcome
+                            case output
                         }
                         
                         public init(from decoder: Decoder) throws {
@@ -43,6 +57,20 @@ extension _Gemini.APISpecification {
                             
                             if let functionCall = try? container.decode(_Gemini.FunctionCall.self, forKey: .functionCall) {
                                 self = .functionCall(functionCall)
+                                return
+                            }
+                            
+                            if let executableContainer = try? container.nestedContainer(keyedBy: ExecutableCodeKeys.self, forKey: .executableCode) {
+                                let language = try executableContainer.decode(String.self, forKey: .language)
+                                let code = try executableContainer.decode(String.self, forKey: .code)
+                                self = .executableCode(language: language, code: code)
+                                return
+                            }
+                            
+                            if let resultContainer = try? container.nestedContainer(keyedBy: CodeExecutionResultKeys.self, forKey: .codeExecutionResult) {
+                                let outcome = try resultContainer.decode(String.self, forKey: .outcome)
+                                let output = try resultContainer.decode(String.self, forKey: .output)
+                                self = .codeExecutionResult(outcome: outcome, output: output)
                                 return
                             }
                             

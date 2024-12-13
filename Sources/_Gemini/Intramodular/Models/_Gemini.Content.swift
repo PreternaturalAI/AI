@@ -14,6 +14,14 @@ extension _Gemini {
         public let safetyRatings: [SafetyRating]
         public let tokenUsage: TokenUsage?
         public let role: String? = nil
+        public let parts: [Part]
+        
+        public enum Part {
+            case text(String)
+            case functionCall(_Gemini.FunctionCall)
+            case executableCode(language: String, code: String)
+            case codeExecutionResult(outcome: String, output: String)
+        }
         
         public enum FinishReason: String, Decodable {
             case maxTokens = "MAX_TOKENS"
@@ -50,52 +58,80 @@ extension _Gemini {
             public let total: Int
         }
         
-        init(apiResponse response: _Gemini.APISpecification.ResponseBodies.GenerateContent) throws {
-            guard let candidate = response.candidates?.first,
-                  let content = candidate.content,
-                  let parts = content.parts else {
-                throw _Gemini.APIError.unknown(message: "Invalid response format")
-            }
+        public init(from decoder: Decoder) throws {
+            // Initialize all required properties before throwing
+            self.text = ""
+            self.finishReason = nil
+            self.safetyRatings = []
+            self.tokenUsage = nil
+            self.parts = []
             
-            self.text = parts.compactMap { part -> String? in
-                if case .text(let text) = part {
-                    return text
-                }
-                return nil
-            }.joined(separator: " ")
-            
-            if let finishReasonStr = candidate.finishReason {
-                self.finishReason = FinishReason(rawValue: finishReasonStr)
-            } else {
-                self.finishReason = nil
-            }
-            
-            self.safetyRatings = (candidate.safetyRatings ?? []).compactMap { rating -> SafetyRating? in
-                guard let category = rating.category,
-                      let probability = rating.probability else {
-                    return nil
-                }
-                
-                return SafetyRating(
-                    category: SafetyRating.Category(rawValue: category) ?? .dangerousContent,
-                    probability: SafetyRating.Probability(rawValue: probability) ?? .negligible,
-                    blocked: rating.blocked ?? false
-                )
-            }
-            
-            if let usage = response.usageMetadata {
-                self.tokenUsage = TokenUsage(
-                    prompt: usage.promptTokenCount ?? 0,
-                    response: usage.candidatesTokenCount ?? 0,
-                    total: usage.totalTokenCount ?? 0
-                )
-            } else {
-                self.tokenUsage = nil
+            throw _Gemini.APIError.unknown(message: "Direct decoding not supported")
+        }
+    }
+}
+
+// Initializers
+
+extension _Gemini.Content {
+    init(apiResponse response: _Gemini.APISpecification.ResponseBodies.GenerateContent) throws {
+        guard let candidate = response.candidates?.first,
+              let content = candidate.content,
+              let responseParts = content.parts else {
+            throw _Gemini.APIError.unknown(message: "Invalid response format")
+        }
+        
+        var parts: [Part] = []
+        var textParts: [String] = []
+        
+        // Process all part types
+        for part in responseParts {
+            switch part {
+            case .text(let text):
+                parts.append(.text(text))
+                textParts.append(text)
+            case .executableCode(let language, let code):
+                parts.append(.executableCode(language: language, code: code))
+                textParts.append("```\(language.lowercased())\n\(code)\n```")
+            case .codeExecutionResult(let outcome, let output):
+                parts.append(.codeExecutionResult(outcome: outcome, output: output))
+                textParts.append("Execution Result (\(outcome)):\n\(output)")
+            case .functionCall(let call):
+                parts.append(.functionCall(call))
+                textParts.append("Function Call: \(call.name) with args: \(call.args)")
             }
         }
         
-        public init(from decoder: Decoder) throws {
-            throw _Gemini.APIError.unknown(message: "Direct decoding not supported")
+        self.parts = parts
+        self.text = textParts.filter { !$0.isEmpty }.joined(separator: "\n\n")
+        
+        if let finishReasonStr = candidate.finishReason {
+            self.finishReason = FinishReason(rawValue: finishReasonStr)
+        } else {
+            self.finishReason = nil
+        }
+        
+        self.safetyRatings = (candidate.safetyRatings ?? []).compactMap { rating -> SafetyRating? in
+            guard let category = rating.category,
+                  let probability = rating.probability else {
+                return nil
+            }
+            
+            return SafetyRating(
+                category: SafetyRating.Category(rawValue: category) ?? .dangerousContent,
+                probability: SafetyRating.Probability(rawValue: probability) ?? .negligible,
+                blocked: rating.blocked ?? false
+            )
+        }
+        
+        if let usage = response.usageMetadata {
+            self.tokenUsage = TokenUsage(
+                prompt: usage.promptTokenCount ?? 0,
+                response: usage.candidatesTokenCount ?? 0,
+                total: usage.totalTokenCount ?? 0
+            )
+        } else {
+            self.tokenUsage = nil
         }
     }
 }
