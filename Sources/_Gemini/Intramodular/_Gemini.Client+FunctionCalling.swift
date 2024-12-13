@@ -11,7 +11,7 @@ extension _Gemini.Client {
         functions: [_Gemini.FunctionDefinition],
         model: _Gemini.Model,
         functionConfig: _Gemini.FunctionCallingConfig = .init(mode: .auto)
-    ) async throws -> [_Gemini.FunctionCall] {
+    ) async throws -> _Gemini.Content {
         let contents = messages.filter { $0.role != .system }.map { message in
             _Gemini.APISpecification.RequestBodies.Content(
                 role: message.role.rawValue,
@@ -39,11 +39,6 @@ extension _Gemini.Client {
         
         let response = try await run(\.generateContent, with: input)
         
-        return response.candidates?.first?.content?.parts?.compactMap { part in
-            if case let .functionCall(call) = part {
-                return call
-            }
-            return nil
-        } ?? []
+        return try _Gemini.Content(apiResponse: response)
     }
 }
