@@ -1,5 +1,5 @@
 {
-  "originHash" : "83853ba40d0163bfd6b0d04a734383c75479cd9c8a0fc3cc071250b3e5259dc4",
+  "originHash" : "c84aa4446fdd21cbb193bc4ba0b1cdc79c7ec1f15c14460832a38ff9323b7098",
   "pins" : [
     {
       "identity" : "corepersistence",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/vmanot/CorePersistence.git",
       "state" : {
         "branch" : "main",
-        "revision" : "302f6123b17047b5ea8f91b06b7440370ff13d9f"
+        "revision" : "3fc10b8e55c3be60ca4695200cecfc046c0ba29a"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/vmanot/Merge.git",
       "state" : {
         "branch" : "master",
-        "revision" : "e06fe31d67b5b2addb49d896437aade25323ef69"
+        "revision" : "aca0b0c7a48d91934b098bab9b5c4a9f343369f2"
       }
     },
     {
@@ -34,7 +34,7 @@
       "location" : "https://github.com/vmanot/Swallow.git",
       "state" : {
         "branch" : "master",
-        "revision" : "e1831bd9e9f9392be901c6fffee8e236a91ba044"
+        "revision" : "890a767eacad123a5310cdcc8074d16378c18cbe"
       }
     },
     {
@@ -49,9 +49,9 @@
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-syntax.git",
+      "location" : "https://github.com/swift-precompiled/swift-syntax",
       "state" : {
-        "revision" : "0687f71944021d616d34d922343dcef086855920",
+        "revision" : "85ba62b876bb023acdd828d738703f1c08eaa058",
         "version" : "600.0.1"
       }
     },
@@ -70,7 +70,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX.git",
       "state" : {
         "branch" : "master",
-        "revision" : "a68663989c8aaae013c4104c6a4aa2f35afe1000"
+        "revision" : "50e2aacd7b124ffb5d06b4bfa5a4f255052a559b"
       }
     }
   ],

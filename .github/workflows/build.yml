@@ -20,7 +20,7 @@ jobs:
     - name: Run Preternatural Build (Xcode 16)
       uses: PreternaturalAI/github-action/preternatural-build@main
       with:
-        reuse_derived_data: false
         xcode-version: '16'
         platforms: 'macOS'
         configurations: '["debug"]'
+        fuck-swift-syntax: true
