@@ -6,7 +6,15 @@ import CoreMI
 import Swift
 
 extension _Gemini {
-    public struct Model: RawRepresentable, Codable, Hashable, Sendable {
+    public struct Model: RawRepresentable, Codable, Hashable, Sendable, CaseIterable {
+        public static var allCases: [Model] = [
+            .gemini_2_0_flash_exp,
+            .gemini_1_5_pro,
+            .gemini_1_5_pro_latest,
+            .gemini_1_5_flash,
+            .gemini_1_5_flash_latest,
+            .gemini_1_0_pro
+        ]
 
         public let rawValue: String
         
