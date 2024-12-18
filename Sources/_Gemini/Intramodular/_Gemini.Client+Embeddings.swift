@@ -8,7 +8,7 @@
 extension _Gemini.Client {
     public func generateEmbedding(
         text: String,
-        model: String = "models/text-embedding-004"
+        model: _Gemini.Model = .text_embedding_004
     ) async throws -> [Double] {
         let content = _Gemini.APISpecification.RequestBodies.Content(
             role: "user",

@@ -13,7 +13,11 @@ extension _Gemini.APISpecification {
             public let fileData: Data
             public let offset: Int
             
-            public init(uploadURL: URL, fileData: Data, offset: Int = 0) {
+            public init(
+                uploadURL: URL,
+                fileData: Data,
+                offset: Int = 0
+            ) {
                 self.uploadURL = uploadURL
                 self.fileData = fileData
                 self.offset = offset
@@ -143,7 +147,11 @@ extension _Gemini.APISpecification {
             public let mimeType: String
             public let displayName: String
             
-            public init(fileData: Data, mimeType: String, displayName: String) {
+            public init(
+                fileData: Data,
+                mimeType: String,
+                displayName: String
+            ) {
                 self.fileData = fileData
                 self.mimeType = mimeType
                 self.displayName = displayName
@@ -196,7 +204,9 @@ extension _Gemini.APISpecification {
         public struct DeleteFileInput: Codable {
             public let fileURL: URL
             
-            public init(fileURL: URL) {
+            public init(
+                fileURL: URL
+            ) {
                 self.fileURL = fileURL
             }
         }
@@ -210,7 +220,9 @@ extension _Gemini.APISpecification {
         public struct CreateTunedModel: Codable {
             public let requestBody: _Gemini.TuningConfig
             
-            public init(requestBody: _Gemini.TuningConfig) {
+            public init(
+                requestBody: _Gemini.TuningConfig
+            ) {
                 self.requestBody = requestBody
             }
         }
@@ -218,7 +230,9 @@ extension _Gemini.APISpecification {
         public struct GetOperation: Codable {
             public let operationName: String
             
-            public init(operationName: String) {
+            public init(
+                operationName: String
+            ) {
                 self.operationName = operationName
             }
         }
@@ -226,7 +240,9 @@ extension _Gemini.APISpecification {
         public struct GetTunedModel: Codable {
             public let modelName: String
             
-            public init(modelName: String) {
+            public init(
+                modelName: String
+            ) {
                 self.modelName = modelName
             }
         }
@@ -235,8 +251,11 @@ extension _Gemini.APISpecification {
             public let model: String
             public let content: Content
             
-            public init(model: String, content: Content) {
-                self.model = model
+            public init(
+                model: _Gemini.Model,
+                content: Content
+            ) {
+                self.model = model.rawValue
                 self.content = content
             }
         }

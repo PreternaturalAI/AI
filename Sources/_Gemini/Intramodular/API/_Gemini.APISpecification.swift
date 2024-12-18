@@ -121,7 +121,9 @@ extension _Gemini {
         var generateTunedContent = Endpoint<RequestBodies.GenerateContentInput, ResponseBodies.GenerateContent, Void>()
         
         @POST
-        @Path("/v1beta/models/text-embedding-004:embedContent")
+        @Path({ context -> String in
+            "/v1beta/models/\(context.input.model):embedContent"
+        })
         @Body(json: \.input)
         var generateEmbedding = Endpoint<RequestBodies.EmbeddingInput, ResponseBodies.EmbeddingResponse, Void>()
     }

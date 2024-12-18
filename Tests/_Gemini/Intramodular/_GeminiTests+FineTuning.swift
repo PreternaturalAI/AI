@@ -13,11 +13,11 @@ import AI
 @Suite struct _GeminiModelTuningTests {
     // Keep existing examples and config
     static let examples = [
-        _Gemini.Example(textInput: "1", output: "2"),
-        _Gemini.Example(textInput: "3", output: "4"),
-        _Gemini.Example(textInput: "-3", output: "-2"),
-        _Gemini.Example(textInput: "twenty two", output: "twenty three"),
-        _Gemini.Example(textInput: "ninety nine", output: "one hundred")
+        _Gemini.FineTuningExample(textInput: "1", output: "2"),
+        _Gemini.FineTuningExample(textInput: "3", output: "4"),
+        _Gemini.FineTuningExample(textInput: "-3", output: "-2"),
+        _Gemini.FineTuningExample(textInput: "twenty two", output: "twenty three"),
+        _Gemini.FineTuningExample(textInput: "ninety nine", output: "one hundred")
     ]
     
     static let tuningConfig = _Gemini.TuningConfig(

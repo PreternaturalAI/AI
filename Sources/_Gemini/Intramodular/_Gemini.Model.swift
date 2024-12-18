@@ -13,7 +13,8 @@ extension _Gemini {
             .gemini_1_5_pro_latest,
             .gemini_1_5_flash,
             .gemini_1_5_flash_latest,
-            .gemini_1_0_pro
+            .gemini_1_0_pro,
+            .text_embedding_004
         ]
 
         public let rawValue: String
@@ -28,6 +29,7 @@ extension _Gemini {
         public static let gemini_1_5_flash = Model(rawValue: "gemini-1.5-flash")
         public static let gemini_1_5_flash_latest = Model(rawValue: "gemini-1.5-flash-latest")
         public static let gemini_1_0_pro = Model(rawValue: "gemini-1.0-pro")
+        public static let text_embedding_004 = Model(rawValue: "text-embedding-004")
         
         public var maximumContextLength: Int {
             switch self {
