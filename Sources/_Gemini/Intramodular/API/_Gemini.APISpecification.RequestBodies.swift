@@ -206,5 +206,31 @@ extension _Gemini.APISpecification {
         public struct FileStatusInput: Codable {
             public let name: String
         }
+        
+        // Fine Tuning
+        
+        public struct CreateTunedModel: Codable {
+            public let requestBody: _Gemini.TuningConfig
+            
+            public init(requestBody: _Gemini.TuningConfig) {
+                self.requestBody = requestBody
+            }
+        }
+        
+        public struct GetOperation: Codable {
+            public let operationName: String
+            
+            public init(operationName: String) {
+                self.operationName = operationName
+            }
+        }
+        
+        public struct GetTunedModel: Codable {
+            public let modelName: String
+            
+            public init(modelName: String) {
+                self.modelName = modelName
+            }
+        }
     }
 }

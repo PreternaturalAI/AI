@@ -117,18 +117,18 @@ extension _Gemini.Content {
         
         for part in responseParts {
             switch part {
-            case .text(let text):
-                parts.append(.text(text))
-                textParts.append(text)
-            case .executableCode(let language, let code):
-                parts.append(.executableCode(language: language, code: code))
-                textParts.append("```\(language.lowercased())\n\(code)\n```")
-            case .codeExecutionResult(let outcome, let output):
-                parts.append(.codeExecutionResult(outcome: outcome, output: output))
-                textParts.append("Execution Result (\(outcome)):\n\(output)")
-            case .functionCall(let call):
-                parts.append(.functionCall(call))
-                textParts.append("Function Call: \(call.name) with args: \(call.args)")
+                case .text(let text):
+                    parts.append(.text(text))
+                    textParts.append(text)
+                case .executableCode(let language, let code):
+                    parts.append(.executableCode(language: language, code: code))
+                    textParts.append("```\(language.lowercased())\n\(code)\n```")
+                case .codeExecutionResult(let outcome, let output):
+                    parts.append(.codeExecutionResult(outcome: outcome, output: output))
+                    textParts.append("Execution Result (\(outcome)):\n\(output)")
+                case .functionCall(let call):
+                    parts.append(.functionCall(call))
+                    textParts.append("Function Call: \(call.name) with args: \(call.args)")
             }
         }
         
@@ -199,5 +199,82 @@ extension _Gemini.Content {
         } else {
             self.groundingMetadata = nil
         }
+    }
+    
+    init(apiResponse response: _Gemini.APISpecification.ResponseBodies.TunedGenerateContent) throws {
+        if response.candidates == nil || response.candidates?.isEmpty == true {
+            guard let usage = response.usageMetadata else {
+                throw _Gemini.APIError.unknown(message: "Response missing both candidates and usage metadata")
+            }
+            
+            self.text = ""
+            self.finishReason = .other  // Set a default finish reason
+            self.safetyRatings = []
+            self.parts = []
+            self.groundingMetadata = nil
+            self.tokenUsage = TokenUsage(
+                prompt: usage.promptTokenCount ?? 0,
+                response: usage.candidatesTokenCount ?? 0,
+                total: usage.totalTokenCount ?? 0
+            )
+            return
+        }
+        
+        guard let candidate = response.candidates?.first,
+              let content = candidate.content else {
+            throw _Gemini.APIError.unknown(message: "Invalid candidate format")
+        }
+        
+        var parts: [Part] = []
+        var textParts: [String] = []
+        
+        if let responseParts = content.parts {
+            for part in responseParts {
+                switch part {
+                    case .text(let text):
+                        let normalizedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                        parts.append(.text(normalizedText))
+                        textParts.append(normalizedText)
+                    case .functionCall(let call):
+                        parts.append(.functionCall(call))
+                        textParts.append("Function Call: \(call.name)")
+                    case .executableCode(let language, let code):
+                        parts.append(.executableCode(language: language, code: code))
+                        textParts.append("```\(language)\n\(code)\n```")
+                    case .codeExecutionResult(let outcome, let output):
+                        parts.append(.codeExecutionResult(outcome: outcome, output: output))
+                        textParts.append("\(outcome): \(output)")
+                }
+            }
+        }
+        
+        self.parts = parts
+        self.text = textParts.joined(separator: "\n\n")
+        
+        // Handle finish reason with a default value if not present
+        self.finishReason = candidate.finishReason
+            .flatMap { FinishReason(rawValue: $0) } ?? .other
+        
+        self.safetyRatings = (candidate.safetyRatings ?? []).compactMap { rating -> SafetyRating? in
+            guard let category = rating.category,
+                  let probability = rating.probability else {
+                return nil
+            }
+            
+            return SafetyRating(
+                category: SafetyRating.Category(rawValue: category) ?? .dangerousContent,
+                probability: SafetyRating.Probability(rawValue: probability) ?? .negligible,
+                blocked: rating.blocked ?? false
+            )
+        }
+        
+        self.tokenUsage = response.usageMetadata.map {
+            TokenUsage(
+                prompt: $0.promptTokenCount ?? 0,
+                response: $0.candidatesTokenCount ?? 0,
+                total: $0.totalTokenCount ?? 0
+            )
+        }
+        self.groundingMetadata = nil
     }
 }

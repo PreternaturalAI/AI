@@ -94,6 +94,31 @@ extension _Gemini {
             "/\(context.input.fileURL.path)"
         })
         var deleteFile = Endpoint<RequestBodies.DeleteFileInput, Void, Void>()
+        
+        //Fine Tuning
+        @POST
+        @Path("/v1beta/tunedModels")
+        @Body(json: \.requestBody)
+        var createTunedModel = Endpoint<RequestBodies.CreateTunedModel, _Gemini.TuningOperation, Void>()
+        
+        @GET
+        @Path({ context -> String in
+            "/v1/\(context.input.operationName)"
+        })
+        var getTuningOperation = Endpoint<RequestBodies.GetOperation, _Gemini.TuningOperation, Void>()
+        
+        @GET
+        @Path({ context -> String in
+            "/v1beta/\(context.input.modelName)"
+        })
+        var getTunedModel = Endpoint<RequestBodies.GetTunedModel, _Gemini.TunedModel, Void>()
+        
+        @POST
+        @Path({ context -> String in
+            "/v1beta/\(context.input.model):generateContent"  // Use the model name directly
+        })
+        @Body(json: \.requestBody)
+        var generateTunedContent = Endpoint<RequestBodies.GenerateContentInput, ResponseBodies.GenerateContent, Void>()
     }
 }
 
@@ -119,8 +144,11 @@ extension _Gemini.APISpecification {
             from response: Request.Response,
             context: DecodeOutputContext
         ) throws -> Output {
+            
+            print(response)
+            
             try response.validate()
-                        
+            
             return try response.decode(
                 Output.self,
                 keyDecodingStrategy: .convertFromSnakeCase
