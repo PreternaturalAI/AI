@@ -36,8 +36,8 @@ extension _Gemini.APISpecification {
         public struct ContentBody: Codable {
             public let contents: [Content]
             public let cachedContent: String?
-            public let generationConfig: GenerationConfig?
-            public let tools: [Tool]?
+            public let generationConfig: _Gemini.GenerationConfig?
+            public let tools: [_Gemini.Tool]?
             public let toolConfig: _Gemini.ToolConfig?
             public let systemInstruction: Content?
             
@@ -53,8 +53,8 @@ extension _Gemini.APISpecification {
             public init(
                 contents: [Content],
                 cachedContent: String? = nil,
-                generationConfig: GenerationConfig? = nil,
-                tools: [Tool]? = nil,
+                generationConfig: _Gemini.GenerationConfig? = nil,
+                tools: [_Gemini.Tool]? = nil,
                 toolConfig: _Gemini.ToolConfig? = nil,
                 systemInstruction: Content? = nil
             ) {
@@ -138,34 +138,6 @@ extension _Gemini.APISpecification {
             }
         }
         
-        public struct GenerationConfig: Codable {
-            public let maxOutputTokens: Int?
-            public let temperature: Double?
-            public let topP: Double?
-            public let topK: Int?
-            public let presencePenalty: Double?
-            public let frequencyPenalty: Double?
-            public let responseMimeType: String?
-            
-            public init(
-                maxOutputTokens: Int? = nil,
-                temperature: Double? = nil,
-                topP: Double? = nil,
-                topK: Int? = nil,
-                presencePenalty: Double? = nil,
-                frequencyPenalty: Double? = nil,
-                responseMimeType: String? = nil
-            ) {
-                self.maxOutputTokens = maxOutputTokens
-                self.temperature = temperature
-                self.topP = topP
-                self.topK = topK
-                self.presencePenalty = presencePenalty
-                self.frequencyPenalty = frequencyPenalty
-                self.responseMimeType = responseMimeType
-            }
-        }
-        
         public struct FileUploadInput: Codable, HTTPRequest.Multipart.ContentConvertible {
             public let fileData: Data
             public let mimeType: String
@@ -220,79 +192,6 @@ extension _Gemini.APISpecification {
                 )
                 
                 return result
-            }
-        }
-        
-        public struct Tool: Codable {
-            private enum CodingKeys: String, CodingKey {
-                case functionDeclarations = "function_declarations"
-                case codeExecution = "code_execution"
-                case googleSearchRetrieval = "google_search_retrieval"
-            }
-            
-            public let functionDeclarations: [_Gemini.FunctionDefinition]?
-            public let codeExecutionEnabled: Bool
-            public let googleSearchRetrieval: GoogleSearchRetrieval?
-            
-            public init(functionDeclarations: [_Gemini.FunctionDefinition]? = nil) {
-                self.functionDeclarations = functionDeclarations
-                self.codeExecutionEnabled = false
-                self.googleSearchRetrieval = nil
-            }
-            
-            public init(codeExecutionEnabled: Bool = true) {
-                self.functionDeclarations = nil
-                self.codeExecutionEnabled = codeExecutionEnabled
-                self.googleSearchRetrieval = nil
-            }
-            
-            public init(googleSearchRetrieval: GoogleSearchRetrieval) {
-                self.functionDeclarations = nil
-                self.codeExecutionEnabled = false
-                self.googleSearchRetrieval = googleSearchRetrieval
-            }
-            
-            public func encode(to encoder: Encoder) throws {
-                var container = encoder.container(keyedBy: CodingKeys.self)
-                try container.encodeIfPresent(functionDeclarations, forKey: .functionDeclarations)
-                if codeExecutionEnabled {
-                    try container.encode([String: String](), forKey: .codeExecution)
-                }
-                try container.encodeIfPresent(googleSearchRetrieval, forKey: .googleSearchRetrieval)
-            }
-            
-            public init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                self.functionDeclarations = try container.decodeIfPresent([_Gemini.FunctionDefinition].self, forKey: .functionDeclarations)
-                self.codeExecutionEnabled = false
-                self.googleSearchRetrieval = try container.decodeIfPresent(GoogleSearchRetrieval.self, forKey: .googleSearchRetrieval)
-            }
-        }
-        
-        public struct GoogleSearchRetrieval: Codable {
-            private enum CodingKeys: String, CodingKey {
-                case dynamicRetrievalConfig = "dynamic_retrieval_config"
-            }
-            
-            public let dynamicRetrievalConfig: DynamicRetrievalConfig
-            
-            public init(dynamicRetrievalConfig: DynamicRetrievalConfig) {
-                self.dynamicRetrievalConfig = dynamicRetrievalConfig
-            }
-        }
-        
-        public struct DynamicRetrievalConfig: Codable {
-            private enum CodingKeys: String, CodingKey {
-                case mode
-                case dynamicThreshold = "dynamic_threshold"
-            }
-            
-            public let mode: String
-            public let dynamicThreshold: Double
-            
-            public init(mode: String = "MODE_DYNAMIC", dynamicThreshold: Double) {
-                self.mode = mode
-                self.dynamicThreshold = dynamicThreshold
             }
         }
         

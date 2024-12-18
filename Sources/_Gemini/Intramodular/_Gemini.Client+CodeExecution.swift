@@ -10,7 +10,9 @@ import Foundation
 extension _Gemini.Client {
     public func generateContentWithCodeExecution(
         messages: [_Gemini.Message],
-        model: _Gemini.Model
+        model: _Gemini.Model,
+        toolConfig: _Gemini.ToolConfig? = nil,
+        config: _Gemini.GenerationConfig? = nil
     ) async throws -> _Gemini.Content {
         let contents = messages.filter { $0.role != .system }.map { message in
             _Gemini.APISpecification.RequestBodies.Content(
@@ -26,14 +28,14 @@ extension _Gemini.Client {
             )
         }
         
-        let tool = _Gemini.APISpecification.RequestBodies.Tool(codeExecutionEnabled: true)
-        
+        let tool = _Gemini.Tool(codeExecutionEnabled: true)
         let input = _Gemini.APISpecification.RequestBodies.GenerateContentInput(
             model: model,
             requestBody: .init(
                 contents: contents,
+                generationConfig: config,
                 tools: [tool],
-                toolConfig: nil,
+                toolConfig: toolConfig,
                 systemInstruction: systemInstruction
             )
         )

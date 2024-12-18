@@ -26,7 +26,7 @@ extension _Gemini.Client {
             )
         }
         
-        let tool = _Gemini.APISpecification.RequestBodies.Tool(functionDeclarations: functions)
+        let tool = _Gemini.Tool(functionDeclarations: functions)
         let input = _Gemini.APISpecification.RequestBodies.GenerateContentInput(
             model: model,
             requestBody: .init(

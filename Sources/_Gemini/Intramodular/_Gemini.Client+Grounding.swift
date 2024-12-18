@@ -25,7 +25,7 @@ extension _Gemini.Client {
             )
         }
         
-        let tool = _Gemini.APISpecification.RequestBodies.Tool(
+        let tool = _Gemini.Tool(
             googleSearchRetrieval: .init(
                 dynamicRetrievalConfig: .init(
                     mode: "MODE_DYNAMIC",
