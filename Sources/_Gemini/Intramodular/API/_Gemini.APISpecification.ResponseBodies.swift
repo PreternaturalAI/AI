@@ -167,5 +167,13 @@ extension _Gemini.APISpecification {
                 }
             }
         }
+        
+        public struct EmbeddingResponse: Decodable {
+            public let embedding: Embedding
+            
+            public struct Embedding: Decodable {
+                public let values: [Double]
+            }
+        }
     }
 }

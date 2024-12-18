@@ -232,5 +232,15 @@ extension _Gemini.APISpecification {
                 self.modelName = modelName
             }
         }
+        
+        public struct EmbeddingInput: Codable {
+            public let model: String
+            public let content: Content
+            
+            public init(model: String, content: Content) {
+                self.model = model
+                self.content = content
+            }
+        }
     }
 }
