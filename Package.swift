@@ -365,6 +365,21 @@ let package = Package(
             ]
         ),
         .testTarget(
+            name: "_GeminiTests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/_Gemini",
+            resources: [
+                .copy("Resources/LintMySwiftSmall.mov"),
+                .copy("Resources/LintMySwift2.m4a"),
+            ],
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
             name: "LargeLanguageModelsTests",
             dependencies: [
                 "AI",
