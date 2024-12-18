@@ -15,6 +15,8 @@ import FoundationX
 import Swallow
 
 extension _Gemini.Client {
+    
+    // FIXME: - I'm not sure where/how a default should be properly placed.
     static public let configDefault: _Gemini.GenerationConfig = .init(
         maxOutputTokens: 8192,
         temperature: 1,
@@ -24,88 +26,111 @@ extension _Gemini.Client {
     )
     
     public func generateContent(
-        url: URL,
-        type: HTTPMediaType,
-        prompt: String,
+        messages: [_Gemini.Message] = [],
+        file: _Gemini.File? = nil,
+        fileURL: URL? = nil,
+        mimeType: HTTPMediaType? = nil,
         model: _Gemini.Model,
         config: _Gemini.GenerationConfig = configDefault
     ) async throws -> _Gemini.Content {
-        do {
-            let data = try Data(contentsOf: url)
+        // Handle file URL if provided
+        if let fileURL = fileURL {
+            guard let mimeType = mimeType else {
+                throw _Gemini.APIError.unknown(message: "MIME type is required when using fileURL")
+            }
             
-            let uploadedFile = try await uploadFile(
-                fileData: data,
-                mimeType: type,
-                displayName: UUID().uuidString
-            )
-            
-            return try await self.generateContent(
-                file: uploadedFile,
-                prompt: prompt,
-                model: model,
-                config: config
-            )
-        } catch let error as NSError where error.domain == NSCocoaErrorDomain {
-            throw _Gemini.APIError.unknown(message: "Failed to read file: \(error.localizedDescription)")
-        } catch {
-            throw error
-        }
-    }
-    
-    public func generateContent(
-        file: _Gemini.File,
-        prompt: String,
-        model: _Gemini.Model,
-        config: _Gemini.GenerationConfig = configDefault
-    ) async throws -> _Gemini.Content {
-        guard let fileName = file.name else {
-            throw ContentGenerationError.invalidFileName
+            do {
+                let data = try Data(contentsOf: fileURL)
+                let uploadedFile = try await uploadFile(
+                    fileData: data,
+                    mimeType: mimeType,
+                    displayName: UUID().uuidString
+                )
+                return try await generateContent(
+                    messages: messages,
+                    file: uploadedFile,
+                    model: model,
+                    config: config
+                )
+            } catch let error as NSError where error.domain == NSCocoaErrorDomain {
+                throw _Gemini.APIError.unknown(message: "Failed to read file: \(error.localizedDescription)")
+            }
         }
         
-        do {
-            print("Waiting for file processing...")
+        // Handle file if provided
+        if let file = file {
+            guard let fileName = file.name else {
+                throw ContentGenerationError.invalidFileName
+            }
+            
             let processedFile = try await waitForFileProcessing(name: fileName)
-            print("File processing complete: \(processedFile)")
             
             guard let mimeType = file.mimeType else {
                 throw _Gemini.APIError.unknown(message: "Invalid MIME type")
             }
             
-            let fileUri = processedFile.uri
+            var contents: [_Gemini.APISpecification.RequestBodies.Content] = []
             
-            let fileContent = _Gemini.APISpecification.RequestBodies.Content(
+            // Add file content first if present
+            contents.append(_Gemini.APISpecification.RequestBodies.Content(
                 role: "user",
-                parts: [
-                    .file(url: fileUri, mimeType: mimeType),
-                ]
-            )
+                parts: [.file(url: processedFile.uri, mimeType: mimeType)]
+            ))
             
-            let promptContent = _Gemini.APISpecification.RequestBodies.Content(
-                role: "user",
-                parts: [
-                    .text(prompt)
-                ]
-            )
+            // Add regular messages
+            contents.append(contentsOf: messages.filter { $0.role != .system }.map { message in
+                _Gemini.APISpecification.RequestBodies.Content(
+                    role: message.role.rawValue,
+                    parts: [.text(message.content)]
+                )
+            })
+            
+            let systemInstruction = messages.first { $0.role == .system }.map { message in
+                _Gemini.APISpecification.RequestBodies.Content(
+                    role: message.role.rawValue,
+                    parts: [.text(message.content)]
+                )
+            }
             
             let input = _Gemini.APISpecification.RequestBodies.GenerateContentInput(
                 model: model,
                 requestBody: .init(
-                    contents: [fileContent, promptContent],
-                    generationConfig: config
+                    contents: contents,
+                    generationConfig: config,
+                    systemInstruction: systemInstruction
                 )
             )
             
-            print(input)
-            
             let response = try await run(\.generateContent, with: input)
-            
-            return try _Gemini.Content.init(apiResponse: response)
-
-        } catch let error as ContentGenerationError {
-            throw error
-        } catch {
-            throw _Gemini.APIError.unknown(message: "Content generation failed: \(error.localizedDescription)")
+            return try _Gemini.Content(apiResponse: response)
         }
+        
+        // Handle text-only messages
+        let contents = messages.filter { $0.role != .system }.map { message in
+            _Gemini.APISpecification.RequestBodies.Content(
+                role: message.role.rawValue,
+                parts: [.text(message.content)]
+            )
+        }
+        
+        let systemInstruction = messages.first { $0.role == .system }.map { message in
+            _Gemini.APISpecification.RequestBodies.Content(
+                role: message.role.rawValue,
+                parts: [.text(message.content)]
+            )
+        }
+        
+        let input = _Gemini.APISpecification.RequestBodies.GenerateContentInput(
+            model: model,
+            requestBody: .init(
+                contents: contents,
+                generationConfig: config,
+                systemInstruction: systemInstruction
+            )
+        )
+        
+        let response = try await run(\.generateContent, with: input)
+        return try _Gemini.Content(apiResponse: response)
     }
 }
 

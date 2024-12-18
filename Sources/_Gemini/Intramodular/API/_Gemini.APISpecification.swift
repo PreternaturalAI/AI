@@ -119,7 +119,6 @@ extension _Gemini.APISpecification {
             from response: Request.Response,
             context: DecodeOutputContext
         ) throws -> Output {
-            print(response)
             try response.validate()
                         
             return try response.decode(

@@ -43,10 +43,11 @@ import _Gemini
     @Test func testVideoContentGeneration() async throws {
         do {
             let file = try await createFile(type: .video)
+            let messages = [_Gemini.Message(role: .user, content: "What is happening in this video?")]
             
             let content = try await client.generateContent(
+                messages: messages,
                 file: file,
-                prompt: "What is happening in this video?",
                 model: .gemini_1_5_flash
             )
             
@@ -67,10 +68,11 @@ import _Gemini
     @Test func testAudioContentGeneration() async throws {
         do {
             let file = try await createFile(type: .audio)
+            let messages = [_Gemini.Message(role: .user, content: "What is being said in this audio?")]
             
             let content = try await client.generateContent(
+                messages: messages,
                 file: file,
-                prompt: "What is being said in this audio?",
                 model: .gemini_1_5_flash
             )
             
@@ -88,10 +90,11 @@ import _Gemini
     @Test func testImageContentGeneration() async throws {
         do {
             let file = try await createFile(type: .image)
+            let messages = [_Gemini.Message(role: .user, content: "What is this the shape of this image?")]
             
             let content = try await client.generateContent(
+                messages: messages,
                 file: file,
-                prompt: "What is this the shape of this image?",
                 model: .gemini_1_5_flash
             )
             
@@ -109,10 +112,12 @@ import _Gemini
     @Test func testImageContentGenerationWithURL() async throws {
         do {
             let url = try loadTestFileURL(named: "LintMySwift2", fileExtension: "m4a")
+            let messages = [_Gemini.Message(role: .user, content: "What does this audio say?")]
+            
             let content = try await client.generateContent(
-                url: url,
-                type: .custom("audio/x-m4a"),
-                prompt: "What does this audio say?",
+                messages: messages,
+                fileURL: url,
+                mimeType: .custom("audio/x-m4a"),
                 model: .gemini_1_5_flash
             )
             

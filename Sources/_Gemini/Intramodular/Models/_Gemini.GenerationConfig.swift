@@ -5,6 +5,8 @@
 //  Created by Jared Davidson on 12/18/24.
 //
 
+import Foundation
+
 extension _Gemini {
     public struct GenerationConfig: Codable {
         public let maxOutputTokens: Int?
@@ -14,7 +16,7 @@ extension _Gemini {
         public let presencePenalty: Double?
         public let frequencyPenalty: Double?
         public let responseMimeType: String?
-        public let responseSchema: ResponseSchema?
+        public let responseSchema: SchemaObject?
         
         public init(
             maxOutputTokens: Int? = nil,
@@ -24,7 +26,7 @@ extension _Gemini {
             presencePenalty: Double? = nil,
             frequencyPenalty: Double? = nil,
             responseMimeType: String? = nil,
-            responseSchema: ResponseSchema? = nil
+            responseSchema: SchemaObject? = nil
         ) {
             self.maxOutputTokens = maxOutputTokens
             self.temperature = temperature
@@ -37,38 +39,61 @@ extension _Gemini {
         }
     }
     
-    public struct ResponseSchema: Codable {
-        public let type: SchemaType
-        public let items: SchemaObject?
-        public let properties: [String: SchemaObject]?
+    public indirect enum SchemaObject: Codable {
+        case object(properties: [String: SchemaObject])
+        case array(items: SchemaObject)
+        case string
+        case number
+        case boolean
         
-        public init(
-            type: SchemaType,
-            items: SchemaObject? = nil,
-            properties: [String: SchemaObject]? = nil
-        ) {
-            self.type = type
-            self.items = items
-            self.properties = properties
+        public var type: SchemaType {
+            switch self {
+            case .object: return .object
+            case .array: return .array
+            case .string: return .string
+            case .number: return .number
+            case .boolean: return .boolean
+            }
         }
         
         private enum CodingKeys: String, CodingKey {
             case type
-            case items
             case properties
+            case items
         }
-    }
-    
-    public struct SchemaObject: Codable {
-        public let type: SchemaType
-        public let properties: [String: SchemaObject]?
         
-        public init(
-            type: SchemaType,
-            properties: [String: SchemaObject]? = nil
-        ) {
-            self.type = type
-            self.properties = properties
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(type, forKey: .type)
+            
+            switch self {
+            case .object(let properties):
+                try container.encode(properties, forKey: .properties)
+            case .array(let items):
+                try container.encode(items, forKey: .items)
+            case .string, .number, .boolean:
+                break
+            }
+        }
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let type = try container.decode(SchemaType.self, forKey: .type)
+            
+            switch type {
+            case .object:
+                let properties = try container.decode([String: SchemaObject].self, forKey: .properties)
+                self = .object(properties: properties)
+            case .array:
+                let items = try container.decode(SchemaObject.self, forKey: .items)
+                self = .array(items: items)
+            case .string:
+                self = .string
+            case .number:
+                self = .number
+            case .boolean:
+                self = .boolean
+            }
         }
     }
     
