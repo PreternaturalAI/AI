@@ -371,10 +371,6 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/_Gemini",
-            resources: [
-                .copy("Resources/LintMySwiftSmall.mov"),
-                .copy("Resources/LintMySwift2.m4a"),
-            ],
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]

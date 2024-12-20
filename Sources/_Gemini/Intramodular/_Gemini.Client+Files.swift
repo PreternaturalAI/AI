@@ -9,6 +9,87 @@ import Foundation
 import NetworkKit
 
 extension _Gemini.Client {
+    internal func handleFileGeneration(
+        fileSource: FileSource,
+        mimeType: HTTPMediaType?,
+        messages: [_Gemini.Message],
+        model: _Gemini.Model,
+        config: _Gemini.GenerationConfig
+    ) async throws -> _Gemini.Content {
+        let initialFile: _Gemini.File
+        
+        switch fileSource {
+            case .localFile(let fileURL):
+                initialFile = try await processLocalFile(
+                    fileURL: fileURL,
+                    mimeType: mimeType
+                )
+                
+            case .remoteURL(let url):
+                initialFile = try await processRemoteURL(
+                    url: url,
+                    mimeType: mimeType
+                )
+                
+            case .uploadedFile(let file):
+                initialFile = file
+        }
+        
+        let processedFile = try await waitForFileProcessing(name: initialFile.name ?? "")
+        
+        return try await generateWithFile(
+            file: processedFile,
+            messages: messages,
+            model: model,
+            config: config
+        )
+    }
+    
+    internal func processLocalFile(
+        fileURL: URL,
+        mimeType: HTTPMediaType?
+    ) async throws -> _Gemini.File {
+        guard let mimeType = mimeType else {
+            throw _Gemini.APIError.unknown(message: "MIME type is required when using fileURL")
+        }
+        
+        do {
+            let data = try Data(contentsOf: fileURL)
+            let file = try await uploadFile(
+                fileData: data,
+                mimeType: mimeType,
+                displayName: UUID().uuidString
+            )
+            return file
+        } catch let error as NSError where error.domain == NSCocoaErrorDomain {
+            throw _Gemini.APIError.unknown(message: "Failed to read file: \(error.localizedDescription)")
+        }
+    }
+    
+    internal func processRemoteURL(
+        url: URL,
+        mimeType: HTTPMediaType?
+    ) async throws -> _Gemini.File {
+        guard let mimeType = mimeType else {
+            throw _Gemini.APIError.unknown(message: "MIME type is required when using remote URL")
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw _Gemini.APIError.unknown(message: "Failed to download file from URL")
+        }
+        
+        let file = try await uploadFile(
+            fileData: data,
+            mimeType: mimeType,
+            displayName: UUID().uuidString
+        )
+        return file
+    }
+    
+    
     public func waitForFileProcessing(
         name: String,
         maxAttempts: Int = 10,

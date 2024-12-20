@@ -11,23 +11,38 @@ import _Gemini
 import AI
 
 @Suite struct _GeminiModelTuningTests {
+    // Test case structure
+    struct TestCase {
+        let input: String
+        let expectedOutput: String
+    }
+    
     // Keep existing examples and config
     static let examples = [
+        // Numeric inputs
         _Gemini.FineTuningExample(textInput: "1", output: "2"),
+        _Gemini.FineTuningExample(textInput: "2", output: "3"),
         _Gemini.FineTuningExample(textInput: "3", output: "4"),
-        _Gemini.FineTuningExample(textInput: "-3", output: "-2"),
-        _Gemini.FineTuningExample(textInput: "twenty two", output: "twenty three"),
-        _Gemini.FineTuningExample(textInput: "ninety nine", output: "one hundred")
+        _Gemini.FineTuningExample(textInput: "4", output: "5"),
+        _Gemini.FineTuningExample(textInput: "9", output: "10"),
+        _Gemini.FineTuningExample(textInput: "10", output: "11"),
+        
+        // Text inputs
+        _Gemini.FineTuningExample(textInput: "one", output: "two"),
+        _Gemini.FineTuningExample(textInput: "two", output: "three"),
+        _Gemini.FineTuningExample(textInput: "three", output: "four"),
+        _Gemini.FineTuningExample(textInput: "nine", output: "ten"),
+        _Gemini.FineTuningExample(textInput: "ten", output: "eleven"),
     ]
     
     static let tuningConfig = _Gemini.TuningConfig(
-        displayName: "number generator model",
+        displayName: "number increment model",
         baseModel: .gemini_1_5_flash,
         tuningTask: .init(
             hyperparameters: .init(
-                batchSize: 2,
+                batchSize: 4,
                 learningRate: 0.001,
-                epochCount: 5
+                epochCount: 10
             ),
             trainingData: .init(
                 examples: .init(examples: examples)
@@ -60,7 +75,6 @@ import AI
         
         #expect(completedModel.state == .active)
         
-        // Store model name for the generation test
         UserDefaults.standard.set(completedModel.name, forKey: "lastTunedModelName")
     }
     
@@ -71,16 +85,22 @@ import AI
         
         print("\nUsing model:", modelName)
         
-        // Reduced set of test cases focusing on the ones that work
         let testCases = [
-            ("ten", "eleven"),
-            ("twenty", "twenty one"),
-            ("thirty", "thirty one")
+            // Test numeric inputs
+            TestCase(input: "5", expectedOutput: "6"),
+            TestCase(input: "10", expectedOutput: "11"),
+            TestCase(input: "99", expectedOutput: "100"),
+            TestCase(input: "-3", expectedOutput: "-2"),
+            
+            // Test text inputs
+            TestCase(input: "ten", expectedOutput: "eleven"),
+            TestCase(input: "twenty", expectedOutput: "twenty one"),
+            TestCase(input: "thirty", expectedOutput: "thirty one")
         ]
         
         let config = _Gemini.GenerationConfig(
             maxOutputTokens: 100,
-            temperature: 0.0,
+            temperature: 0.0,  // Use 0 temperature for deterministic outputs
             topP: 1.0,
             topK: 1
         )
@@ -88,18 +108,18 @@ import AI
         var successCount = 0
         var failureCount = 0
         
-        for (input, expectedOutput) in testCases {
-            print("\n=== Testing input:", input, "===")
+        for testCase in testCases {
+            print("\n=== Testing input:", testCase.input, "===")
             do {
                 let response = try await client.generateWithTunedModel(
                     modelName: modelName,
-                    input: input,
+                    input: testCase.input,
                     config: config
                 )
                 
                 let output = response.text.trimmingCharacters(in: .whitespacesAndNewlines)
                 print("Model output:", output)
-                print("Expected output:", expectedOutput)
+                print("Expected output:", testCase.expectedOutput)
                 
                 if let usage = response.tokenUsage {
                     print("Token usage - Prompt:", usage.prompt,
@@ -109,17 +129,17 @@ import AI
                 
                 #expect(!output.isEmpty, "Output should not be empty")
                 
-                if output == expectedOutput {
+                if output == testCase.expectedOutput {
                     print("✅ Output matches expected")
                     successCount += 1
                 } else {
                     print("⚠️ Output differs from expected:")
                     print("  Actual:", output)
-                    print("  Expected:", expectedOutput)
+                    print("  Expected:", testCase.expectedOutput)
                     failureCount += 1
                 }
             } catch {
-                print("❌ Error testing input '\(input)':", error)
+                print("❌ Error testing input '\(testCase.input)':", error)
                 failureCount += 1
             }
         }
