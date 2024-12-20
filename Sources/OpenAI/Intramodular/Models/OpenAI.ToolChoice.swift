@@ -6,6 +6,7 @@ import NetworkKit
 import Swift
 
 extension OpenAI {
+    /// https://platform.openai.com/docs/api-reference/runs/createRun#runs-createrun-tool_choice
     public enum ToolChoice: Codable {
         case none
         case auto
@@ -20,15 +21,7 @@ extension OpenAI {
         }
         
         public enum ToolValue: Codable {
-            case function(String)
-            
-            public struct FunctionDetails: Codable {
-                var name: String
-                
-                public init(name: String) {
-                    self.name = name
-                }
-            }
+            case function(ToolName)
         }
     }
 }
@@ -83,6 +76,14 @@ extension OpenAI.ToolChoice.ToolValue {
         case function
     }
     
+    private struct FunctionDetails: Codable {
+        var name: OpenAI.ToolName
+        
+        public init(name: OpenAI.ToolName) {
+            self.name = name
+        }
+    }
+
     public init(
         from decoder: Decoder
     ) throws {

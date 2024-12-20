@@ -1,5 +1,5 @@
 {
-  "originHash" : "c84aa4446fdd21cbb193bc4ba0b1cdc79c7ec1f15c14460832a38ff9323b7098",
+  "originHash" : "094840915419b625ed8a43083bdf164ab8d3f6bbb7fda2dcec07cb5e55a2b736",
   "pins" : [
     {
       "identity" : "corepersistence",
@@ -16,7 +16,7 @@
       "location" : "https://github.com/vmanot/Merge.git",
       "state" : {
         "branch" : "master",
-        "revision" : "aca0b0c7a48d91934b098bab9b5c4a9f343369f2"
+        "revision" : "4bc71ce650b79b3dbe1a26acf7e54b29d750e0b6"
       }
     },
     {
@@ -34,7 +34,7 @@
       "location" : "https://github.com/vmanot/Swallow.git",
       "state" : {
         "branch" : "master",
-        "revision" : "890a767eacad123a5310cdcc8074d16378c18cbe"
+        "revision" : "4c05166cf644846199fb734bbc47d74f87610945"
       }
     },
     {
@@ -49,9 +49,9 @@
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swift-precompiled/swift-syntax",
+      "location" : "https://github.com/apple/swift-syntax.git",
       "state" : {
-        "revision" : "85ba62b876bb023acdd828d738703f1c08eaa058",
+        "revision" : "0687f71944021d616d34d922343dcef086855920",
         "version" : "600.0.1"
       }
     },

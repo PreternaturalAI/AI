@@ -7,7 +7,7 @@ import Swallow
 
 extension AbstractLLM {
     public protocol Completion: Codable, CustomDebugStringConvertible, Hashable, Sendable {
-        static var _completionType: AbstractLLM.CompletionType? { get }
+        static var knownCompletionType: AbstractLLM.CompletionType? { get }
     }
 }
 
