@@ -12,7 +12,7 @@ extension OpenAI.APISpecification {
 }
 
 extension OpenAI.APISpecification.RequestBodies {
-    struct CreateCompletion: Codable, Hashable {
+    public struct CreateCompletion: Codable, Hashable {
         let prompt: Either<String, [String]>
         let model: OpenAI.Model
         let suffix: String?
