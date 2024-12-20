@@ -16,7 +16,7 @@ extension AbstractLLM {
         associatedtype CompletionParameters: AbstractLLM.CompletionParameters
         associatedtype Completion: Partializable
         
-        static var completionType: AbstractLLM.CompletionType? { get }
+        static var knownCompletionType: AbstractLLM.CompletionType? { get }
         
         var context: PromptContextValues { get set }
     }
@@ -24,10 +24,10 @@ extension AbstractLLM {
 
 extension AbstractLLM {
     public enum ChatOrTextPrompt: Prompt {
-        public typealias CompletionParameters = AbstractLLM.ChatOrTextCompletionParameters
+        public typealias CompletionParameters = ChatOrTextCompletionParameters
         public typealias Completion = AbstractLLM.ChatOrTextCompletion
         
-        public static var completionType: AbstractLLM.CompletionType? {
+        public static var knownCompletionType: AbstractLLM.CompletionType? {
             nil
         }
         

@@ -10,7 +10,7 @@ extension _Gemini.Client {
         messages: [_Gemini.Message],
         functions: [_Gemini.FunctionDefinition],
         model: _Gemini.Model,
-        functionConfig: _Gemini.FunctionCallingConfig = .init(mode: .auto)
+        functionConfig: _Gemini.FunctionCallingConfiguration = .init(mode: .auto)
     ) async throws -> _Gemini.Content {
         let contents = messages.filter { $0.role != .system }.map { message in
             _Gemini.APISpecification.RequestBodies.Content(
@@ -32,7 +32,7 @@ extension _Gemini.Client {
             requestBody: .init(
                 contents: contents,
                 tools: [tool],
-                toolConfig: _Gemini.ToolConfig(functionCallingConfig: functionConfig),
+                toolConfiguration: _Gemini.ToolConfiguration(functionCallingConfig: functionConfig),
                 systemInstruction: systemInstruction
             )
         )

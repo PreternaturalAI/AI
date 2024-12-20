@@ -21,6 +21,7 @@ extension _Gemini.Client {
         )
         
         let response = try await run(\.generateEmbedding, with: input)
+        
         return response.embedding.values
     }
 }

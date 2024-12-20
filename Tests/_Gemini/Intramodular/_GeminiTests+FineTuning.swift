@@ -98,7 +98,7 @@ import AI
             TestCase(input: "thirty", expectedOutput: "thirty one")
         ]
         
-        let config = _Gemini.GenerationConfig(
+        let config = _Gemini.GenerationConfiguration(
             maxOutputTokens: 100,
             temperature: 0.0,  // Use 0 temperature for deterministic outputs
             topP: 1.0,

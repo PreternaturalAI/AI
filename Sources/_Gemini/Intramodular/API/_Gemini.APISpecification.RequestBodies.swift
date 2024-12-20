@@ -40,9 +40,9 @@ extension _Gemini.APISpecification {
         public struct ContentBody: Codable {
             public let contents: [Content]
             public let cachedContent: String?
-            public let generationConfig: _Gemini.GenerationConfig?
+            public let generationConfig: _Gemini.GenerationConfiguration?
             public let tools: [_Gemini.Tool]?
-            public let toolConfig: _Gemini.ToolConfig?
+            public let toolConfiguration: _Gemini.ToolConfiguration?
             public let systemInstruction: Content?
             
             private enum CodingKeys: String, CodingKey {
@@ -50,23 +50,23 @@ extension _Gemini.APISpecification {
                 case cachedContent
                 case generationConfig
                 case tools
-                case toolConfig = "tool_config"
+                case toolConfiguration = "tool_config"
                 case systemInstruction = "system_instruction"
             }
             
             public init(
                 contents: [Content],
                 cachedContent: String? = nil,
-                generationConfig: _Gemini.GenerationConfig? = nil,
+                generationConfig: _Gemini.GenerationConfiguration? = nil,
                 tools: [_Gemini.Tool]? = nil,
-                toolConfig: _Gemini.ToolConfig? = nil,
+                toolConfiguration: _Gemini.ToolConfiguration? = nil,
                 systemInstruction: Content? = nil
             ) {
                 self.contents = contents
                 self.cachedContent = cachedContent
                 self.generationConfig = generationConfig
                 self.tools = tools
-                self.toolConfig = toolConfig
+                self.toolConfiguration = toolConfiguration
                 self.systemInstruction = systemInstruction
             }
         }
@@ -212,7 +212,7 @@ extension _Gemini.APISpecification {
         }
         
         public struct FileStatusInput: Codable {
-            public let name: String
+            public let name: _Gemini.File.Name
         }
         
         // Fine Tuning

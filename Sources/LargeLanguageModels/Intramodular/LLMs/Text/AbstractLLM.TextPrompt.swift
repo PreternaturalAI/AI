@@ -11,7 +11,7 @@ extension AbstractLLM {
         public typealias CompletionParameters = AbstractLLM.TextCompletionParameters
         public typealias Completion = AbstractLLM.TextCompletion
         
-        public static var completionType: AbstractLLM.CompletionType? {
+        public static var knownCompletionType: AbstractLLM.CompletionType? {
             .text
         }
         

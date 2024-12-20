@@ -1,11 +1,10 @@
 //
-//  _Gemini.Content.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/12/24.
+// Copyright (c) Vatsal Manot
 //
 
 import Foundation
+import LargeLanguageModels
+import Swallow
 
 extension _Gemini {
     public struct Content: Decodable {
@@ -105,7 +104,9 @@ extension _Gemini {
 }
 
 extension _Gemini.Content {
-    init(apiResponse response: _Gemini.APISpecification.ResponseBodies.GenerateContent) throws {
+    init(
+        apiResponse response: _Gemini.APISpecification.ResponseBodies.GenerateContent
+    ) throws {
         guard let candidate = response.candidates?.first,
               let content = candidate.content,
               let responseParts = content.parts else {
@@ -201,7 +202,9 @@ extension _Gemini.Content {
         }
     }
     
-    init(apiResponse response: _Gemini.APISpecification.ResponseBodies.TunedGenerateContent) throws {
+    init(
+        apiResponse response: _Gemini.APISpecification.ResponseBodies.TunedGenerateContent
+    ) throws {
         if response.candidates == nil || response.candidates?.isEmpty == true {
             guard let usage = response.usageMetadata else {
                 throw _Gemini.APIError.unknown(message: "Response missing both candidates and usage metadata")

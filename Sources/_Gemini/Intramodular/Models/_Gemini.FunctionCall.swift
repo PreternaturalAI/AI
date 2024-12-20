@@ -49,7 +49,7 @@ extension _Gemini {
         }
     }
     
-    public struct FunctionCallingConfig: Codable, Equatable {
+    public struct FunctionCallingConfiguration: Codable, Equatable {
         public enum Mode: String, Codable {
             case auto = "AUTO"
             case any = "ANY"
@@ -59,16 +59,19 @@ extension _Gemini {
         public let mode: Mode
         public let allowedFunctionNames: [String]?
         
-        public init(mode: Mode, allowedFunctionNames: [String]? = nil) {
+        public init(
+            mode: Mode,
+            allowedFunctionNames: [String]? = nil
+        ) {
             self.mode = mode
             self.allowedFunctionNames = allowedFunctionNames
         }
     }
     
-    public struct ToolConfig: Codable, Equatable {
-        public let functionCallingConfig: FunctionCallingConfig?
+    public struct ToolConfiguration: Codable, Equatable {
+        public let functionCallingConfig: FunctionCallingConfiguration?
         
-        public init(functionCallingConfig: FunctionCallingConfig? = nil) {
+        public init(functionCallingConfig: FunctionCallingConfiguration? = nil) {
             self.functionCallingConfig = functionCallingConfig
         }
     }

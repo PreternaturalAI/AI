@@ -19,7 +19,7 @@ import AI
             "review": .string
         ])
         
-        let config = _Gemini.GenerationConfig(
+        let config = _Gemini.GenerationConfiguration(
             temperature: 0.7,
             responseMimeType: "application/json",
             responseSchema: .object(properties: [

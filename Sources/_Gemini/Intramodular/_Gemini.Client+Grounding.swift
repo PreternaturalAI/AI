@@ -27,7 +27,7 @@ extension _Gemini.Client {
         
         let tool = _Gemini.Tool(
             googleSearchRetrieval: .init(
-                dynamicRetrievalConfig: .init(
+                dynamicRetrievalConfiguration: .init(
                     mode: "MODE_DYNAMIC",
                     dynamicThreshold: dynamicThreshold
                 )
@@ -39,12 +39,13 @@ extension _Gemini.Client {
             requestBody: .init(
                 contents: contents,
                 tools: [tool],
-                toolConfig: nil,
+                toolConfiguration: nil,
                 systemInstruction: systemInstruction
             )
         )
         
         let response = try await run(\.generateContent, with: input)
+        
         return try _Gemini.Content(apiResponse: response)
     }
 }

@@ -1,18 +1,16 @@
 //
-//  _Gemini.Client+CodeExecution.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/13/24.
+// Copyright (c) Vatsal Manot
 //
 
 import Foundation
+import Swallow
 
 extension _Gemini.Client {
     public func generateContentWithCodeExecution(
         messages: [_Gemini.Message],
         model: _Gemini.Model,
-        toolConfig: _Gemini.ToolConfig? = nil,
-        config: _Gemini.GenerationConfig? = nil
+        toolConfig: _Gemini.ToolConfiguration? = nil,
+        configuration: _Gemini.GenerationConfiguration? = nil
     ) async throws -> _Gemini.Content {
         let contents = messages.filter { $0.role != .system }.map { message in
             _Gemini.APISpecification.RequestBodies.Content(
@@ -33,9 +31,9 @@ extension _Gemini.Client {
             model: model,
             requestBody: .init(
                 contents: contents,
-                generationConfig: config,
+                generationConfig: configuration,
                 tools: [tool],
-                toolConfig: toolConfig,
+                toolConfiguration: toolConfig,
                 systemInstruction: systemInstruction
             )
         )
@@ -43,20 +41,7 @@ extension _Gemini.Client {
         let response = try await run(\.generateContent, with: input)
         
         let content = try _Gemini.Content(apiResponse: response)
-        
-        for part in content.parts {
-            switch part {
-                case .text(let string):
-                    break
-                case .functionCall(let functionCall):
-                    break
-                case .executableCode(let language, let code):
-                    print(language, code)
-                case .codeExecutionResult(let outcome, let output):
-                    break
-            }
-        }
-        
+                
         return content
     }
 }

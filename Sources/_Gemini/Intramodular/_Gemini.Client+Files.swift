@@ -1,48 +1,89 @@
 //
-//  _Gemini.Client+Files.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/18/24.
+// Copyright (c) Vatsal Manot
 //
 
+import Dispatch
 import Foundation
+import Merge
 import NetworkKit
+import Swallow
 
 extension _Gemini.Client {
-    internal func handleFileGeneration(
-        fileSource: FileSource,
-        mimeType: HTTPMediaType?,
-        messages: [_Gemini.Message],
-        model: _Gemini.Model,
-        config: _Gemini.GenerationConfig
-    ) async throws -> _Gemini.Content {
-        let initialFile: _Gemini.File
-        
-        switch fileSource {
-            case .localFile(let fileURL):
-                initialFile = try await processLocalFile(
-                    fileURL: fileURL,
-                    mimeType: mimeType
-                )
-                
-            case .remoteURL(let url):
-                initialFile = try await processRemoteURL(
-                    url: url,
-                    mimeType: mimeType
-                )
-                
-            case .uploadedFile(let file):
-                initialFile = file
+    public func uploadFile(
+        fileData: Data,
+        mimeType: HTTPMediaType,
+        displayName: String
+    ) async throws -> _Gemini.File {
+        guard !displayName.isEmpty else {
+            throw FileProcessingError.invalidFileName
         }
         
-        let processedFile = try await waitForFileProcessing(name: initialFile.name ?? "")
+        do {
+            let input = _Gemini.APISpecification.RequestBodies.FileUploadInput(
+                fileData: fileData,
+                mimeType: mimeType.rawValue,
+                displayName: displayName
+            )
+            
+            let response = try await run(\.uploadFile, with: input)
+            
+            return response.file
+        } catch {
+            throw _Gemini.APIError.unknown(message: "File upload failed: \(error.localizedDescription)")
+        }
+    }
+    
+    public func getFile(
+        name: _Gemini.File.Name
+    ) async throws -> _Gemini.File {
+        guard !name.rawValue.isEmpty else {
+            throw FileProcessingError.invalidFileName
+        }
         
-        return try await generateWithFile(
-            file: processedFile,
-            messages: messages,
-            model: model,
-            config: config
-        )
+        do {
+            let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
+            return try await run(\.getFile, with: input)
+        } catch {
+            throw _Gemini.APIError.unknown(message: "Failed to get file status: \(error.localizedDescription)")
+        }
+    }
+    
+    public func deleteFile(
+        fileURL: URL
+    ) async throws {
+        do {
+            let input = _Gemini.APISpecification.RequestBodies.DeleteFileInput(fileURL: fileURL)
+            try await run(\.deleteFile, with: input)
+        } catch {
+            throw _Gemini.APIError.unknown(message: "Failed to delete file: \(error.localizedDescription)")
+        }
+    }
+    
+    public func pollFileUntilActive(
+        name: _Gemini.File.Name,
+        maxRetryCount: Int? = nil,
+        retryDelay: DispatchTimeInterval = .seconds(1)
+    ) async throws -> _Gemini.File {
+        guard !name.rawValue.isEmpty else {
+            throw FileProcessingError.invalidFileName
+        }
+        
+        let result = try await Task.retrying(
+            priority: nil,
+            maxRetryCount: maxRetryCount ?? Int.max,
+            retryDelay: retryDelay
+        ) {
+            let file: _Gemini.File = try await self.getFile(name: name)
+            
+            switch file.state {
+                case .active:
+                    return file
+                case .processing:
+                    throw FileProcessingError.fileStillProcessing
+            }
+        }.value
+        
+        return result
     }
     
     internal func processLocalFile(
@@ -89,99 +130,48 @@ extension _Gemini.Client {
         return file
     }
     
-    
-    public func waitForFileProcessing(
-        name: String,
-        maxAttempts: Int = 10,
-        delaySeconds: Double = 1.0
+    func _processedFile(
+        from fileSource: _Gemini.FileSource,
+        mimeType: HTTPMediaType?
     ) async throws -> _Gemini.File {
-        guard !name.isEmpty else {
-            throw FileProcessingError.invalidFileName
+        enum FileGenerationError: Swift.Error {
+            case missingFileName
         }
         
-        for attempt in 1...maxAttempts {
-            do {
-                let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
-                let fileStatus = try await run(\.getFile, with: input)
+        let initialFile: _Gemini.File
+        
+        switch fileSource {
+            case .localFile(let fileURL):
+                initialFile = try await processLocalFile(
+                    fileURL: fileURL,
+                    mimeType: mimeType
+                )
                 
-                print("File status attempt \(attempt): \(fileStatus.state)")
+            case .remoteURL(let url):
+                initialFile = try await processRemoteURL(
+                    url: url,
+                    mimeType: mimeType
+                )
                 
-                switch fileStatus.state {
-                case .active:
-                    return fileStatus
-                case .processing:
-                    break
-                }
-                
-                if attempt < maxAttempts {
-                    try await Task.sleep(nanoseconds: UInt64(delaySeconds * 1_000_000_000))
-                }
-            } catch {
-                if attempt == maxAttempts {
-                    throw error
-                }
-                continue
-            }
+            case .uploadedFile(let file):
+                initialFile = file
         }
         
-        throw FileProcessingError.processingTimeout(fileName: name)
-    }
-    
-    public func uploadFile(
-        fileData: Data,
-        mimeType: HTTPMediaType,
-        displayName: String
-    ) async throws -> _Gemini.File {
-        guard !displayName.isEmpty else {
-            throw FileProcessingError.invalidFileName
+        guard let name: _Gemini.File.Name = initialFile.name else {
+            throw FileGenerationError.missingFileName
         }
         
-        do {
-            let input = _Gemini.APISpecification.RequestBodies.FileUploadInput(
-                fileData: fileData,
-                mimeType: mimeType.rawValue,
-                displayName: displayName
-            )
-            
-            let response = try await run(\.uploadFile, with: input)
-            return response.file
-        } catch {
-            throw _Gemini.APIError.unknown(message: "File upload failed: \(error.localizedDescription)")
-        }
-    }
-    
-    public func getFile(
-        name: String
-    ) async throws -> _Gemini.File {
-        guard !name.isEmpty else {
-            throw FileProcessingError.invalidFileName
-        }
+        let result = try await pollFileUntilActive(name: name)
         
-        do {
-            let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
-            return try await run(\.getFile, with: input)
-        } catch {
-            throw _Gemini.APIError.unknown(message: "Failed to get file status: \(error.localizedDescription)")
-        }
-    }
-    
-    public func deleteFile(
-        fileURL: URL
-    ) async throws {
-        do {
-            let input = _Gemini.APISpecification.RequestBodies.DeleteFileInput(fileURL: fileURL)
-            try await run(\.deleteFile, with: input)
-        } catch {
-            throw _Gemini.APIError.unknown(message: "Failed to delete file: \(error.localizedDescription)")
-        }
+        return result
     }
 }
 
-// Error Handling
+// MARK: - Error Handling
 
 fileprivate enum FileProcessingError: Error {
     case invalidFileName
-    case processingTimeout(fileName: String)
+    case fileStillProcessing
     case invalidFileState(state: String)
     case fileNotFound(name: String)
 }

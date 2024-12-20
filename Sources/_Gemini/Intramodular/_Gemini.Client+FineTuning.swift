@@ -38,7 +38,7 @@ extension _Gemini.Client {
     public func generateWithTunedModel(
         modelName: String,
         input: String,
-        config: _Gemini.GenerationConfig = configDefault
+        config: _Gemini.GenerationConfiguration = configDefault
     ) async throws -> _Gemini.Content {
         let messages = [
             _Gemini.Message(role: .user, content: input)

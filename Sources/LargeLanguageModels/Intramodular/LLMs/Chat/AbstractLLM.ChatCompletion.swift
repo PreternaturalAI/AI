@@ -9,7 +9,7 @@ import Swallow
 
 extension AbstractLLM {
     public struct ChatCompletion: Completion {
-        public static var _completionType: AbstractLLM.CompletionType? {
+        public static var knownCompletionType: AbstractLLM.CompletionType? {
             .chat
         }
         

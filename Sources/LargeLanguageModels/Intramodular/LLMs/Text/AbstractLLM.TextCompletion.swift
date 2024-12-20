@@ -8,7 +8,7 @@ import Swallow
 
 extension AbstractLLM {
     public struct TextCompletion: Completion {
-        public static var _completionType: AbstractLLM.CompletionType? {
+        public static var knownCompletionType: AbstractLLM.CompletionType? {
             .text
         }
         

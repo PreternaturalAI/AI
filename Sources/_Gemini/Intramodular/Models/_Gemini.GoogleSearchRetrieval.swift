@@ -10,17 +10,17 @@ import Foundation
 extension _Gemini {
     public struct GoogleSearchRetrieval: Codable {
         private enum CodingKeys: String, CodingKey {
-            case dynamicRetrievalConfig = "dynamic_retrieval_config"
+            case dynamicRetrievalConfiguration = "dynamic_retrieval_config"
         }
         
-        public let dynamicRetrievalConfig: DynamicRetrievalConfig
+        public let dynamicRetrievalConfiguration: DynamicRetrievalConfiguration
         
-        public init(dynamicRetrievalConfig: DynamicRetrievalConfig) {
-            self.dynamicRetrievalConfig = dynamicRetrievalConfig
+        public init(dynamicRetrievalConfiguration: DynamicRetrievalConfiguration) {
+            self.dynamicRetrievalConfiguration = dynamicRetrievalConfiguration
         }
     }
     
-    public struct DynamicRetrievalConfig: Codable {
+    public struct DynamicRetrievalConfiguration: Codable {
         private enum CodingKeys: String, CodingKey {
             case mode
             case dynamicThreshold = "dynamic_threshold"
@@ -29,7 +29,10 @@ extension _Gemini {
         public let mode: String
         public let dynamicThreshold: Double
         
-        public init(mode: String = "MODE_DYNAMIC", dynamicThreshold: Double) {
+        public init(
+            mode: String = "MODE_DYNAMIC",
+            dynamicThreshold: Double
+        ) {
             self.mode = mode
             self.dynamicThreshold = dynamicThreshold
         }

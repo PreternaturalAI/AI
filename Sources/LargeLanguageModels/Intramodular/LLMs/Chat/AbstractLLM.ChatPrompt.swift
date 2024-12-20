@@ -12,7 +12,7 @@ extension AbstractLLM {
         public typealias CompletionParameters = AbstractLLM.ChatCompletionParameters
         public typealias Completion = AbstractLLM.ChatCompletion
         
-        public static var completionType: AbstractLLM.CompletionType? {
+        public static var knownCompletionType: AbstractLLM.CompletionType? {
             .chat
         }
         

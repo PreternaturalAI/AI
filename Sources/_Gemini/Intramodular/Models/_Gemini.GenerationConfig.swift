@@ -8,7 +8,7 @@
 import Foundation
 
 extension _Gemini {
-    public struct GenerationConfig: Codable {
+    public struct GenerationConfiguration: Codable {
         public let maxOutputTokens: Int?
         public let temperature: Double?
         public let topP: Double?
@@ -39,7 +39,7 @@ extension _Gemini {
         }
     }
     
-    public indirect enum SchemaObject: Codable {
+    public indirect enum SchemaObject {
         case object(properties: [String: SchemaObject])
         case array(items: SchemaObject)
         case string
@@ -48,51 +48,16 @@ extension _Gemini {
         
         public var type: SchemaType {
             switch self {
-            case .object: return .object
-            case .array: return .array
-            case .string: return .string
-            case .number: return .number
-            case .boolean: return .boolean
-            }
-        }
-        
-        private enum CodingKeys: String, CodingKey {
-            case type
-            case properties
-            case items
-        }
-        
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(type, forKey: .type)
-            
-            switch self {
-            case .object(let properties):
-                try container.encode(properties, forKey: .properties)
-            case .array(let items):
-                try container.encode(items, forKey: .items)
-            case .string, .number, .boolean:
-                break
-            }
-        }
-        
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            let type = try container.decode(SchemaType.self, forKey: .type)
-            
-            switch type {
-            case .object:
-                let properties = try container.decode([String: SchemaObject].self, forKey: .properties)
-                self = .object(properties: properties)
-            case .array:
-                let items = try container.decode(SchemaObject.self, forKey: .items)
-                self = .array(items: items)
-            case .string:
-                self = .string
-            case .number:
-                self = .number
-            case .boolean:
-                self = .boolean
+                case .object:
+                    return .object
+                case .array:
+                    return .array
+                case .string:
+                    return .string
+                case .number:
+                    return .number
+                case .boolean:
+                    return .boolean
             }
         }
     }
@@ -103,5 +68,49 @@ extension _Gemini {
         case string = "STRING"
         case number = "NUMBER"
         case boolean = "BOOLEAN"
+    }
+}
+
+// MARK: - Conformances
+
+extension _Gemini.SchemaObject: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case type
+        case properties
+        case items
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(type, forKey: .type)
+        
+        switch self {
+            case .object(let properties):
+                try container.encode(properties, forKey: .properties)
+            case .array(let items):
+                try container.encode(items, forKey: .items)
+            case .string, .number, .boolean:
+                break
+        }
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let type = try container.decode(_Gemini.SchemaType.self, forKey: .type)
+        
+        switch type {
+            case .object:
+                let properties = try container.decode([String: _Gemini.SchemaObject].self, forKey: .properties)
+                self = .object(properties: properties)
+            case .array:
+                let items = try container.decode(_Gemini.SchemaObject.self, forKey: .items)
+                self = .array(items: items)
+            case .string:
+                self = .string
+            case .number:
+                self = .number
+            case .boolean:
+                self = .boolean
+        }
     }
 }
