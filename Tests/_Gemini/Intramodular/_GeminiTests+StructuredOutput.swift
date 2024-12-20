@@ -37,7 +37,7 @@ import AI
         let response = try await client.generateContent(
             messages: messages,
             model: .gemini_1_5_pro_latest,
-            config: config
+            configuration: configuration
         )
         
         dump(response)
