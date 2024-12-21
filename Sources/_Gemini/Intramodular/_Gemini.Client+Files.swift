@@ -9,6 +9,7 @@ import NetworkKit
 import Swallow
 
 extension _Gemini.Client {
+    
     public func uploadFile(
         fileData: Data,
         mimeType: HTTPMediaType,
@@ -43,6 +44,21 @@ extension _Gemini.Client {
         do {
             let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
             return try await run(\.getFile, with: input)
+        } catch {
+            throw _Gemini.APIError.unknown(message: "Failed to get file status: \(error.localizedDescription)")
+        }
+    }
+    
+    public func listFiles(
+        pageSize: Int? = nil,
+        pageToken: String? = nil
+    ) async throws -> _Gemini.FileList {
+        do {
+            let input = _Gemini.APISpecification.RequestBodies.FileListInput(
+                pageSize: pageSize,
+                pageToken: pageToken
+            )
+            return try await run(\.listFiles, with: input)
         } catch {
             throw _Gemini.APIError.unknown(message: "Failed to get file status: \(error.localizedDescription)")
         }
