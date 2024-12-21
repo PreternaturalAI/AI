@@ -1,10 +1,10 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import CorePersistence
 import NetworkKit
 import Swift
-import CorePersistence
 
 extension OpenAI {
     public struct FineTuning  {

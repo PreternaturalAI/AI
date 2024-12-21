@@ -1,17 +1,15 @@
 //
-//  HumeAI.Client-Models.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/25/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import Merge
 import NetworkKit
 import SwiftAPI
-import Merge
 
 extension HumeAI.Client {
     public func listModels() async throws -> [HumeAI.Model] {
         let response = try await run(\.listModels)
+        
         return response.models
     }
     
@@ -19,6 +17,7 @@ extension HumeAI.Client {
         id: String
     ) async throws -> HumeAI.Model {
         let input = HumeAI.APISpecification.PathInput.ID(id: id)
+        
         return try await run(\.getModel, with: input)
     }
     
@@ -39,6 +38,7 @@ extension HumeAI.Client {
         let input = HumeAI.APISpecification.PathInput.ID(
             id: id
         )
+        
         return try await run(\.listModelVersions, with: input)
     }
     
@@ -50,6 +50,7 @@ extension HumeAI.Client {
             id: id,
             version: version
         )
+        
         return try await run(\.getModelVersion, with: input)
     }
     

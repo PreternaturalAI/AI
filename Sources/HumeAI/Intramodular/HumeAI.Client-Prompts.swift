@@ -1,17 +1,15 @@
 //
-//  Untitled.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/25/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import Merge
 import NetworkKit
 import SwiftAPI
-import Merge
 
 extension HumeAI.Client {
     public func listPrompts() async throws -> [HumeAI.Prompt] {
         let response = try await run(\.listPrompts)
+        
         return response.promptsPage
     }
     
@@ -25,6 +23,7 @@ extension HumeAI.Client {
             text: text,
             versionDescription: description
         )
+        
         return try await run(\.createPrompt, with: input)
     }
     
@@ -39,6 +38,7 @@ extension HumeAI.Client {
         let input = HumeAI.APISpecification.PathInput.ID(
             id: id
         )
+        
         return try await run(\.listPromptVersions, with: input).promptsPage
     }
     
@@ -52,6 +52,7 @@ extension HumeAI.Client {
             text: text,
             versionDescription: versionDescription
         )
+        
         return try await run(\.createPromptVersion, with: input)
     }
     
@@ -63,6 +64,7 @@ extension HumeAI.Client {
             id: id,
             version: version
         )
+        
         return try await run(\.getPromptVersion, with: input)
     }
     
@@ -98,6 +100,7 @@ extension HumeAI.Client {
             version: version,
             description: description
         )
+        
         return try await run(\.updatePromptDescription, with: input)
     }
 }

@@ -1,8 +1,5 @@
 //
-//  Rime.Voice.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/21/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import Foundation

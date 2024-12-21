@@ -1,9 +1,9 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
-import LargeLanguageModels
 import Cohere
+import LargeLanguageModels
 import XCTest
 
 final class EmbeddingsTests: XCTestCase {

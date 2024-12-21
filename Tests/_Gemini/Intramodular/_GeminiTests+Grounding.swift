@@ -1,14 +1,11 @@
 //
-//  _GeminiTests+Grounding.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/13/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
-import Testing
-import Foundation
-import _Gemini
 import AI
+import Foundation
+import Testing
+import _Gemini
 
 @Suite struct _GeminiGroundingTests {
     @Test func testGroundingWithGoogleSearch() async throws {

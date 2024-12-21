@@ -1,18 +1,15 @@
 //
-//  _Gemini.Client+ContentGeneration.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/18/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import CorePersistence
 import Diagnostics
-import NetworkKit
 import Foundation
-import SwiftAPI
-import Merge
 import FoundationX
+import Merge
+import NetworkKit
 import Swallow
+import SwiftAPI
 
 extension _Gemini.Client {
     static public let configDefault: _Gemini.GenerationConfiguration = .init(

@@ -1,13 +1,10 @@
 //
-//  HumeAI.APISpecification.RequestBodies.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/22/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import Merge
 import NetworkKit
 import SwiftAPI
-import Merge
 
 extension HumeAI.APISpecification {
     enum RequestBodies {
@@ -144,6 +141,7 @@ extension HumeAI.APISpecification {
                         )
                     )
                 }
+                
                 return result
             }
         }

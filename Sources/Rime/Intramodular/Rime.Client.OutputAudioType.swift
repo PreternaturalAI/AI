@@ -1,8 +1,5 @@
 //
-//  Rime.OutputAudioType.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/22/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import Swift

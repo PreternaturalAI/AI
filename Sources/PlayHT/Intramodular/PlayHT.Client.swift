@@ -1,8 +1,5 @@
 //
-//  PlayHT.Client.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/20/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import CorePersistence
@@ -63,6 +60,7 @@ extension PlayHT.Client {
         async let clonedVoices = clonedVoices()
         
         let (available, cloned) = try await (htVoices, clonedVoices)
+        
         return available + cloned
     }
     
@@ -126,6 +124,7 @@ extension PlayHT.Client {
         )
         
         let response = try await run(\.instantCloneVoice, with: input)
+        
         return .init(rawValue: response.id)
     }
     
@@ -139,6 +138,7 @@ extension PlayHT.Client {
         )
         
         let response = try await run(\.instantCloneVoiceWithURL, with: input)
+        
         return .init(rawValue: response.id)
     }
     

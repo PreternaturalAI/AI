@@ -1,13 +1,10 @@
 //
-//  PlayHT.APISpecification.RequestBodies.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/20/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import Merge
 import NetworkKit
 import SwiftAPI
-import Merge
 
 extension PlayHT.APISpecification {
     enum RequestBodies {

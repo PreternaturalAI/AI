@@ -1,11 +1,11 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import Anthropic
 import LargeLanguageModels
-import XCTest
 import SwiftUIX
+import XCTest
 
 final class AnthropicTests: XCTestCase {
     func test() async throws {

@@ -1,11 +1,11 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import CreateMLComponents
 import Diagnostics
 import Foundation
 import Swallow
-import CreateMLComponents
 
 public protocol __AbstractLLM_ChatRole_Initiable {
     init(from role: AbstractLLM.ChatRole) throws

@@ -1,8 +1,5 @@
 //
-//  _Gemini.Client+Grounding.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/13/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 extension _Gemini.Client {

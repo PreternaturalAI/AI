@@ -1,8 +1,5 @@
 //
-//  File.swift
-//
-//
-//  Created by Natasha Murashev on 5/16/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import OpenAI

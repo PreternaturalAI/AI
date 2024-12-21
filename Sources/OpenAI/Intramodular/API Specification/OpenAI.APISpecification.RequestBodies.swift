@@ -1,5 +1,5 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import CorePersistence
@@ -442,6 +442,7 @@ extension OpenAI.APISpecification.RequestBodies {
             guard !isSpeedOutOfBounds else {
                 return inputSpeed < Self.Speed.min.rawValue ? "\(Self.Speed.min.rawValue)" : "\(Self.Speed.max.rawValue)"
             }
+            
             return "\(inputSpeed)"
         }
     }

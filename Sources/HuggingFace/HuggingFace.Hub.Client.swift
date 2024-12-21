@@ -1,8 +1,5 @@
 //
-//  HubApi.swift
-//
-//
-//  Created by Pedro Cuenca on 20231230.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import Foundation
@@ -87,6 +84,7 @@ public extension HuggingFace.Hub.Client {
         for glob in globs {
             selected = selected.union(filenames.matching(glob: glob))
         }
+        
         return Array(selected)
     }
     
@@ -118,6 +116,7 @@ public extension HuggingFace.Hub.Client {
     /// `filename` is relative to the download base.
     func configuration(from filename: String, in repo: Repo) throws -> HuggingFace.Config {
         let fileURL = localRepoLocation(repo).appending(path: filename)
+        
         return try configuration(fileURL: fileURL)
     }
     
@@ -168,6 +167,7 @@ public extension HuggingFace.Hub.Client {
             url = url.appending(path: repo.id)
             url = url.appending(path: "resolve/main") // TODO: revisions
             url = url.appending(path: relativeFilename)
+            
             return url
         }
         
@@ -201,6 +201,7 @@ public extension HuggingFace.Hub.Client {
             _ = try withExtendedLifetime(downloadSubscriber) {
                 try downloader.waitUntilDone()
             }
+        
             return destination
         }
     }
@@ -235,6 +236,7 @@ public extension HuggingFace.Hub.Client {
             fileProgress.completedUnitCount = 100
         }
         outputHandler(progress)
+    
         return repoDestination
     }
     

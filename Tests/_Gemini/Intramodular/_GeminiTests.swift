@@ -1,13 +1,10 @@
 //
-//  Untitled.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/11/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
-import Testing
-import SwiftUIX
 import Foundation
+import SwiftUIX
+import Testing
 import _Gemini
 
 @Suite struct GeminiTests {

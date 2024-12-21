@@ -1,10 +1,10 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import Foundation
 import LargeLanguageModels
 import Swallow
-import Foundation
 
 extension OpenAI {
     public class VectorStore: OpenAI.Object, @unchecked Sendable {

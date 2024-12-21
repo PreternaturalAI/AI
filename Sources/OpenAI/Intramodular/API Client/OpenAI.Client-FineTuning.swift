@@ -1,12 +1,12 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
-import NetworkKit
-import Swift
-import Swallow
 import CorePersistence
 import Diagnostics
+import NetworkKit
+import Swallow
+import Swift
 
 extension OpenAI.Client {
     public func uploadFineTuningJSONLFile(

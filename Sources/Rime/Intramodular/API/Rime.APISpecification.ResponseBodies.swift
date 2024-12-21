@@ -1,13 +1,10 @@
 //
-//  Rime.APISpecification.ResponseBodies.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/21/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import Merge
 import NetworkKit
 import SwiftAPI
-import Merge
 
 extension Rime.APISpecification {
     enum ResponseBodies {

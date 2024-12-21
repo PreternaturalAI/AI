@@ -1,7 +1,5 @@
 //
-//  HubApiTests.swift
-//
-//  Created by Pedro Cuenca on 20231230.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 @testable import HuggingFace
@@ -93,6 +91,7 @@ class SnapshotDownloadTests: XCTestCase {
     let repo = "coreml-projects/Llama-2-7b-chat-coreml"
     let downloadDestination: URL = {
         let base = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        
         return base.appending(component: "huggingface-tests")
     }()
 
@@ -122,6 +121,7 @@ class SnapshotDownloadTests: XCTestCase {
                 }
             }
         }
+            
         return filenames
     }
 

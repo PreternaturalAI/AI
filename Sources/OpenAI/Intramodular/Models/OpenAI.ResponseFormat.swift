@@ -1,5 +1,5 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import CorePersistence
@@ -62,6 +62,7 @@ extension OpenAI.ChatCompletion.ResponseFormat {
                 default:
                     self = .unknown
             }
+            
             return
         }
         

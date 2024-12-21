@@ -1,17 +1,15 @@
 //
-//  HumeAI.Client-CustomVoices.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/25/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import Merge
 import NetworkKit
 import SwiftAPI
-import Merge
 
 extension HumeAI.Client {
     public func listCustomVoices() async throws -> [HumeAI.Voice] {
         let response = try await run(\.listCustomVoices)
+        
         return response.customVoicesPage
     }
     
@@ -27,6 +25,7 @@ extension HumeAI.Client {
             parameterModel: parameterModel,
             parameters: parameters
         )
+        
         return try await run(\.createCustomVoice, with: input)
     }
     
@@ -34,6 +33,7 @@ extension HumeAI.Client {
         id: String
     ) async throws -> HumeAI.Voice {
         let input = HumeAI.APISpecification.PathInput.ID(id: id)
+        
         return try await run(\.getCustomVoice, with: input)
     }
     
@@ -49,6 +49,7 @@ extension HumeAI.Client {
             parameterModel: parameterModel,
             parameters: parameters
         )
+        
         return try await run(\.createCustomVoiceVersion, with: input)
     }
     

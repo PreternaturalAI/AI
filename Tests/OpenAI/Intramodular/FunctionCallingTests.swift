@@ -1,5 +1,5 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import AI
@@ -336,6 +336,7 @@ extension Date {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
+        
         return dateFormatter.string(from: self)
     }
     

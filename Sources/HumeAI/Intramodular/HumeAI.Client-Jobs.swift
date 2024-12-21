@@ -1,13 +1,10 @@
 //
-//  HumeAI.Client-Jobs.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/25/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import Merge
 import NetworkKit
 import SwiftAPI
-import Merge
 
 extension HumeAI.Client {
     public func startTrainingJob(
@@ -22,6 +19,7 @@ extension HumeAI.Client {
             description: description,
             configuration: configuration
         )
+        
         return try await run(\.startTrainingJob, with: input)
     }
     
@@ -35,6 +33,7 @@ extension HumeAI.Client {
             files: files,
             configuration: configuration
         )
+        
         return try await run(\.startCustomInferenceJob, with: input)
     }
 }

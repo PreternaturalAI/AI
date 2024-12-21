@@ -1,13 +1,10 @@
 //
-//  HumeAI.Client-Chats.swift
-//  AI
-//
-//  Created by Jared Davidson on 11/25/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
+import Merge
 import NetworkKit
 import SwiftAPI
-import Merge
 
 extension HumeAI.Client {
     public func listChats() async throws -> [HumeAI.Chat] {
