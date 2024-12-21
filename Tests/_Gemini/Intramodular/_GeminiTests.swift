@@ -9,19 +9,24 @@ import Testing
 import SwiftUIX
 import Foundation
 import _Gemini
+import NetworkKit
 
 @Suite struct GeminiTests {
+    
     @Test func testVideoContentGeneration() async throws {
         do {
             guard let url = URL(string: "https://devstreaming-cdn.apple.com/videos/wwdc/2024/10087/4/1BAC307D-DA03-4FDC-AB9B-F3B4494DE81E/downloads/wwdc2024-10087_sd.mp4") else {
                 throw GeminiTestError.invalidURL("https://devstreaming-cdn.apple.com/videos/wwdc/2024/10087/4/1BAC307D-DA03-4FDC-AB9B-F3B4494DE81E/downloads/wwdc2024-10087_sd.mp4")
             }
             
+            let file = try await processRemoteURL(url: url, mimeType: .mp4)
+            print("File successfully uploaded: \(String(describing: file.name))")
+            
             let messages = [_Gemini.Message(role: .user, content: "What is happening in this video?")]
             
             let content = try await client.generateContent(
                 messages: messages,
-                fileSource: .remoteURL(url),
+                fileSource: .uploadedFile(file),
                 mimeType: .custom("video/mp4"),
                 model: .gemini_1_5_flash
             )
@@ -90,6 +95,33 @@ import _Gemini
         } catch {
             throw GeminiTestError.imageProcessingError(error)
         }
+    }
+}
+
+// Helper Functions
+extension GeminiTests {
+    
+    internal func processRemoteURL(
+        url: URL,
+        mimeType: HTTPMediaType?
+    ) async throws -> _Gemini.File {
+        guard let mimeType = mimeType else {
+            throw _Gemini.APIError.unknown(message: "MIME type is required when using remote URL")
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw _Gemini.APIError.unknown(message: "Failed to download file from URL")
+        }
+        
+        let file = try await client.uploadFile(
+            fileData: data,
+            mimeType: mimeType,
+            displayName: UUID().uuidString
+        )
+        return file
     }
 }
 
