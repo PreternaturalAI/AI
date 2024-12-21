@@ -8,6 +8,7 @@
 import Foundation
 
 extension _Gemini {
+    
     public struct File: Codable {
         public let createTime: String?
         public let expirationTime: String?
@@ -29,6 +30,12 @@ extension _Gemini {
             public let videoDuration: String
         }
     }
+    
+    public struct FileList: Codable {
+        public let files: [_Gemini.File]
+        // A token that can be sent as a pageToken into a subsequent files.list call.
+        public let nextPageToken: String
+    }
 }
 
 extension _Gemini.File {
@@ -46,15 +53,5 @@ extension _Gemini.File {
         public func encode(to encoder: any Encoder) throws {
             try rawValue.encode(to: encoder)
         }
-    }
-}
-
-// MARK: - Supplementary
-
-extension _Gemini {
-    public enum FileSource {
-        case localFile(URL)
-        case remoteURL(URL)
-        case uploadedFile(_Gemini.File)
     }
 }

@@ -25,18 +25,11 @@ extension _Gemini.Client {
     
     public func generateContent(
         messages: [_Gemini.Message] = [],
-        fileSource: _Gemini.FileSource? = nil,
+        file: _Gemini.File? = nil,
         mimeType: HTTPMediaType? = nil,
         model: _Gemini.Model,
         configuration: _Gemini.GenerationConfiguration = configDefault
     ) async throws -> _Gemini.Content {
-        let file: _Gemini.File?
-        
-        if let fileSource = fileSource {
-            file = try await _processedFile(from: fileSource, mimeType: mimeType)
-        } else {
-            file = nil
-        }
         
         let systemInstruction = extractSystemInstruction(from: messages)
         let messages: [_Gemini.Message] = messages.filter({ $0.role != .system })

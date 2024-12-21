@@ -398,7 +398,8 @@ let package = Package(
             name: "_GeminiTests",
             dependencies: [
                 "AI",
-                "Swallow"
+                "Swallow",
+                "_Gemini"
             ],
             path: "Tests/_Gemini",
             swiftSettings: [

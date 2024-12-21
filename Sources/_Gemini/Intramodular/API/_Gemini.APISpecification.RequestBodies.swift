@@ -215,6 +215,13 @@ extension _Gemini.APISpecification {
             public let name: _Gemini.File.Name
         }
         
+        public struct FileListInput: Codable {
+            // Maximum number of Files to return per page. If unspecified, defaults to 10. Maximum pageSize is 100.
+            public let pageSize: Int?
+            // A page token from a previous files.list call.
+            public let pageToken: String?
+        }
+        
         // Fine Tuning
         
         public struct CreateTunedModel: Codable {

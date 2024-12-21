@@ -84,9 +84,26 @@ extension _Gemini {
         // File Status endpoint
         @GET
         @Path({ context -> String in
-            "/v1beta/\(context.input.name)"
+            "/v1beta/\(context.input.name.rawValue)"
         })
         var getFile = Endpoint<RequestBodies.FileStatusInput, _Gemini.File, Void>()
+        
+        @GET
+        @Path("/v1beta/files")
+        @Query({ context -> [String : String] in
+            var parameters: [String : String] = [:]
+            
+            if let pageSize = context.input.pageSize {
+                parameters["pageSize"] = String(pageSize)
+            }
+            
+            if let pageToken = context.input.pageToken {
+                parameters["pageToken"] = pageToken
+            }
+            
+            return parameters
+        })
+        var listFiles = Endpoint<RequestBodies.FileListInput, _Gemini.FileList, Void>()
         
         // Delete File endpoint
         @DELETE
