@@ -15,8 +15,40 @@ import _Gemini
     private var fileData: Data? = nil
     private var fileName: _Gemini.File.Name? = nil
     
-    @Test mutating func testUploadFile() async throws {
+    @Test mutating func testUploadFileFromData() async throws {
         let file: _Gemini.File = try await uploadFile()
+        
+        print(file)
+        #expect(file.name.isNotNil)
+        #expect(((file.name?.rawValue.starts(with: "files/")) == true))
+    }
+    
+    @Test mutating func testUploadFileFromRemoteURL() async throws {
+        
+        let file = try await client.uploadFile(
+            from: fileURL,
+            mimeType: .custom("image/png"),
+            displayName: UUID().uuidString
+        )
+        
+        print(file)
+        #expect(file.name.isNotNil)
+        #expect(((file.name?.rawValue.starts(with: "files/")) == true))
+    }
+    
+    @Test mutating func testUploadFileFromLocalURL() async throws {
+        
+        let fileData = try await downloadFile(from: fileURL)
+        let fileName = UUID().uuidString + ".png"
+        
+        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        try fileData.write(to: fileURL)
+        
+        let file = try await client.uploadFile(
+            from: fileURL,
+            mimeType: .custom("image/png"),
+            displayName: UUID().uuidString
+        )
         
         print(file)
         #expect(file.name.isNotNil)
@@ -72,7 +104,7 @@ extension GeminiFileTests {
         let data = try await downloadFile(from: fileURL)
         
         let file = try await client.uploadFile(
-            fileData: data,
+            from: data,
             mimeType: .custom("image/png"),
             displayName: UUID().uuidString
         )

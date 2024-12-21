@@ -55,13 +55,3 @@ extension _Gemini.File {
         }
     }
 }
-
-// MARK: - Supplementary
-
-extension _Gemini {
-    public enum FileSource {
-        case localFile(URL)
-        case remoteURL(URL)
-        case uploadedFile(_Gemini.File)
-    }
-}
