@@ -13,8 +13,8 @@ import _Gemini
 @Suite struct GeminiTests {
     @Test func testVideoContentGeneration() async throws {
         do {
-            guard let url = URL(string: "https://file-examples.com/storage/fefaeec240676402c9bdb74/2017/04/file_example_MP4_640_3MG.mp4") else {
-                throw GeminiTestError.invalidURL("https://file-examples.com/storage/fefaeec240676402c9bdb74/2017/04/file_example_MP4_640_3MG.mp4")
+            guard let url = URL(string: "https://devstreaming-cdn.apple.com/videos/wwdc/2024/10087/4/1BAC307D-DA03-4FDC-AB9B-F3B4494DE81E/downloads/wwdc2024-10087_sd.mp4") else {
+                throw GeminiTestError.invalidURL("https://devstreaming-cdn.apple.com/videos/wwdc/2024/10087/4/1BAC307D-DA03-4FDC-AB9B-F3B4494DE81E/downloads/wwdc2024-10087_sd.mp4")
             }
             
             let messages = [_Gemini.Message(role: .user, content: "What is happening in this video?")]
@@ -42,8 +42,8 @@ import _Gemini
     
     @Test func testAudioContentGeneration() async throws {
         do {
-            guard let url = URL(string: "https://file-examples.com/storage/fefaeec240676402c9bdb74/2017/11/file_example_WAV_10MG.wav") else {
-                throw GeminiTestError.invalidURL("https://file-examples.com/storage/fefaeec240676402c9bdb74/2017/11/file_example_WAV_10MG.wav")
+            guard let url = URL(string: "https://replicate.delivery/mgxm/e5159b1b-508a-4be4-b892-e1eb47850bdc/OSR_uk_000_0050_8k.wav") else {
+                throw GeminiTestError.invalidURL("https://replicate.delivery/mgxm/e5159b1b-508a-4be4-b892-e1eb47850bdc/OSR_uk_000_0050_8k.wav")
             }
             
             let messages = [_Gemini.Message(role: .user, content: "What is being said in this audio?")]
@@ -68,8 +68,8 @@ import _Gemini
     
     @Test func testImageContentGeneration() async throws {
         do {
-            guard let url = URL(string: "https://file-examples.com/storage/fefaeec240676402c9bdb74/2017/10/file_example_PNG_2100kB.png") else {
-                throw GeminiTestError.invalidURL("https://file-examples.com/storage/fefaeec240676402c9bdb74/2017/10/file_example_PNG_2100kB.png")
+            guard let url = URL(string: "https://upload.wikimedia.org/wikipedia/en/7/77/EricCartman.png") else {
+                throw GeminiTestError.invalidURL("https://upload.wikimedia.org/wikipedia/en/7/77/EricCartman.png")
             }
             
             let messages = [_Gemini.Message(role: .user, content: "What is in this image?")]
