@@ -84,7 +84,7 @@ extension _Gemini {
         // File Status endpoint
         @GET
         @Path({ context -> String in
-            "/v1beta/\(context.input.name)"
+            "/v1beta/\(context.input.name.rawValue)"
         })
         var getFile = Endpoint<RequestBodies.FileStatusInput, _Gemini.File, Void>()
         
