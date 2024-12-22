@@ -9,11 +9,11 @@ import Foundation
 
 extension _Gemini {
     
-    public struct File: Codable {
+    public struct File: Codable, Hashable {
         public let createTime: String?
         public let expirationTime: String?
         public let mimeType: String?
-        public let name: _Gemini.File.Name?
+        public let name: _Gemini.File.Name
         public let sha256Hash: String?
         public let sizeBytes: String?
         public let state: State
@@ -26,20 +26,20 @@ extension _Gemini {
             case active = "ACTIVE"
         }
         
-        public struct VideoMetadata: Codable {
+        public struct VideoMetadata: Codable, Hashable {
             public let videoDuration: String
         }
     }
     
-    public struct FileList: Codable {
-        public let files: [_Gemini.File]
+    public struct FileList: Codable, Hashable {
+        public let files: [_Gemini.File]?
         // A token that can be sent as a pageToken into a subsequent files.list call.
-        public let nextPageToken: String
+        public let nextPageToken: String?
     }
 }
 
 extension _Gemini.File {
-    public struct Name: Codable, RawRepresentable {
+    public struct Name: Codable, RawRepresentable, Hashable {
         public let rawValue: String
         
         public init(rawValue: String) {

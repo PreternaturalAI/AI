@@ -25,7 +25,7 @@ import NetworkKit
                 displayName: nil
             )
             print("File successfully uploaded: \(String(describing: file.name))")
-            let activeFile = try await client.pollFileUntilActive(name: file.name!)
+            let activeFile = try await client.pollFileUntilActive(name: file.name)
             
             let messages = [_Gemini.Message(role: .user, content: "What is happening in this video?")]
             
@@ -42,6 +42,7 @@ import NetworkKit
             if let tokenUsage = content.tokenUsage {
                 print("Token usage - Total: \(tokenUsage.total)")
             }
+            try await client.deleteFile(fileURL: file.uri)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
             #expect(Bool(false), "Video content generation failed: \(error)")
@@ -62,8 +63,8 @@ import NetworkKit
                 mimeType: mimeType,
                 displayName: nil
             )
-            print("File successfully uploaded: \(String(describing: file.name))")
-            let activeFile = try await client.pollFileUntilActive(name: file.name!)
+            print("File successfully uploaded: \(file.name.rawValue)")
+            let activeFile = try await client.pollFileUntilActive(name: file.name)
             
             let messages = [_Gemini.Message(role: .user, content: "What is being said in this audio?")]
             
@@ -77,6 +78,7 @@ import NetworkKit
             print("Generated content: \(content)")
             
             #expect(!content.text.isEmpty)
+            try await client.deleteFile(fileURL: file.uri)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
             #expect(Bool(false), "Audio content generation failed: \(error)")
@@ -97,7 +99,7 @@ import NetworkKit
                 mimeType: mimeType,
                 displayName: nil
             )
-            let activeFile = try await client.pollFileUntilActive(name: file.name!)
+            let activeFile = try await client.pollFileUntilActive(name: file.name)
             
             let messages = [_Gemini.Message(role: .user, content: "What is in this image?")]
             
@@ -111,6 +113,7 @@ import NetworkKit
             print("Generated content: \(content)")
             
             #expect(!content.text.isEmpty)
+            try await client.deleteFile(fileURL: file.uri)
         } catch let error as GeminiTestError {
             print("Detailed error: \(error.localizedDescription)")
             #expect(Bool(false), "Image content generation failed: \(error)")
