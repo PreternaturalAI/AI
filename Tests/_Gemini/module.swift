@@ -1,8 +1,5 @@
 //
-//  module.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/11/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import AI

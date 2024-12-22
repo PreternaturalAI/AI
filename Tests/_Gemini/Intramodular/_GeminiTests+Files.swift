@@ -1,12 +1,9 @@
 //
-//  _GeminiTests+Files.swift
-//  AI
-//
-//  Created by Natasha Murashev on 12/21/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
-import Testing
 import Foundation
+import Testing
 import _Gemini
 
 @Suite struct GeminiFileTests {
@@ -63,6 +60,7 @@ import _Gemini
 
         guard let fileName = fileName else {
             #expect(Bool(false), "The file name is invalid")
+            
             return
         }
 
@@ -77,6 +75,7 @@ import _Gemini
         
         guard let fileName = file.name else {
             #expect(Bool(false), "The uploaded file has no valid name.")
+            
             return
         }
         

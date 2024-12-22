@@ -1,14 +1,11 @@
 //
-//  _GeminiTests+StructuredOutput.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/18/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
-import Testing
-import Foundation
-import _Gemini
 import AI
+import Foundation
+import Testing
+import _Gemini
 
 @Suite struct _GeminiStructuredOutputTests {
     @Test func testStructuredMovieReview() async throws {

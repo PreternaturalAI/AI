@@ -1,8 +1,5 @@
 //
-//  _Gemini.GoogleSearchRetrieval.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/18/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import Foundation

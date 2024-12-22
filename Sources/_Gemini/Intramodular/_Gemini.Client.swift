@@ -1,15 +1,12 @@
 //
-//  _Gemini.CLient.swift
-//  AI
-//
-//  Created by Jared Davidson on 12/11/24.
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import Diagnostics
-import NetworkKit
 import Foundation
-import Merge
 import FoundationX
+import Merge
+import NetworkKit
 import Swallow
 
 extension _Gemini {

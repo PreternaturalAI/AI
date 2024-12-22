@@ -1,11 +1,6 @@
 //
-//  _Gemini.TuningModel.swift
-//  AI
+// Copyright (c) Preternatural AI, Inc.
 //
-//  Created by Jared Davidson on 12/18/24.
-//
-
-// FIXME: - Break Apart
 
 extension _Gemini {
     public struct TunedModel: Codable {

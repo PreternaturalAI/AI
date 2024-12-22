@@ -1,5 +1,5 @@
 //
-// Copyright (c) Vatsal Manot
+// Copyright (c) Preternatural AI, Inc.
 //
 
 import Dispatch
@@ -76,6 +76,7 @@ extension _Gemini.Client {
         
         do {
             let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
+            
             return try await run(\.getFile, with: input)
         } catch {
             throw _Gemini.APIError.unknown(message: "Failed to get file status: \(error.localizedDescription)")
@@ -91,6 +92,7 @@ extension _Gemini.Client {
                 pageSize: pageSize,
                 pageToken: pageToken
             )
+            
             return try await run(\.listFiles, with: input)
         } catch {
             throw _Gemini.APIError.unknown(message: "Failed to get file status: \(error.localizedDescription)")

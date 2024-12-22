@@ -1,10 +1,6 @@
 //
-//  _Gemini.FineTuningExample.swift
-//  AI
+// Copyright (c) Preternatural AI, Inc.
 //
-//  Created by Jared Davidson on 12/18/24.
-//
-
 
 extension _Gemini {
     public struct FineTuningExample: Codable {
