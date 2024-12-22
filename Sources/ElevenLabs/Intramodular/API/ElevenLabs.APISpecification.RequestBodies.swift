@@ -1,10 +1,13 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  ElevenLabs.RequestTypes.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/18/24.
 //
 
-import Merge
 import NetworkKit
 import SwiftAPI
+import Merge
 
 extension ElevenLabs.APISpecification {
     

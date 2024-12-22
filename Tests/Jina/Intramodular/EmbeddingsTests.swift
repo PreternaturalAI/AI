@@ -1,9 +1,9 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
-import Jina
 import LargeLanguageModels
+import Jina
 import XCTest
 
 final class EmbeddingsTests: XCTestCase {

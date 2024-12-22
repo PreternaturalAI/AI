@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  _Gemini.FunctionCall.swift
+//  AI
+//
+//  Created by Jared Davidson on 12/13/24.
 //
 
 import Foundation

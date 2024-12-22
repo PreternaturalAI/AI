@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  _Gemini.TuningTask.swift
+//  AI
+//
+//  Created by Jared Davidson on 12/18/24.
 //
 
 import Foundation

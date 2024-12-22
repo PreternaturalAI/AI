@@ -1,10 +1,10 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
-import Foundation
 import NetworkKit
 import SwiftAPI
+import Foundation
 
 extension _Gemini.APISpecification {
     public enum RequestBodies {
@@ -120,7 +120,6 @@ extension _Gemini.APISpecification {
                     
                     if let text = try? container.decode(String.self, forKey: .text) {
                         self = .text(text)
-                        
                         return
                     }
                     
@@ -129,7 +128,6 @@ extension _Gemini.APISpecification {
                         let mimeType = try nested.decode(String.self, forKey: .mimeType)
                         if let url = URL(string: uri) {
                             self = .file(url: url, mimeType: mimeType)
-                            
                             return
                         }
                     }

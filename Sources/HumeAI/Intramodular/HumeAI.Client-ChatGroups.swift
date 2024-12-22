@@ -1,15 +1,17 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.Client.ChatGroup.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
-import Merge
 import NetworkKit
 import SwiftAPI
+import Merge
 
 extension HumeAI.Client {
     public func listChatGroups() async throws -> [HumeAI.ChatGroup] {
         let response = try await run(\.listChatGroups)
-        
         return response.chatGroups.map { chatGroup in
             HumeAI.ChatGroup(
                 id: chatGroup.id,
@@ -32,7 +34,6 @@ extension HumeAI.Client {
         let input = HumeAI.APISpecification.PathInput.ID(
             id: id
         )
-        
         return try await run(\.getChatGroup, with: input)
     }
 }

@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  PlayHT.APISpeicification.ResponseBodies.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/20/24.
 //
 
 import Foundation

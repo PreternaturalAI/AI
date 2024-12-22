@@ -1,15 +1,15 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
 import CorePersistence
 import Diagnostics
-import Foundation
-import FoundationX
-import Merge
 import NetworkKit
-import Swallow
+import Foundation
 import SwiftAPI
+import Merge
+import FoundationX
+import Swallow
 
 extension ElevenLabs {
     @RuntimeDiscoverable
@@ -82,7 +82,6 @@ extension ElevenLabs.Client {
         )
         
         let response = try await run(\.addVoice, with: input)
-        
         return .init(rawValue: response.voiceId)
     }
     

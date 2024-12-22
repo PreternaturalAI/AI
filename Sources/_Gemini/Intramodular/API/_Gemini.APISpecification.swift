@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  _Gemini.APISpecification.swift
+//  AI
+//
+//  Created by Jared Davidson on 12/11/24.
 //
 
 import CorePersistence

@@ -1,12 +1,15 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  Untitled.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/22/24.
 //
 
+import XCTest
 import AI
-@testable import NeetsAI
 import NetworkKit
 import SwiftAPI
-import XCTest
+@testable import NeetsAI
 
 final class NeetsAIClientTests: XCTestCase {
 

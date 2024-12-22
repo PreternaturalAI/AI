@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.Chat.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
 extension HumeAI {

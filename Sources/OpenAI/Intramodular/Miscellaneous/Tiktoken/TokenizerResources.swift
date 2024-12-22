@@ -1,5 +1,5 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
 import CryptoKit
@@ -81,7 +81,6 @@ private extension TokenizerResources {
         // Check if the data exists in cache
         if FileManager.default.fileExists(atPath: cacheFileURL.path) {
             let data = try? Data(contentsOf: cacheFileURL)
-            
             return data
         } else {
             guard let url = URL(string: stringUrl) else { return nil }
@@ -128,7 +127,6 @@ private extension TokenizerResources {
         guard let data = try? await fetch(stringUrl: url),
               let decoded = try? JSONDecoder().decode([String: Int].self, from: data)
         else { return [:] }
-        
         return decoded
     }
 }
@@ -139,7 +137,6 @@ extension String {
     var _SHA256: String {
         let data = Data(self.utf8)
         let hashed = SHA256.hash(data: data)
-        
         return hashed.compactMap { String(format: "%02x", $0) }.joined()
     }
 

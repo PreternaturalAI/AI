@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.Clent.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/22/24.
 //
 
 import CorePersistence
@@ -42,7 +45,6 @@ extension HumeAI.Client {
     // Text to Speech
     public func getAllAvailableVoices() async throws -> [HumeAI.Voice] {
         let response = try await run(\.listCustomVoices)
-        
         return response.customVoicesPage
     }
 }

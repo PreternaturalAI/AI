@@ -1,10 +1,13 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.APISpeicification.ResponseBodies.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/22/24.
 //
 
-import Merge
 import NetworkKit
 import SwiftAPI
+import Merge
 
 extension HumeAI.APISpecification {
     enum ResponseBodies {

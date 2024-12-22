@@ -1,11 +1,15 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  _GeminiFunctionTests.swift
+//  AI
+//
+//  Created by Jared Davidson on 12/13/24.
 //
 
-import AI
-import Foundation
+
 import Testing
+import Foundation
 import _Gemini
+import AI
 
 @Suite struct _GeminiFunctionTests {
     @Test func testLightingSystem() async throws {

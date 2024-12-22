@@ -1,9 +1,13 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  Downloader.swift
+//
+//  Adapted from https://github.com/huggingface/swift-coreml-diffusers/blob/d041577b9f5e201baa3465bc60bc5d0a1cf7ed7f/Diffusion/Common/Downloader.swift
+//  Created by Pedro Cuenca on December 2022.
+//  See LICENSE at https://github.com/huggingface/swift-coreml-diffusers/LICENSE
 //
 
-import Combine
 import Foundation
+import Combine
 
 extension HuggingFace {
     class Downloader: NSObject, ObservableObject {
@@ -51,12 +55,10 @@ extension HuggingFace {
                     switch existing.state {
                     case .running:
                         // print("Already downloading \(url)")
-                        
                         return
                     case .suspended:
                         // print("Resuming suspended download task for \(url)")
                         existing.resume()
-                        
                         return
                     case .canceling:
                         // print("Starting new download task for \(url), previous was canceling")

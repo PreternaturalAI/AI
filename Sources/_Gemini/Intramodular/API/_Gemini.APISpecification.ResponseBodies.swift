@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  _Gemini.APISpecification.ResponseBodies.swift
+//  AI
+//
+//  Created by Jared Davidson on 12/11/24.
 //
 
 import Foundation
@@ -51,13 +54,11 @@ extension _Gemini.APISpecification {
                         
                         if let text = try? container.decode(String.self, forKey: .text) {
                             self = .text(text)
-                            
                             return
                         }
                         
                         if let functionCall = try? container.decode(_Gemini.FunctionCall.self, forKey: .functionCall) {
                             self = .functionCall(functionCall)
-                            
                             return
                         }
                         
@@ -65,7 +66,6 @@ extension _Gemini.APISpecification {
                             let language = try executableContainer.decode(String.self, forKey: .language)
                             let code = try executableContainer.decode(String.self, forKey: .code)
                             self = .executableCode(language: language, code: code)
-                            
                             return
                         }
                         
@@ -73,7 +73,6 @@ extension _Gemini.APISpecification {
                             let outcome = try resultContainer.decode(String.self, forKey: .outcome)
                             let output = try resultContainer.decode(String.self, forKey: .output)
                             self = .codeExecutionResult(outcome: outcome, output: output)
-                            
                             return
                         }
                         

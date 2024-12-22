@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  _Gemini.Message.swift
+//  AI
+//
+//  Created by Jared Davidson on 12/13/24.
 //
 
 import Foundation

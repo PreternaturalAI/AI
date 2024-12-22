@@ -1,10 +1,13 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.Client-Configs.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
-import Merge
 import NetworkKit
 import SwiftAPI
+import Merge
 
 extension HumeAI.Client {
     public func listConfigs() async throws -> [HumeAI.Config] {
@@ -23,7 +26,6 @@ extension HumeAI.Client {
             description: description,
             settings: settings
         )
-        
         return try await run(\.createConfig, with: input)
     }
     

@@ -1,9 +1,9 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
-import Groq
 import LargeLanguageModels
+import Groq
 import XCTest
 
 final class CompletionTests: XCTestCase {

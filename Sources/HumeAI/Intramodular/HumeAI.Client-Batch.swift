@@ -1,10 +1,13 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.Client-Jobs.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
-import Merge
 import NetworkKit
 import SwiftAPI
+import Merge
 
 extension HumeAI.Client {
     public func startInferenceJob(
@@ -16,7 +19,6 @@ extension HumeAI.Client {
             models: models,
             callback: nil
         )
-        
         return try await run(\.startInferenceJob, with: input)
     }
     
@@ -26,7 +28,6 @@ extension HumeAI.Client {
         let input = HumeAI.APISpecification.PathInput.ID(
             id: id
         )
-        
         return try await run(\.getJobDetails, with: input)
     }
     
@@ -36,7 +37,6 @@ extension HumeAI.Client {
         let input = HumeAI.APISpecification.PathInput.ID(
             id: id
         )
-        
         return try await run(\.getJobPredictions, with: input)
     }
     public func listJobs() async throws -> [HumeAI.Job] {
@@ -45,7 +45,6 @@ extension HumeAI.Client {
     
     public func getJobArtifacts(id: String) async throws -> [String: String] {
         let input = HumeAI.APISpecification.PathInput.ID(id: id)
-        
         return try await run(\.getJobArtifacts, with: input)
     }
 }

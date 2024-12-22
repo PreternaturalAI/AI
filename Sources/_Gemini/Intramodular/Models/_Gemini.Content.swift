@@ -1,5 +1,5 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
 import Foundation
@@ -220,7 +220,6 @@ extension _Gemini.Content {
                 response: usage.candidatesTokenCount ?? 0,
                 total: usage.totalTokenCount ?? 0
             )
-            
             return
         }
         

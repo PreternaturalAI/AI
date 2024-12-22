@@ -1,9 +1,9 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
-import CoreMI
 import CorePersistence
+import CoreMI
 import Swallow
 
 extension AbstractLLM {

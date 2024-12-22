@@ -1,15 +1,17 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.Client-Tools.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
-import Merge
 import NetworkKit
 import SwiftAPI
+import Merge
 
 extension HumeAI.Client {
     public func listTools() async throws -> [HumeAI.Tool] {
         let response = try await run(\.listTools)
-        
         return response.toolsPage
     }
     
@@ -45,7 +47,6 @@ extension HumeAI.Client {
             description: "This tool is for getting the current weather.",
             fallbackContent: "Unable to fetch current weather."
         )
-        
         return try await run(\.createTool, with: tool)
     }
     

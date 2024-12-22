@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  Hub.swift
+//  
+//
+//  Created by Pedro Cuenca on 18/5/23.
 //
 
 import Foundation
@@ -82,7 +85,6 @@ extension HuggingFace {
             } else if let value = dictionary[key] {
                 return Config(["value": value])
             }
-                
             return nil
         }
         
@@ -149,14 +151,12 @@ extension HuggingFace {
                     // If the config exists but doesn't contain a tokenizerClass, use a fallback config if we have it
                     if let fallbackConfig = Self.fallbackTokenizerConfig(for: modelType) {
                         let configuration = fallbackConfig.dictionary.merging(hubConfig.dictionary, uniquingKeysWith: { current, _ in current })
-                        
                         return HuggingFace.Config(configuration)
                     }
                     
                     // Guess by capitalizing
                     var configuration = hubConfig.dictionary
                     configuration["tokenizer_class"] = "\(modelType.capitalized)Tokenizer"
-                    
                     return HuggingFace.Config(configuration)
                 }
                 
@@ -203,7 +203,6 @@ extension HuggingFace {
                 tokenizerConfig: tokenizerConfig,
                 tokenizerData: tokenizerVocab
             )
-            
             return configs
         }
         

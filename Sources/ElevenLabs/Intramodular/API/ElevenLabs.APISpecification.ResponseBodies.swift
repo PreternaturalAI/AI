@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  ElevenLabs.APISpecification.ResponseBodies.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/18/24.
 //
 
 import Foundation

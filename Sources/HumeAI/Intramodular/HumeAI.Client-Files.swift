@@ -1,15 +1,17 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.Client-Files.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
-import Merge
 import NetworkKit
 import SwiftAPI
+import Merge
 
 extension HumeAI.Client {
     public func listFiles() async throws -> [HumeAI.File] {
         let response = try await run(\.listFiles)
-        
         return response.files
     }
     
@@ -23,7 +25,6 @@ extension HumeAI.Client {
             name: name,
             metadata: metadata
         )
-        
         return try await run(\.uploadFile, with: input)
     }
     

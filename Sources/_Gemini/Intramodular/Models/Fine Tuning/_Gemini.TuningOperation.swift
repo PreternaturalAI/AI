@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  _Gemini.TuningOperation.swift
+//  AI
+//
+//  Created by Jared Davidson on 12/18/24.
 //
 
 import Foundation
@@ -13,7 +16,6 @@ extension _Gemini {
         // Computed property for done state since it's not in initial response
         public var done: Bool {
             // Operation is done if we have a tunedModel in metadata
-            
             return metadata?.tunedModel != nil
         }
         

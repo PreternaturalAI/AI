@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  _Gemini.Client+FineTuning.swift
+//  AI
+//
+//  Created by Jared Davidson on 12/18/24.
 //
 
 import Foundation
@@ -11,7 +14,6 @@ extension _Gemini.Client {
         let input = _Gemini.APISpecification.RequestBodies.CreateTunedModel(
             requestBody: config
         )
-        
         return try await run(\.createTunedModel, with: input)
     }
     
@@ -21,7 +23,6 @@ extension _Gemini.Client {
         let input = _Gemini.APISpecification.RequestBodies.GetOperation(
             operationName: operationName
         )
-        
         return try await run(\.getTuningOperation, with: input)
     }
     
@@ -31,7 +32,6 @@ extension _Gemini.Client {
         let input = _Gemini.APISpecification.RequestBodies.GetTunedModel(
             modelName: modelName
         )
-        
         return try await run(\.getTunedModel, with: input)
     }
     
@@ -60,7 +60,6 @@ extension _Gemini.Client {
         )
         
         let response = try await run(\.generateTunedContent, with: input)
-    
         return try _Gemini.Content(apiResponse: response)
     }
     

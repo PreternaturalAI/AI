@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  NeetsAI.APISpecification.ResponseBodies.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/22/24.
 //
 
 import Foundation

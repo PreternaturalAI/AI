@@ -1,5 +1,5 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
 import Foundation
@@ -47,7 +47,6 @@ class CoreBPE {
                 ret.append(contentsOf: encoded)
             }
         }
-        
         return ret
     }
     
@@ -59,7 +58,6 @@ class CoreBPE {
                 $0.append(contentsOf: tokenBytes)
             }
         })
-            
         return String(data: data, encoding: .utf8) ?? ""
     }
 }
@@ -115,7 +113,6 @@ private extension CoreBPE {
             if calculatedIndex < parts.count {
                 let range = parts[startIdx].0..<parts[calculatedIndex].0
                 let subPiece = Array(piece[range])
-                
                 return ranks[subPiece]
             } else {
                 return nil
@@ -169,7 +166,6 @@ private extension CoreBPE {
         }
         
         // TODO: Use ranks
-            
         return parts.prevCurrent({ completion($0.0..<$1.0) })
     }
     
@@ -177,10 +173,8 @@ private extension CoreBPE {
         if piece.count == 1 {
             return [ranks[piece]!]
         }
-        
         return bytePairMerge(piece, ranks, completion: { p in
             let chunk = Array(piece[p])
-        
             return ranks[chunk] ?? 0
         })
     }
@@ -202,7 +196,6 @@ extension Array {
         enumerated().compactMap({ index, element in
             guard index > 0 else { return nil }
             let prev = self[index-1]
-        
             return try? body(prev, element)
         })
     }

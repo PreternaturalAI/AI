@@ -1,9 +1,12 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  Batch.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
-@testable import HumeAI
 import XCTest
+@testable import HumeAI
 
 final class HumeAIClientBatchTests: XCTestCase {
     func testStartInferenceJob() async throws {

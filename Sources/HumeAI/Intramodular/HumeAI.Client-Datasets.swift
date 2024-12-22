@@ -1,15 +1,17 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.Client-Datasets.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
-import Merge
 import NetworkKit
 import SwiftAPI
+import Merge
 
 extension HumeAI.Client {
     public func listDatasets() async throws -> [HumeAI.Dataset] {
         let response = try await run(\.listDatasets)
-        
         return response.datasets
     }
     
@@ -23,7 +25,6 @@ extension HumeAI.Client {
             description: description,
             fileIds: fileIds
         )
-        
         return try await run(\.createDataset, with: input)
     }
     

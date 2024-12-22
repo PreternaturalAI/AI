@@ -1,5 +1,6 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
+
 
 import Foundation

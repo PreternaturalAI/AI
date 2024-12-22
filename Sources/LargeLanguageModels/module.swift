@@ -1,13 +1,14 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
 @_exported import CoreMI
-import CorePersistence
 @_exported import Diagnostics
 @_exported import Merge
 @_exported import Swallow
 @_exported import SwiftDI
+
+import CorePersistence
 
 public enum _module {
     public static func initialize() {

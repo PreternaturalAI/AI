@@ -1,9 +1,9 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
-import FoundationX
 import NetworkKit
+import FoundationX
 import Swallow
 
 extension TogetherAI {

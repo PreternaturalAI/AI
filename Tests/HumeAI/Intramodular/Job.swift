@@ -1,9 +1,12 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  Job.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
-@testable import HumeAI
 import XCTest
+@testable import HumeAI
 
 final class HumeAIClientJobTests: XCTestCase {
     
@@ -41,7 +44,6 @@ final class HumeAIClientJobTests: XCTestCase {
         
         guard let firstPrediction = predictions.first else {
             XCTFail("No predictions found")
-            
             return
         }
         
@@ -105,7 +107,6 @@ final class HumeAIClientJobTests: XCTestCase {
         
         guard let facePrediction = predictions.first?.results.predictions.first?.models.face?.groupedPredictions.first?.predictions.first else {
             XCTFail("No face predictions found")
-            
             return
         }
         

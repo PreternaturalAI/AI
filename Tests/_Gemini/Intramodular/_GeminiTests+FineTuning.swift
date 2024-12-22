@@ -1,11 +1,14 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  _GeminiTests+FineTuning.swift
+//  AI
+//
+//  Created by Jared Davidson on 12/18/24.
 //
 
-import AI
-import Foundation
 import Testing
+import Foundation
 import _Gemini
+import AI
 
 @Suite struct _GeminiModelTuningTests {
     // Test case structure

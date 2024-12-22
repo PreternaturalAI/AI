@@ -1,10 +1,13 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  HumeAI.Client-Chat.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/25/24.
 //
 
-import Merge
 import NetworkKit
 import SwiftAPI
+import Merge
 
 extension HumeAI.Client {
     public func chat(
@@ -19,7 +22,6 @@ extension HumeAI.Client {
             maxTokens: nil,
             stream: nil
         )
-        
         return try await run(\.chat, with: input)
     }
 }

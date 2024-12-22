@@ -1,5 +1,5 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
 import Dispatch
@@ -42,7 +42,6 @@ extension _Gemini.Client {
         
         do {
             let input = _Gemini.APISpecification.RequestBodies.FileStatusInput(name: name)
-            
             return try await run(\.getFile, with: input)
         } catch {
             throw _Gemini.APIError.unknown(message: "Failed to get file status: \(error.localizedDescription)")
@@ -102,7 +101,6 @@ extension _Gemini.Client {
                 mimeType: mimeType,
                 displayName: UUID().uuidString
             )
-            
             return file
         } catch let error as NSError where error.domain == NSCocoaErrorDomain {
             throw _Gemini.APIError.unknown(message: "Failed to read file: \(error.localizedDescription)")
@@ -129,7 +127,6 @@ extension _Gemini.Client {
             mimeType: mimeType,
             displayName: UUID().uuidString
         )
-        
         return file
     }
     

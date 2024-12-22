@@ -1,5 +1,8 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+//  Rime.Client.swift
+//  AI
+//
+//  Created by Jared Davidson on 11/21/24.
 //
 
 import CorePersistence

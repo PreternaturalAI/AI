@@ -1,11 +1,11 @@
 //
-// Copyright (c) Preternatural AI, Inc.
+// Copyright (c) Vatsal Manot
 //
 
-import Groq
 import LargeLanguageModels
-import Mistral
+import Groq
 import XCTest
+import Mistral
 
 final class EmbeddingsTests: XCTestCase {
         
