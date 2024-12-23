@@ -121,6 +121,52 @@ import NetworkKit
             throw GeminiTestError.imageProcessingError(error)
         }
     }
+    
+    @Test func testMultipleContentGeneration() async throws {
+        do {
+            guard let imageURL = URL(string: "https://upload.wikimedia.org/wikipedia/en/7/77/EricCartman.png") else {
+                throw GeminiTestError.invalidURL("https://upload.wikimedia.org/wikipedia/en/7/77/EricCartman.png")
+            }
+            
+            let mimeType: HTTPMediaType = .custom("image/png")
+            let imageFile = try await client.uploadFile(
+                from: imageURL,
+                mimeType: mimeType,
+                displayName: nil
+            )
+            let activeImageFile = try await client.pollFileUntilActive(name: imageFile.name)
+            
+            guard let image2URL = URL(string: "https://upload.wikimedia.org/wikipedia/en/2/25/KyleBroflovski.png") else {
+                throw GeminiTestError.invalidURL("https://upload.wikimedia.org/wikipedia/en/2/25/KyleBroflovski.png")
+            }
+            
+            let image2File = try await client.uploadFile(
+                from: image2URL,
+                mimeType: mimeType,
+                displayName: nil
+            )
+            print("File successfully uploaded: \(String(describing: image2File.name))")
+            let activeImage2File = try await client.pollFileUntilActive(name: image2File.name)
+            
+            let messages = [_Gemini.Message(role: .user, content: "What do these two images have in common?")]
+            
+            let content = try await client.generateContent(
+                messages: messages,
+                files: [activeImageFile, activeImage2File],
+                model: .gemini_2_0_flash_exp
+            )
+            print("Generated content: \(content)")
+            
+            #expect(!content.text.isEmpty)
+            try await client.deleteFile(fileURL: imageFile.uri)
+            try await client.deleteFile(fileURL: image2File.uri)
+        } catch let error as GeminiTestError {
+            print("Detailed error: \(error.localizedDescription)")
+            #expect(Bool(false), "Image content generation failed: \(error)")
+        } catch {
+            throw GeminiTestError.imageProcessingError(error)
+        }
+    }
 }
 
 // Error Handling
