@@ -62,6 +62,45 @@ extension _Gemini.Client {
             configuration: configuration
         )
     }
+    
+    public func generateContent(
+        messages: [_Gemini.Message] = [],
+        files: [_Gemini.File],
+        model: _Gemini.Model,
+        configuration: _Gemini.GenerationConfiguration = configDefault
+    ) async throws -> _Gemini.Content {
+        
+        let systemInstruction = extractSystemInstruction(from: messages)
+        let messages: [_Gemini.Message] = messages.filter({ $0.role != .system })
+        var contents: [_Gemini.APISpecification.RequestBodies.Content] = []
+        
+        try files.forEach { file in
+            guard let mimeType = file.mimeType else {
+                throw _Gemini.APIError.unknown(message: "Invalid MIME type")
+            }
+            
+            contents.append(
+                _Gemini.APISpecification.RequestBodies.Content(
+                    role: "user",
+                    parts: [.file(url: file.uri, mimeType: mimeType)]
+                )
+            )
+        }
+        
+        contents.append(contentsOf: messages.map { message in
+            _Gemini.APISpecification.RequestBodies.Content(
+                role: message.role.rawValue,
+                parts: [.text(message.content)]
+            )
+        })
+        
+        return try await generateContent(
+            contents: contents,
+            systemInstruction: systemInstruction,
+            model: model,
+            configuration: configuration
+        )
+    }
             
     internal func generateContent(
         contents: [_Gemini.APISpecification.RequestBodies.Content],
