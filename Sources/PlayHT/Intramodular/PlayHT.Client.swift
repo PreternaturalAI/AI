@@ -63,7 +63,7 @@ extension PlayHT.Client {
         async let clonedVoices = clonedVoices()
         
         let (available, cloned) = try await (htVoices, clonedVoices)
-        return available + cloned
+        return cloned
     }
     
     public func availableVoices() async throws -> [PlayHT.Voice] {
@@ -78,6 +78,7 @@ extension PlayHT.Client {
         text: String,
         voice: String,
         settings: PlayHT.VoiceSettings,
+        language: String,
         outputSettings: PlayHT.OutputSettings = .default,
         model: PlayHT.Model
     ) async throws -> Data {
@@ -86,33 +87,14 @@ extension PlayHT.Client {
             text: text,
             voice: voice,
             voiceEngine: model,
-            quality: outputSettings.quality.rawValue,
-            outputFormat: outputSettings.format.rawValue
+//            quality: outputSettings.quality.rawValue,
+            outputFormat: outputSettings.format.rawValue,
+            language: language
         )
         
         let responseData = try await run(\.streamTextToSpeech, with: input)
-        
-        guard let url = URL(string: responseData.href) else {
-            throw PlayHTError.invalidURL
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue(interface.configuration.userId ?? "", forHTTPHeaderField: "X-USER-ID")
-        request.addValue(interface.configuration.apiKey ?? "", forHTTPHeaderField: "AUTHORIZATION")
-        
-        let (audioData, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw PlayHTError.audioFetchFailed
-        }
-        
-        guard !audioData.isEmpty else {
-            throw PlayHTError.audioFetchFailed
-        }
-        
-        return audioData
+       
+        return responseData
     }
     
     
