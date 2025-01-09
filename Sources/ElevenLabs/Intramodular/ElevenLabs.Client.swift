@@ -42,11 +42,13 @@ extension ElevenLabs.Client {
     public func speech(
         for text: String,
         voiceID: String,
+        languageCode: String?,
         voiceSettings: ElevenLabs.VoiceSettings,
         model: ElevenLabs.Model
     ) async throws -> Data {
         let requestBody = ElevenLabs.APISpecification.RequestBodies.SpeechRequest(
             text: text,
+            languageCode: languageCode,
             voiceSettings: voiceSettings,
             model: model
         )
@@ -57,12 +59,14 @@ extension ElevenLabs.Client {
     public func speechToSpeech(
         inputAudioURL: URL,
         voiceID: String,
+        languageCode: String?,
         voiceSettings: ElevenLabs.VoiceSettings,
         model: ElevenLabs.Model
     ) async throws -> Data {
         let input = ElevenLabs.APISpecification.RequestBodies.SpeechToSpeechInput(
             voiceId: voiceID,
             audioURL: inputAudioURL,
+            languageCode: languageCode,
             model: model,
             voiceSettings: voiceSettings
         )

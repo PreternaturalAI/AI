@@ -20,6 +20,8 @@ extension ElevenLabs {
         case MultilingualV1 = "eleven_multilingual_v1"
         
         case EnglishSTSV2 = "eleven_english_sts_v2"
+        
+        case FlashV2_5 = "eleven_flash_v2_5"
     }
 }
 
