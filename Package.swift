@@ -20,23 +20,37 @@ let package = Package(
                 "Anthropic",
                 "Cohere",
                 "ElevenLabs",
-                "_Gemini",
                 "Groq",
                 "HuggingFace",
                 "Jina",
                 "Mistral",
                 "Ollama",
                 "OpenAI",
-                "Perplexity",
-                "TogetherAI",
-                "VoyageAI",
                 "AI",
+            ]
+        ),
+        .library(
+            name: "_Gemini",
+            targets: [
+                "_Gemini"
             ]
         ),
         .library(
             name: "Anthropic",
             targets: [
                 "Anthropic"
+            ]
+        ),
+        .library(
+            name: "HumeAI",
+            targets: [
+                "HumeAI"
+            ]
+        ),
+        .library(
+            name: "NeetsAI",
+            targets: [
+                "NeetsAI"
             ]
         ),
         .library(
@@ -50,7 +64,31 @@ let package = Package(
             targets: [
                 "Perplexity"
             ]
-        )
+        ),
+        .library(
+            name: "PlayHT",
+            targets: [
+                "PlayHT"
+            ]
+        ),
+        .library(
+            name: "Rime",
+            targets: [
+                "Rime"
+            ]
+        ),
+        .library(
+            name: "TogetherAI",
+            targets: [
+                "TogetherAI"
+            ]
+        ),
+        .library(
+            name: "VoyageAI",
+            targets: [
+                "VoyageAI"
+            ]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/vmanot/CorePersistence.git", branch: "main"),
@@ -340,26 +378,30 @@ let package = Package(
             dependencies: [
                 "CoreMI",
                 "LargeLanguageModels",
-                "_Gemini",
                 "Anthropic",
                 "Cohere",
                 "ElevenLabs",
                 "Groq",
                 "HuggingFace",
-                "HumeAI",
                 "Jina",
-                "NeetsAI",
                 "Mistral",
                 "Ollama",
                 "OpenAI",
-                "Perplexity",
-                "PlayHT",
-                "Rime",
                 "Swallow",
-                "TogetherAI",
-                "VoyageAI",
             ],
             path: "Sources/AI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "_GeminiTests",
+            dependencies: [
+                "AI",
+                "Swallow",
+                "_Gemini"
+            ],
+            path: "Tests/_Gemini",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
