@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct VideoGenerationSettings: Codable, Hashable {
+public struct VideoGenerationSettings: Codable, Hashable, Equatable {
     /// Duration of the generated video in seconds (1-60)
     public var duration: Double {
         didSet {

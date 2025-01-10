@@ -11,7 +11,7 @@ extension VideoGenerationSettings {
         case strong = "strong"    // 10-15
         case extreme = "extreme"  // 15-20
         
-        var guidanceScale: Double {
+        public var guidanceScale: Double {
             switch self {
                 case .subtle: return 3.0
                 case .balanced: return 7.5
@@ -20,7 +20,7 @@ extension VideoGenerationSettings {
             }
         }
         
-        var strengthValue: Double {
+        public var strengthValue: Double {
             (guidanceScale - 1) / 19
         }
     }

@@ -30,11 +30,11 @@ public protocol VideoGenerationRequestHandling {
 }
 
 private struct VideoGeneratorKey: EnvironmentKey {
-    static let defaultValue: (any VideoGenerationRequestHandling)? = DummyVideoGenerator()
+    public static let defaultValue: (any VideoGenerationRequestHandling)? = nil
 }
 
 extension EnvironmentValues {
-    var videoClient: (any VideoGenerationRequestHandling)? {
+    public var videoClient: (any VideoGenerationRequestHandling)? {
         get { self[VideoGeneratorKey.self] }
         set { self[VideoGeneratorKey.self] = newValue }
     }

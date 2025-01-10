@@ -9,7 +9,7 @@ import SwiftUIZ
 import CorePersistence
 import ElevenLabs
 
-public struct AbstractVoiceSettings: Codable, Sendable, Initiable {
+public struct AbstractVoiceSettings: Codable, Sendable, Initiable, Equatable {
     public init() {
         self.init(stability: 1.0)
     }

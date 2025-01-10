@@ -12,7 +12,7 @@ extension VideoGenerationSettings {
         case quality = "quality"  // 40 steps
         case max = "max"         // 50 steps
         
-        var inferenceSteps: Int {
+        public var inferenceSteps: Int {
             switch self {
                 case .draft: return 20
                 case .fast: return 30
@@ -22,7 +22,7 @@ extension VideoGenerationSettings {
             }
         }
         
-        var qualityValue: Double {
+        public var qualityValue: Double {
             Double(inferenceSteps - 20) / 30
         }
     }

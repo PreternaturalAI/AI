@@ -59,7 +59,7 @@ private struct ElevenLabsClientKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    var speechSynthesizer: (any SpeechSynthesisRequestHandling)? {
+    public var speechSynthesizer: (any SpeechSynthesisRequestHandling)? {
         get { self[ElevenLabsClientKey.self] }
         set { self[ElevenLabsClientKey.self] = newValue }
     }
