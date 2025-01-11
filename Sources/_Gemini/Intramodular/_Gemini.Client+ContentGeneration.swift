@@ -69,7 +69,6 @@ extension _Gemini.Client {
         model: _Gemini.Model,
         configuration: _Gemini.GenerationConfiguration = configDefault
     ) async throws -> _Gemini.Content {
-        
         let systemInstruction = extractSystemInstruction(from: messages)
         let messages: [_Gemini.Message] = messages.filter({ $0.role != .system })
         var contents: [_Gemini.APISpecification.RequestBodies.Content] = []

@@ -2,4 +2,5 @@
 // Copyright (c) Vatsal Manot
 //
 
-import LargeLanguageModels
+@_exported import CoreMI
+@_exported import LargeLanguageModels
