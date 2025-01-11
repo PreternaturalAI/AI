@@ -10,10 +10,15 @@ import SwiftAPI
 import Merge
 import FoundationX
 import Swallow
+import LargeLanguageModels
 
 extension ElevenLabs {
     @RuntimeDiscoverable
     public final class Client: SwiftAPI.Client, ObservableObject {
+        public static var persistentTypeRepresentation: some IdentityRepresentation {
+            CoreMI._ServiceVendorIdentifier._ElevenLabs
+        }
+        
         public typealias API = ElevenLabs.APISpecification
         public typealias Session = HTTPSession
         
@@ -30,6 +35,25 @@ extension ElevenLabs {
         public convenience init(apiKey: String?) {
             self.init(configuration: .init(apiKey: apiKey))
         }
+    }
+}
+
+extension ElevenLabs.Client: CoreMI._ServiceClientProtocol {
+    public convenience init(
+        account: (any CoreMI._ServiceAccountProtocol)?
+    ) async throws {
+        let account: any CoreMI._ServiceAccountProtocol = try account.unwrap()
+        let serviceVendorIdentifier: CoreMI._ServiceVendorIdentifier = try account.serviceVendorIdentifier.unwrap()
+        
+        guard serviceVendorIdentifier == CoreMI._ServiceVendorIdentifier._ElevenLabs else {
+            throw CoreMI._ServiceClientError.incompatibleVendor(serviceVendorIdentifier)
+        }
+        
+        guard let credential = try account.credential as? CoreMI._ServiceCredentialTypes.APIKeyCredential else {
+            throw CoreMI._ServiceClientError.invalidCredential(try account.credential)
+        }
+        
+        self.init(apiKey: credential.apiKey)
     }
 }
 
@@ -50,7 +74,6 @@ extension ElevenLabs.Client {
             voiceSettings: voiceSettings,
             model: model
         )
-        
         return try await run(\.textToSpeech, with: .init(voiceId: voiceID, requestBody: requestBody))
     }
     

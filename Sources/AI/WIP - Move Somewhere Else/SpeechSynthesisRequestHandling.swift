@@ -19,7 +19,7 @@ public protocol SpeechToSpeechRequestHandling {
     
 }
 
-public protocol SpeechSynthesisRequestHandling {
+public protocol SpeechSynthesisRequestHandling: AnyObject {
     func availableVoices() async throws -> [ElevenLabs.Voice]
     
     func speech(
@@ -68,3 +68,31 @@ extension EnvironmentValues {
 // MARK: - Conformances
 
 extension ElevenLabs.Client: SpeechSynthesisRequestHandling {}
+
+
+public struct AnySpeechSynthesisRequestHandling: Hashable {
+    private let _service: any CoreMI._ServiceClientProtocol
+    private let _base: any SpeechSynthesisRequestHandling
+    private let _hashValue: Int
+
+    public init(
+        _ base: any SpeechSynthesisRequestHandling,
+        service: any CoreMI._ServiceClientProtocol
+    ) {
+        self._base = base
+        self._hashValue = ObjectIdentifier(base as AnyObject).hashValue
+        self._service = service
+    }
+
+    public static func == (lhs: AnySpeechSynthesisRequestHandling, rhs: AnySpeechSynthesisRequestHandling) -> Bool {
+        lhs._hashValue == rhs._hashValue
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(_hashValue)
+    }
+
+    public func base() -> any SpeechSynthesisRequestHandling {
+        _base
+    }
+}
