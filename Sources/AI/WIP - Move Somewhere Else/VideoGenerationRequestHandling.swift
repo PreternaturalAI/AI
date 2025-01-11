@@ -42,17 +42,23 @@ extension EnvironmentValues {
 }
 
 public struct AnyVideoGenerationRequestHandling: Hashable {
-    private let _service: any CoreMI._ServiceClientProtocol
-    private let _base: any VideoGenerationRequestHandling
+    public let base: any CoreMI._ServiceClientProtocol & VideoGenerationRequestHandling
     private let _hashValue: Int
+    
+//    var displayName: String {
+//        switch base {
+//            case is FalVideoGenerationRequestHandling:
+//                return "Fal"
+//            default:
+//                fatalError()
+//        }
+//    }
 
     public init(
-        _ base: any VideoGenerationRequestHandling,
-        service: any CoreMI._ServiceClientProtocol
+        _ base: any CoreMI._ServiceClientProtocol & VideoGenerationRequestHandling
     ) {
-        self._base = base
+        self.base = base
         self._hashValue = ObjectIdentifier(base as AnyObject).hashValue
-        self._service = service
     }
 
     public static func == (lhs: AnyVideoGenerationRequestHandling, rhs: AnyVideoGenerationRequestHandling) -> Bool {
@@ -61,9 +67,5 @@ public struct AnyVideoGenerationRequestHandling: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(_hashValue)
-    }
-
-    public func base() -> any VideoGenerationRequestHandling {
-        _base
     }
 }

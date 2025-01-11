@@ -71,17 +71,24 @@ extension ElevenLabs.Client: SpeechSynthesisRequestHandling {}
 
 
 public struct AnySpeechSynthesisRequestHandling: Hashable {
-    private let _service: any CoreMI._ServiceClientProtocol
-    private let _base: any SpeechSynthesisRequestHandling
     private let _hashValue: Int
 
+    public let base: any CoreMI._ServiceClientProtocol & SpeechSynthesisRequestHandling
+
+    public var displayName: String {
+        switch base {
+            case is ElevenLabs.Client:
+                return "ElevenLabs"
+            default:
+                fatalError()
+        }
+    }
+    
     public init(
-        _ base: any SpeechSynthesisRequestHandling,
-        service: any CoreMI._ServiceClientProtocol
+        _ base: any CoreMI._ServiceClientProtocol & SpeechSynthesisRequestHandling
     ) {
-        self._base = base
+        self.base = base
         self._hashValue = ObjectIdentifier(base as AnyObject).hashValue
-        self._service = service
     }
 
     public static func == (lhs: AnySpeechSynthesisRequestHandling, rhs: AnySpeechSynthesisRequestHandling) -> Bool {
@@ -90,9 +97,5 @@ public struct AnySpeechSynthesisRequestHandling: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(_hashValue)
-    }
-
-    public func base() -> any SpeechSynthesisRequestHandling {
-        _base
     }
 }
