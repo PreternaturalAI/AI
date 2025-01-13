@@ -8,7 +8,6 @@
 import Foundation
 import AI
 import ElevenLabs
-import PlayHT
 import SwiftUI
 
 public protocol SpeechToSpeechRequest {
