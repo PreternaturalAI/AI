@@ -1,14 +1,14 @@
 //
-//  Hub.swift
-//  
-//
-//  Created by Pedro Cuenca on 18/5/23.
+// Copyright (c) Preternatural AI, Inc.
 //
 
-import Foundation
+import FoundationX
+import Swallow
 
 extension HuggingFace {
-    public struct Hub {}
+    public struct Hub {
+        
+    }
 }
 
 public extension HuggingFace.Hub {

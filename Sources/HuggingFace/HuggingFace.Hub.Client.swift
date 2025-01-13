@@ -1,21 +1,24 @@
 //
-//  HubApi.swift
-//
-//
-//  Created by Pedro Cuenca on 20231230.
+// Copyright (c) Preternatural AI, Inc.
 //
 
-import Foundation
+import CoreMI
+import CorePersistence
+import FoundationX
+import Swallow
 
 extension HuggingFace.Hub {
-    public struct Client {
-        var downloadBase: URL
-        public var hfToken: String?
-        var endpoint: String
-        var useBackgroundSession: Bool
-        
+    @HadeanIdentifier("bihaz-rupug-pizoj-jivub")
+    public final class Client: CoreMI._ServiceClientProtocol {
         public typealias RepoType = HuggingFace.Hub.RepoType
         public typealias Repo = HuggingFace.Hub.Repo
+        
+        public static let shared = Client()
+        
+        public var downloadBase: URL
+        public var hfToken: String?
+        public var endpoint: String
+        public var useBackgroundSession: Bool
         
         public init(
             downloadBase: URL? = nil,
@@ -24,31 +27,49 @@ extension HuggingFace.Hub {
             useBackgroundSession: Bool = false
         ) {
             self.hfToken = hfToken
+            
             if let downloadBase {
                 self.downloadBase = downloadBase
             } else {
                 let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                
                 self.downloadBase = documents.appending(component: "huggingface")
             }
+            
             self.endpoint = endpoint
             self.useBackgroundSession = useBackgroundSession
         }
         
-        public static let shared = Client()
+        public convenience init(
+            account: (any CoreMI._ServiceAccountProtocol)?
+        ) async throws {
+            let account: any CoreMI._ServiceAccountProtocol = try account.unwrap()
+            let serviceVendorIdentifier: CoreMI._ServiceVendorIdentifier = try account.serviceVendorIdentifier.unwrap()
+            
+            guard serviceVendorIdentifier == CoreMI._ServiceVendorIdentifier._HuggingFace else {
+                throw CoreMI._ServiceClientError.incompatibleVendor(serviceVendorIdentifier)
+            }
+            
+            guard let credential = try account.credential as? CoreMI._ServiceCredentialTypes.APIKeyCredential else {
+                throw CoreMI._ServiceClientError.invalidCredential(try account.credential)
+            }
+            
+            self.init(hfToken: credential.apiKey)
+        }
     }
 }
 
 /// File retrieval
-public extension HuggingFace.Hub.Client {
+extension HuggingFace.Hub.Client {
     /// Model data for parsed filenames
-    struct Sibling: Codable {
-        let rfilename: String
+    public struct Sibling: Codable {
+        public let rfilename: String
     }
     
-    struct SiblingsResponse: Codable {
-        let siblings: [Sibling]
+    public struct SiblingsResponse: Codable {
+        public let siblings: [Sibling]
     }
-        
+    
     /// Throws error if the response code is not 20X
     func httpGet(
         for url: URL
@@ -64,15 +85,15 @@ public extension HuggingFace.Hub.Client {
         guard let response = response as? HTTPURLResponse else { throw HuggingFace.Hub.HubClientError.unexpectedError }
         
         switch response.statusCode {
-        case 200..<300: break
-        case 400..<500: throw HuggingFace.Hub.HubClientError.authorizationRequired
-        default: throw HuggingFace.Hub.HubClientError.httpStatusCode(response.statusCode)
+            case 200..<300: break
+            case 400..<500: throw HuggingFace.Hub.HubClientError.authorizationRequired
+            default: throw HuggingFace.Hub.HubClientError.httpStatusCode(response.statusCode)
         }
-
+        
         return (data, response)
     }
     
-    func getFilenames(
+    public func getFilenames(
         from repo: Repo,
         matching globs: [String] = []
     ) async throws -> [String] {
@@ -90,21 +111,21 @@ public extension HuggingFace.Hub.Client {
         return Array(selected)
     }
     
-    func getFilenames(
+    public func getFilenames(
         from repoId: String,
         matching globs: [String] = []
     ) async throws -> [String] {
         return try await getFilenames(from: Repo(id: repoId), matching: globs)
     }
     
-    func getFilenames(
+    public func getFilenames(
         from repo: Repo,
         matching glob: String
     ) async throws -> [String] {
         return try await getFilenames(from: repo, matching: [glob])
     }
     
-    func getFilenames(
+    public func getFilenames(
         from repoId: String,
         matching glob: String
     ) async throws -> [String] {
@@ -113,17 +134,22 @@ public extension HuggingFace.Hub.Client {
 }
 
 /// Configuration loading helpers
-public extension HuggingFace.Hub.Client {
+extension HuggingFace.Hub.Client {
     /// Assumes the file has already been downloaded.
     /// `filename` is relative to the download base.
-    func configuration(from filename: String, in repo: Repo) throws -> HuggingFace.Config {
+    public func configuration(
+        from filename: String,
+        in repo: Repo
+    ) throws -> HuggingFace.Config {
         let fileURL = localRepoLocation(repo).appending(path: filename)
         return try configuration(fileURL: fileURL)
     }
     
     /// Assumes the file is already present at local url.
     /// `fileURL` is a complete local file path for the given model
-    func configuration(fileURL: URL) throws -> HuggingFace.Config {
+    public func configuration(
+        fileURL: URL
+    ) throws -> HuggingFace.Config {
         let data = try Data(contentsOf: fileURL)
         let parsed = try JSONSerialization.jsonObject(with: data, options: [])
         guard let dictionary = parsed as? [String: Any] else { throw HuggingFace.Hub.HubClientError.parse }
@@ -132,13 +158,13 @@ public extension HuggingFace.Hub.Client {
 }
 
 /// Whoami
-public extension HuggingFace.Hub.Client {
-    func whoami() async throws -> HuggingFace.Config {
+extension HuggingFace.Hub.Client {
+    public func whoami() async throws -> HuggingFace.Config {
         guard hfToken != nil else { throw HuggingFace.Hub.HubClientError.authorizationRequired }
         
         let url = URL(string: "\(endpoint)/api/whoami-v2")!
         let (data, _) = try await httpGet(for: url)
-
+        
         let parsed = try JSONSerialization.jsonObject(with: data, options: [])
         guard let dictionary = parsed as? [String: Any] else { throw HuggingFace.Hub.HubClientError.parse }
         return HuggingFace.Config(dictionary)
@@ -146,20 +172,20 @@ public extension HuggingFace.Hub.Client {
 }
 
 /// Snaphsot download
-public extension HuggingFace.Hub.Client {
-    func localRepoLocation(_ repo: Repo) -> URL {
+extension HuggingFace.Hub.Client {
+    public func localRepoLocation(_ repo: Repo) -> URL {
         downloadBase.appending(component: repo.type.rawValue).appending(component: repo.id)
     }
     
-    struct HubFileDownloader {
-        let repo: Repo
-        let repoDestination: URL
-        let relativeFilename: String
-        let hfToken: String?
-        let endpoint: String?
-        let backgroundSession: Bool
-
-        var source: URL {
+    public struct HubFileDownloader {
+        public  let repo: Repo
+        public  let repoDestination: URL
+        public let relativeFilename: String
+        public  let hfToken: String?
+        public let endpoint: String?
+        public  let backgroundSession: Bool
+        
+        public var source: URL {
             // https://huggingface.co/coreml-projects/Llama-2-7b-chat-coreml/resolve/main/tokenizer.json?download=true
             var url = URL(string: endpoint ?? "https://huggingface.co")!
             if repo.type != .models {
@@ -171,26 +197,26 @@ public extension HuggingFace.Hub.Client {
             return url
         }
         
-        var destination: URL {
+        public var destination: URL {
             repoDestination.appending(path: relativeFilename)
         }
         
-        var downloaded: Bool {
-            FileManager.default.fileExists(atPath: destination.path)
+        public var downloaded: Bool {
+            FileManager.default.fileExists(at: destination)
         }
         
-        func prepareDestination() throws {
+        public func prepareDestination() throws {
             let directoryURL = destination.deletingLastPathComponent()
             try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true, attributes: nil)
         }
-
+        
         // Note we go from Combine in Downloader to callback-based progress reporting
         // We'll probably need to support Combine as well to play well with Swift UI
         // (See for example PipelineLoader in swift-coreml-diffusers)
         @discardableResult
         func download(outputHandler: @escaping (Double) -> Void) async throws -> URL {
             guard !downloaded else { return destination }
-
+            
             try prepareDestination()
             let downloader = HuggingFace.Downloader(from: source, to: destination, using: hfToken, inBackground: backgroundSession)
             let downloadSubscriber = downloader.downloadState.sink { state in
@@ -205,37 +231,7 @@ public extension HuggingFace.Hub.Client {
         }
     }
     
-    /*
-    @discardableResult
-    func download(
-        from repo: Repo,
-        matching globs: [String] = [],
-        session: URLSession,
-    outputHandler: @escaping (Progress) -> Void = { _ in }
-    ) async throws {
-        let filenames = try await getFilenames(from: repo, matching: globs)
-        let progress = Progress(totalUnitCount: Int64(filenames.count))
-        let repoDestination = localRepoLocation(repo)
-
-        for filename in filenames {
-            let fileProgress = Progress(totalUnitCount: 100, parent: progress, pendingUnitCount: 1)
-            let downloader = HubFileDownloader(
-                repo: repo,
-                repoDestination: repoDestination,
-                relativeFilename: filename,
-                hfToken: hfToken,
-                endpoint: endpoint,
-                backgroundSession: useBackgroundSession
-            )
-            try await downloader.download { fractionDownloaded in
-                fileProgress.completedUnitCount = Int64(100 * fractionDownloaded)
-                outputHandler(progress)
-            }
-            fileProgress.completedUnitCount = 100
-        }
-    }
-    */
-    func formRequest(repo: HuggingFace.Hub.Repo, relativeFilename: String, authToken: String?) -> URLRequest {
+    public func formRequest(repo: HuggingFace.Hub.Repo, relativeFilename: String, authToken: String?) -> URLRequest {
         var url: URL {
             // https://huggingface.co/coreml-projects/Llama-2-7b-chat-coreml/resolve/main/tokenizer.json?download=true
             var url = URL(string: endpoint)!
@@ -255,10 +251,10 @@ public extension HuggingFace.Hub.Client {
         
         return request
     }
-
+    
     // main snapshot function
     @discardableResult
-    func snapshot(
+    public func snapshot(
         from repo: Repo,
         matching globs: [String] = [],
         outputHandler: @escaping (
@@ -291,7 +287,7 @@ public extension HuggingFace.Hub.Client {
     }
     
     @discardableResult
-    func snapshot(
+    public func snapshot(
         from repoId: String,
         matching globs: [String] = [],
         outputHandler: @escaping (Progress) -> Void = { _ in }
@@ -304,7 +300,7 @@ public extension HuggingFace.Hub.Client {
     }
     
     @discardableResult
-    func snapshot(
+    public func snapshot(
         from repo: Repo,
         matching glob: String,
         outputHandler: @escaping (Progress) -> Void = { _ in }
@@ -313,7 +309,7 @@ public extension HuggingFace.Hub.Client {
     }
     
     @discardableResult
-    func snapshot(
+    public func snapshot(
         from repoId: String,
         matching glob: String,
         outputHandler: @escaping (Progress) -> Void = {_ in }
@@ -323,29 +319,29 @@ public extension HuggingFace.Hub.Client {
 }
 
 /// Stateless wrappers that use `HubApi` instances
-public extension HuggingFace.Hub {
-    static func getFilenames(
+extension HuggingFace.Hub {
+    public static func getFilenames(
         from repo: HuggingFace.Hub.Repo,
         matching globs: [String] = []
     ) async throws -> [String] {
         return try await HuggingFace.Hub.Client.shared.getFilenames(from: repo, matching: globs)
     }
     
-    static func getFilenames(
+    public static func getFilenames(
         from repoId: String,
         matching globs: [String] = []
     ) async throws -> [String] {
         return try await HuggingFace.Hub.Client.shared.getFilenames(from: Repo(id: repoId), matching: globs)
     }
     
-    static func getFilenames(
+    public static func getFilenames(
         from repo: Repo,
         matching glob: String
     ) async throws -> [String] {
         return try await HuggingFace.Hub.Client.shared.getFilenames(from: repo, matching: glob)
     }
     
-    static func getFilenames(
+    public static func getFilenames(
         from repoId: String,
         matching glob: String
     ) async throws -> [String] {
@@ -355,7 +351,7 @@ public extension HuggingFace.Hub {
         )
     }
     
-    static func snapshot(
+    public static func snapshot(
         from repo: Repo,
         matching globs: [String] = [],
         outputHandler: @escaping (Progress) -> Void = { _ in }
@@ -363,7 +359,7 @@ public extension HuggingFace.Hub {
         return try await HuggingFace.Hub.Client.shared.snapshot(from: repo, matching: globs, outputHandler: outputHandler)
     }
     
-    static func snapshot(
+    public static func snapshot(
         from repoId: String,
         matching globs: [String] = [],
         outputHandler: @escaping (Progress) -> Void = { _ in }
@@ -371,7 +367,7 @@ public extension HuggingFace.Hub {
         return try await HuggingFace.Hub.Client.shared.snapshot(from: Repo(id: repoId), matching: globs, outputHandler: outputHandler)
     }
     
-    static func snapshot(
+    public static func snapshot(
         from repo: Repo,
         matching glob: String,
         outputHandler: @escaping (Progress) -> Void = { _ in }
@@ -379,7 +375,7 @@ public extension HuggingFace.Hub {
         return try await HuggingFace.Hub.Client.shared.snapshot(from: repo, matching: glob, outputHandler: outputHandler)
     }
     
-    static func snapshot(
+    public static func snapshot(
         from repoId: String,
         matching glob: String,
         outputHandler: @escaping (Progress) -> Void = { _ in }
@@ -387,13 +383,13 @@ public extension HuggingFace.Hub {
         return try await HuggingFace.Hub.Client.shared.snapshot(from: Repo(id: repoId), matching: glob, outputHandler: outputHandler)
     }
     
-    static func whoami(token: String) async throws -> HuggingFace.Config {
+    public static func whoami(token: String) async throws -> HuggingFace.Config {
         return try await HuggingFace.Hub.Client(hfToken: token).whoami()
     }
 }
 
-public extension [String] {
-    func matching(glob: String) -> [String] {
+extension [String] {
+    fileprivate func matching(glob: String) -> [String] {
         filter { fnmatch(glob, $0, 0) == 0 }
     }
 }
