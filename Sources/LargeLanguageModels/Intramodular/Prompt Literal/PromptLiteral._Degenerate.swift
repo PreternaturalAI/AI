@@ -17,7 +17,6 @@ extension PromptLiteral {
     }
 }
 
-@_spi(Internal)
 extension PromptLiteral {
     public enum _DegenerationError: Error {
         case dynamicVariableUnresolved(any _opaque_DynamicPromptVariable)

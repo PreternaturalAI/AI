@@ -366,7 +366,8 @@ let package = Package(
         .target(
             name: "HuggingFace",
             dependencies: [
-                
+                "CoreMI",
+                "Swallow"
             ],
             path: "Sources/HuggingFace",
             swiftSettings: [
