@@ -8,6 +8,11 @@ import Swallow
 extension CoreMI {
     /// A client for an AI/ML service.
     public protocol _ServiceClientProtocol: PersistentlyRepresentableType {
+        /// A global filespace as provisioned by the service.
+        ///
+        /// For e.g. to represent all the files in an OpenAI/Gemini project.
+        func _globalFileSpace() -> any CoreMI._ServiceProvisionedFileSpace
+        
         init(account: (any CoreMI._ServiceAccountProtocol)?) async throws
     }
     

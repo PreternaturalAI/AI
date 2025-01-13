@@ -2,13 +2,31 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CorePersistence
 import NetworkKit
 import Swift
 
+extension OpenAI.File {
+    @HadeanIdentifier("sihim-nosam-dujaz-zafuj")
+    public struct ID: Codable, RawRepresentable, Hashable, Sendable {
+        public let rawValue: String
+        
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
+        
+        public init(from decoder: any Decoder) throws {
+            rawValue = try String(from: decoder)
+        }
+        
+        public func encode(to encoder: any Encoder) throws {
+            try rawValue.encode(to: encoder)
+        }
+    }    
+}
+
 extension OpenAI {
     public final class File: OpenAI.Object, Identifiable {
-        public typealias ID = _TypeAssociatedID<OpenAI.File, String>
-
         private enum CodingKeys: String, CodingKey {
             case id
             case bytes

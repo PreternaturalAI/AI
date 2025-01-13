@@ -5,11 +5,17 @@
 //  Created by Jared Davidson on 12/11/24.
 //
 
+import CorePersistence
 import Foundation
 
 extension _Gemini {
-    
-    public struct File: Codable, Hashable {
+    public struct File: Codable, Hashable, Identifiable {
+        @HadeanIdentifier("gupuj-nutuh-fabom-luhub")
+        public struct ID: Codable, Hashable, Sendable {
+            public let name: _Gemini.File.Name
+            public let uri: URL
+        }
+
         public let createTime: String?
         public let expirationTime: String?
         public let mimeType: String?
@@ -21,13 +27,8 @@ extension _Gemini {
         public let uri: URL
         public let videoMetadata: VideoMetadata?
         
-        public enum State: String, Codable {
-            case processing = "PROCESSING"
-            case active = "ACTIVE"
-        }
-        
-        public struct VideoMetadata: Codable, Hashable {
-            public let videoDuration: String
+        public var id: _Gemini.File.ID {
+            _Gemini.File.ID(name: name, uri: uri)
         }
     }
     
@@ -39,7 +40,16 @@ extension _Gemini {
 }
 
 extension _Gemini.File {
-    public struct Name: Codable, RawRepresentable, Hashable {
+    public enum State: String, Codable {
+        case processing = "PROCESSING"
+        case active = "ACTIVE"
+    }
+    
+    public struct VideoMetadata: Codable, Hashable {
+        public let videoDuration: String
+    }
+
+    public struct Name: Codable, RawRepresentable, Hashable, Sendable {
         public let rawValue: String
         
         public init(rawValue: String) {

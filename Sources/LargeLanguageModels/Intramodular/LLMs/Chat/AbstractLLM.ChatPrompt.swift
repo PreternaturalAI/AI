@@ -26,7 +26,7 @@ extension AbstractLLM {
                 }
             }
         }
-        
+
         public init(
             messages: [AbstractLLM.ChatMessage],
             context: PromptContextValues = PromptContextValues.current

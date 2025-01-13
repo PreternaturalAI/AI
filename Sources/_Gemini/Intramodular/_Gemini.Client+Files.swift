@@ -2,17 +2,18 @@
 // Copyright (c) Vatsal Manot
 //
 
+import CoreMI
 import Dispatch
-import Foundation
+import FoundationX
 import Merge
 import NetworkKit
 import Swallow
 
 extension _Gemini.Client {
-    
     public func uploadFile(
         from data: Data,
-        mimeType: HTTPMediaType,
+        ofSwiftType swiftType: Any.Type? = nil,
+        mimeType: HTTPMediaType?,
         displayName: String
     ) async throws -> _Gemini.File {
         guard !displayName.isEmpty else {
@@ -20,9 +21,15 @@ extension _Gemini.Client {
         }
         
         do {
+            var mimeType: String? = mimeType?.rawValue ?? _MediaAssetFileType(data)?.mimeType
+            
+            if mimeType == nil, let swiftType {
+                mimeType = HTTPMediaType(_swiftType: swiftType)?.rawValue
+            }
+            
             let input = _Gemini.APISpecification.RequestBodies.FileUploadInput(
                 fileData: data,
-                mimeType: mimeType.rawValue,
+                mimeType: try mimeType.unwrap(),
                 displayName: displayName
             )
             
@@ -36,7 +43,7 @@ extension _Gemini.Client {
     
     public func uploadFile(
         from url: URL,
-        mimeType: HTTPMediaType,
+        mimeType: HTTPMediaType?,
         displayName: String?
     ) async throws -> _Gemini.File {
         let data: Data

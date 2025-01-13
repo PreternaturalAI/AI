@@ -39,6 +39,14 @@ extension _Gemini {
         }
     }
     
+    public enum SchemaType: String, Codable {
+        case array = "ARRAY"
+        case object = "OBJECT"
+        case string = "STRING"
+        case number = "NUMBER"
+        case boolean = "BOOLEAN"
+    }
+
     public indirect enum SchemaObject {
         case object(properties: [String: SchemaObject])
         case array(items: SchemaObject)
@@ -60,14 +68,6 @@ extension _Gemini {
                     return .boolean
             }
         }
-    }
-    
-    public enum SchemaType: String, Codable {
-        case array = "ARRAY"
-        case object = "OBJECT"
-        case string = "STRING"
-        case number = "NUMBER"
-        case boolean = "BOOLEAN"
     }
 }
 
