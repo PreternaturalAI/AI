@@ -7,7 +7,6 @@
 
 import SwiftUIZ
 import CorePersistence
-import ElevenLabs
 
 public struct AbstractVoiceSettings: Codable, Sendable, Initiable, Equatable {
     public init() {
@@ -120,28 +119,4 @@ public protocol AbstractVoiceSettingsInitiable {
 
 public protocol AbstractVoiceSettingsConvertible {
     func __conversion() throws -> AbstractVoiceSettings
-}
-
-extension ElevenLabs.VoiceSettings: AbstractVoiceSettingsConvertible {
-    public func __conversion() throws -> AbstractVoiceSettings {
-        return .init(
-            stability: stability,
-            similarityBoost: similarityBoost,
-            styleExaggeration: styleExaggeration,
-            speakerBoost: speakerBoost,
-            removeBackgroundNoise: removeBackgroundNoise
-        )
-    }
-}
-
-extension ElevenLabs.VoiceSettings: AbstractVoiceSettingsInitiable {
-    public init(settings: AbstractVoiceSettings) throws {
-        self.init(
-            stability: settings.stability,
-            similarityBoost: settings.similarityBoost,
-            styleExaggeration: settings.styleExaggeration,
-            speakerBoost: settings.speakerBoost,
-            removeBackgroundNoise: settings.removeBackgroundNoise
-        )
-    }
 }

@@ -115,7 +115,7 @@ let package = Package(
                 "Merge",
                 "NetworkKit",
                 "Swallow",
-                "SwiftUIX",
+                "SwiftUIX"
             ],
             path: "Sources/LargeLanguageModels",
             resources: [
