@@ -5,7 +5,6 @@
 import AVFoundation
 import Foundation
 import SwiftUI
-import LargeLanguageModels
 
 public protocol VideoGenerationRequestHandling {
     func availableModels() async throws -> [VideoModel]
