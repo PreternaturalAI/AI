@@ -75,11 +75,29 @@ extension _Gemini {
         // Initial Upload Request endpoint
         @POST
         @Path("/upload/v1beta/files")
-        @Header([
-            "X-Goog-Upload-Command": "start, upload, finalize"
-        ])
-        @Body(multipart: .input)
-        var uploadFile = Endpoint<RequestBodies.FileUploadInput, ResponseBodies.FileUpload, Void>()
+        @Header({ context in
+            [
+                HTTPHeaderField(key: "X-Goog-Upload-Protocol", value: "resumable"),
+                HTTPHeaderField(key: "X-Goog-Upload-Command", value: "start"),
+                HTTPHeaderField(key: "X-Goog-Upload-Header-Content-Length", value: "\(context.input.fileData.count)"),
+                HTTPHeaderField(key: "X-Goog-Upload-Header-Content-Type", value: context.input.mimeType),
+                HTTPHeaderField.contentType(.json)
+            ]
+        })
+        @Body(json: \RequestBodies.StartFileUploadInput.metadata)
+        var startFileUpload = Endpoint<RequestBodies.StartFileUploadInput, String, Self.Options>()
+        
+        @POST
+        @Path({ context in context.input.uploadUrl })
+        @Header({ context in
+            [
+                HTTPHeaderField(key: "Content-Length", value: "\(context.input.fileSize)"),
+                HTTPHeaderField(key: "X-Goog-Upload-Offset", value: "0"),
+                HTTPHeaderField(key: "X-Goog-Upload-Command", value: "upload, finalize")
+            ]
+        })
+        @Body(json: \RequestBodies.FinalizeFileUploadInput.data)
+        var finalizeFileUpload = Endpoint<RequestBodies.FinalizeFileUploadInput, ResponseBodies.FileUpload, Void>()
         
         // File Status endpoint
         @GET
@@ -157,6 +175,7 @@ extension _Gemini.APISpecification {
                 context: context
             )
             
+            // FIXME: (@jared) - why are you replacing the query instead of appending a new query item? is this intentional?
             if let apiKey = context.root.configuration.apiKey {
                 request = request.query([.init(name: "key", value: apiKey)])
             }
@@ -173,10 +192,34 @@ extension _Gemini.APISpecification {
             
             try response.validate()
             
+            
+            if let options: _Gemini.APISpecification.Options = context.options as? _Gemini.APISpecification.Options, let headerKey = options.outputHeaderKey {
+                print("HEADERS: \(response.headerFields)")
+                let stringValue: String? = response.headerFields.first (where: { $0.key == headerKey })?.value
+                print(stringValue)
+                
+                switch Output.self {
+                    case String.self:
+                        return (try stringValue.unwrap()) as! Output
+                    case Optional<String>.self:
+                        return stringValue as! Output
+                    default:
+                        throw _Gemini.APIError.invalidContentType
+                }
+            }
+            
             return try response.decode(
                 Output.self,
                 keyDecodingStrategy: .convertFromSnakeCase
             )
+        }
+    }
+    
+    public class Options {
+        var outputHeaderKey: HTTPHeaderField.Key?
+        
+        init(outputHeaderKey: HTTPHeaderField.Key? = nil) {
+            self.outputHeaderKey = outputHeaderKey
         }
     }
 }
