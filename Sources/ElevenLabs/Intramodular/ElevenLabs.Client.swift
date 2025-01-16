@@ -130,3 +130,56 @@ extension ElevenLabs.Client {
         try await run(\.deleteVoice, with: voice.rawValue)
     }
 }
+
+// MARK: - Conformances
+
+extension ElevenLabs.Client: SpeechSynthesisRequestHandling {
+    public func availableVoices() async throws -> [AbstractVoice] {
+        return try await self.availableVoices().map({try $0.__conversion()})
+    }
+    
+    public func speech(for text: String, voiceID: String, voiceSettings: AbstractVoiceSettings, model: String) async throws -> Data {
+        try await self.speech(
+            for: text,
+            voiceID: voiceID,
+            voiceSettings: .init(settings: voiceSettings),
+            model: .init(rawValue: model) ?? .MultilingualV1
+        )
+    }
+    
+    public func speechToSpeech(inputAudioURL: URL, voiceID: String, voiceSettings: AbstractVoiceSettings, model: String) async throws -> Data {
+        try await self.speechToSpeech(
+            inputAudioURL: inputAudioURL,
+            voiceID: voiceID,
+            voiceSettings: .init(settings: voiceSettings),
+            model: .init(rawValue: model) ?? .MultilingualV1
+        )
+    }
+    
+    public func upload(voiceWithName name: String, description: String, fileURL: URL) async throws -> AbstractVoice.ID {
+        let voice: ElevenLabs.Voice.ID = try await self.upload(
+            voiceWithName: name,
+            description: description,
+            fileURL: fileURL
+        )
+        
+        return .init(rawValue: voice.rawValue)
+    }
+    
+    public func edit(voice: AbstractVoice.ID, name: String, description: String, fileURL: URL?) async throws -> Bool {
+        try await self.edit(
+            voice: ElevenLabs.Voice.ID(rawValue: voice.rawValue),
+            name: name,
+            description: description,
+            fileURL: fileURL
+        )
+    }
+    
+    public func delete(voice: AbstractVoice.ID) async throws {
+        try await self.delete(
+            voice: ElevenLabs.Voice.ID(
+                rawValue: voice.rawValue
+            )
+        )
+    }
+}

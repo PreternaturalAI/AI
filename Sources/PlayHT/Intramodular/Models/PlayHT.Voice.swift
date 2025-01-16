@@ -7,6 +7,7 @@
 
 import Foundation
 import Swallow
+import LargeLanguageModels
 
 extension PlayHT {
     public struct Voice: Codable, Hashable, Identifiable {
@@ -16,7 +17,7 @@ extension PlayHT {
         public let name: String
         public let language: String?
         public let languageCode: String?
-        public let voiceEngine: String
+        public let voiceEngine: String?
         public let isCloned: Bool?
         public let gender: String?
         public let accent: String?
@@ -26,6 +27,39 @@ extension PlayHT {
         public let texture: String?
         public let loudness: String?
         public let tempo: String?
+        
+        
+        init(
+            id: ID,
+            name: String,
+            language: String? = nil,
+            languageCode: String? = nil,
+            voiceEngine: String? = nil,
+            isCloned: Bool? = nil,
+            gender: String? = nil,
+            accent: String? = nil,
+            age: String? = nil,
+            style: String? = nil,
+            sample: String? = nil,
+            texture: String? = nil,
+            loudness: String? = nil,
+            tempo: String? = nil
+        ) {
+            self.id = id
+            self.name = name
+            self.language = language
+            self.languageCode = languageCode
+            self.voiceEngine = voiceEngine
+            self.isCloned = isCloned
+            self.gender = gender
+            self.accent = accent
+            self.age = age
+            self.style = style
+            self.sample = sample
+            self.texture = texture
+            self.loudness = loudness
+            self.tempo = tempo
+        }
 
         private enum CodingKeys: String, CodingKey {
             case id, name, language, languageCode, voiceEngine, isCloned
@@ -70,5 +104,26 @@ extension PlayHT {
         case ogg = "ogg"
         case mulaw = "mulaw"
         case flac = "flac"
+    }
+}
+
+// MARK: - Conformances
+
+extension PlayHT.Voice: AbstractVoiceConvertible {
+    public func __conversion() throws -> AbstractVoice {
+        return AbstractVoice(
+            voiceID: self.id.rawValue,
+            name: self.name,
+            description: nil
+        )
+    }
+}
+
+extension PlayHT.Voice: AbstractVoiceInitiable {
+    public init(voice: AbstractVoice) throws {
+        self.init(
+            id: .init(rawValue: voice.id.rawValue),
+            name: voice.name
+        )
     }
 }
