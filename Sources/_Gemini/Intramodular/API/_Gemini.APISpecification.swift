@@ -70,11 +70,13 @@ extension _Gemini {
             "/v1beta/models/\(context.input.model):generateContent"
         })
         @Body(json: \.requestBody)
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var generateContent = Endpoint<RequestBodies.GenerateContentInput, ResponseBodies.GenerateContent, Void>()
         
         // Initial Upload Request endpoint
         @POST
         @Path("/upload/v1beta/files")
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         @Header({ context in
             [
                 HTTPHeaderField(key: "X-Goog-Upload-Protocol", value: "resumable"),
@@ -88,7 +90,7 @@ extension _Gemini {
         var startFileUpload = Endpoint<RequestBodies.StartFileUploadInput, String, Self.Options>()
         
         @POST
-        @Path({ context in context.input.uploadUrl })
+        @AbsolutePath({ $0.input.uploadUrl })
         @Header({ context in
             [
                 HTTPHeaderField(key: "Content-Length", value: "\(context.input.fileSize)"),
@@ -96,7 +98,7 @@ extension _Gemini {
                 HTTPHeaderField(key: "X-Goog-Upload-Command", value: "upload, finalize")
             ]
         })
-        @Body(json: \RequestBodies.FinalizeFileUploadInput.data)
+        @Body(data: \RequestBodies.FinalizeFileUploadInput.data)
         var finalizeFileUpload = Endpoint<RequestBodies.FinalizeFileUploadInput, ResponseBodies.FileUpload, Void>()
         
         // File Status endpoint
@@ -104,6 +106,7 @@ extension _Gemini {
         @Path({ context -> String in
             "/v1beta/\(context.input.name.rawValue)"
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var getFile = Endpoint<RequestBodies.FileStatusInput, _Gemini.File, Void>()
         
         @GET
@@ -119,8 +122,13 @@ extension _Gemini {
                 parameters["pageToken"] = pageToken
             }
             
+            if let apiKey = context.root.configuration.apiKey {
+                parameters["key"] = apiKey
+            }
+            
             return parameters
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var listFiles = Endpoint<RequestBodies.FileListInput, _Gemini.FileList, Void>()
         
         // Delete File endpoint
@@ -128,24 +136,28 @@ extension _Gemini {
         @Path({ context -> String in
             "/\(context.input.fileURL.path)"
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var deleteFile = Endpoint<RequestBodies.DeleteFileInput, Void, Void>()
         
-        //Fine Tuning
+        // Fine Tuning
         @POST
         @Path("/v1beta/tunedModels")
         @Body(json: \.requestBody)
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var createTunedModel = Endpoint<RequestBodies.CreateTunedModel, _Gemini.TuningOperation, Void>()
         
         @GET
         @Path({ context -> String in
             "/v1/\(context.input.operationName)"
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var getTuningOperation = Endpoint<RequestBodies.GetOperation, _Gemini.TuningOperation, Void>()
         
         @GET
         @Path({ context -> String in
             "/v1beta/\(context.input.modelName)"
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var getTunedModel = Endpoint<RequestBodies.GetTunedModel, _Gemini.TunedModel, Void>()
         
         @POST
@@ -153,6 +165,7 @@ extension _Gemini {
             "/v1beta/\(context.input.model):generateContent"  // Use the model name directly
         })
         @Body(json: \.requestBody)
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var generateTunedContent = Endpoint<RequestBodies.GenerateContentInput, ResponseBodies.GenerateContent, Void>()
         
         @POST
@@ -160,6 +173,7 @@ extension _Gemini {
             "/v1beta/models/\(context.input.model):embedContent"
         })
         @Body(json: \.input)
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var generateEmbedding = Endpoint<RequestBodies.EmbeddingInput, ResponseBodies.EmbeddingResponse, Void>()
     }
 }
@@ -175,10 +189,7 @@ extension _Gemini.APISpecification {
                 context: context
             )
             
-            // FIXME: (@jared) - why are you replacing the query instead of appending a new query item? is this intentional?
-            if let apiKey = context.root.configuration.apiKey {
-                request = request.query([.init(name: "key", value: apiKey)])
-            }
+            print("REQUEST URL: \(request.url)")
             
             return request
         }
