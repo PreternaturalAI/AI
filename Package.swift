@@ -389,6 +389,7 @@ let package = Package(
                 "Ollama",
                 "OpenAI",
                 "Swallow",
+                "NeetsAI",
             ],
             path: "Sources/AI",
             swiftSettings: [

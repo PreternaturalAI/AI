@@ -30,7 +30,7 @@ extension NeetsAI.Voice: AbstractVoiceConvertible {
 extension NeetsAI.Voice: AbstractVoiceInitiable {
     public init(voice: AbstractVoice) throws {
         self.init(
-            id: voice.voiceID,
+            id: .init(voice.voiceID),
             title: voice.name,
             aliasOf: voice.description,
             supportedModels: []

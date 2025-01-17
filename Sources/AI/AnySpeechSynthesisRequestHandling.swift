@@ -7,6 +7,7 @@
 
 import ElevenLabs
 import LargeLanguageModels
+import NeetsAI
 
 public struct AnySpeechSynthesisRequestHandling: Hashable {
     private let _hashValue: Int
@@ -17,6 +18,8 @@ public struct AnySpeechSynthesisRequestHandling: Hashable {
         switch base {
             case is ElevenLabs.Client:
                 return "ElevenLabs"
+            case is NeetsAI.Client:
+                return "NeetsAI"
             default:
                 fatalError()
         }
