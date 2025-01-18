@@ -10,7 +10,11 @@ import LargeLanguageModels
 
 extension NeetsAI.Client: SpeechSynthesisRequestHandling {
     public func availableVoices() async throws -> [AbstractVoice] {
-        return try await getAllAvailableVoices().map( { try $0.__conversion() } )
+        let voices = try await getAllAvailableVoices()
+            .map({ try $0.__conversion() })
+            .filter({ !$0.name.isEmpty })
+            .unique(by: \.name)
+        return voices
     }
     
     public func speech(for text: String, voiceID: String, voiceSettings: LargeLanguageModels.AbstractVoiceSettings, model: String) async throws -> Data {
@@ -37,5 +41,13 @@ extension NeetsAI.Client: SpeechSynthesisRequestHandling {
     
     public func delete(voice: LargeLanguageModels.AbstractVoice.ID) async throws {
         throw NeetsAI.APIError.unknown(message: "Deleting Voice is not supported")
+    }
+}
+
+// FIXME: - REMOVE ME
+extension Sequence {
+    func unique<T: Hashable>(by keyPath: KeyPath<Element, T>) -> [Element] {
+        var seen = Set<T>()
+        return filter { seen.insert($0[keyPath: keyPath]).inserted }
     }
 }
