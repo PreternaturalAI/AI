@@ -6,6 +6,7 @@ import CoreMI
 import Dispatch
 import FoundationX
 import Merge
+import Media
 import NetworkKit
 import Swallow
 
@@ -50,6 +51,9 @@ extension _Gemini.Client {
         return result.file
     }
     
+    public func upload(file: any MediaFile) async throws {
+        try await self.uploadFile(from: file.url, mimeType: HTTPMediaType(fileURL: file.url), displayName: file.name)
+    }
     
     public func uploadFile(
         from url: URL,
