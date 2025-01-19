@@ -115,7 +115,7 @@ let package = Package(
                 "Merge",
                 "NetworkKit",
                 "Swallow",
-                "SwiftUIX",
+                "SwiftUIX"
             ],
             path: "Sources/LargeLanguageModels",
             resources: [
@@ -191,7 +191,8 @@ let package = Package(
                 "LargeLanguageModels",
                 "Merge",
                 "NetworkKit",
-                "Swallow"
+                "Swallow",
+                "Media"
             ],
             path: "Sources/_Gemini",
             swiftSettings: [
@@ -389,6 +390,7 @@ let package = Package(
                 "Ollama",
                 "OpenAI",
                 "Swallow",
+                "NeetsAI",
             ],
             path: "Sources/AI",
             swiftSettings: [

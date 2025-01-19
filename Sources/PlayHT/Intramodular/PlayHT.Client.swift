@@ -59,14 +59,14 @@ extension PlayHT.Client: CoreMI._ServiceClientProtocol {
 extension PlayHT.Client {
     
     public func getAllAvailableVoices() async throws -> [PlayHT.Voice] {
-        async let htVoices = availableVoices()
-        async let clonedVoices = clonedVoices()
+        async let htVoices = self.getAvailableVoices()
+        async let clonedVoices = self.clonedVoices()
         
         let (available, cloned) = try await (htVoices, clonedVoices)
         return available + cloned
     }
     
-    public func availableVoices() async throws -> [PlayHT.Voice] {
+    public func getAvailableVoices() async throws -> [PlayHT.Voice] {
         try await run(\.listVoices).voices
     }
     

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import LargeLanguageModels
 
 extension ElevenLabs {
     public struct VoiceSettings: Codable, Sendable, Hashable {
@@ -95,6 +96,32 @@ extension ElevenLabs.VoiceSettings {
             styleExaggeration: nil,
             speakerBoost: speakerBoost,
             removeBackgroundNoise: nil
+        )
+    }
+}
+
+// MARK: - Conformances
+
+extension ElevenLabs.VoiceSettings: AbstractVoiceSettingsConvertible {
+    public func __conversion() throws -> AbstractVoiceSettings {
+        return .init(
+            stability: stability,
+            similarityBoost: similarityBoost,
+            styleExaggeration: styleExaggeration,
+            speakerBoost: speakerBoost,
+            removeBackgroundNoise: removeBackgroundNoise
+        )
+    }
+}
+
+extension ElevenLabs.VoiceSettings: AbstractVoiceSettingsInitiable {
+    public init(settings: AbstractVoiceSettings) throws {
+        self.init(
+            stability: settings.stability,
+            similarityBoost: settings.similarityBoost,
+            styleExaggeration: settings.styleExaggeration,
+            speakerBoost: settings.speakerBoost,
+            removeBackgroundNoise: settings.removeBackgroundNoise
         )
     }
 }
