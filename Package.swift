@@ -191,7 +191,8 @@ let package = Package(
                 "LargeLanguageModels",
                 "Merge",
                 "NetworkKit",
-                "Swallow"
+                "Swallow",
+                "Media"
             ],
             path: "Sources/_Gemini",
             swiftSettings: [

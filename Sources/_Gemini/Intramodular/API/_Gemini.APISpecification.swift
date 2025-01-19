@@ -184,12 +184,10 @@ extension _Gemini.APISpecification {
             from input: Input,
             context: BuildRequestContext
         ) throws -> Request {
-            var request = try super.buildRequestBase(
+            let request = try super.buildRequestBase(
                 from: input,
                 context: context
             )
-            
-            print("REQUEST URL: \(request.url)")
             
             return request
         }
@@ -198,16 +196,10 @@ extension _Gemini.APISpecification {
             from response: Request.Response,
             context: DecodeOutputContext
         ) throws -> Output {
-            
-            print(response)
-            
             try response.validate()
             
-            
             if let options: _Gemini.APISpecification.Options = context.options as? _Gemini.APISpecification.Options, let headerKey = options.outputHeaderKey {
-                print("HEADERS: \(response.headerFields)")
                 let stringValue: String? = response.headerFields.first (where: { $0.key == headerKey })?.value
-                print(stringValue)
                 
                 switch Output.self {
                     case String.self:

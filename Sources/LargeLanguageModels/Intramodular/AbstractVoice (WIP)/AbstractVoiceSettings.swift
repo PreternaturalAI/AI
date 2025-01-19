@@ -5,7 +5,7 @@
 //  Created by Jared Davidson on 10/30/24.
 //
 
-import SwiftUIZ
+import SwiftUIX
 import CorePersistence
 
 public struct AbstractVoiceSettings: Codable, Sendable, Initiable, Equatable {
