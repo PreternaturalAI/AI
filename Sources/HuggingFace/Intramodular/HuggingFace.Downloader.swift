@@ -78,28 +78,23 @@ extension HuggingFace {
         }
         
         @discardableResult
-        func waitUntilDone() throws -> URL {
-            // It's either this, or stream the bytes ourselves (add to a buffer, save to disk, etc; boring and finicky)
-            let semaphore = DispatchSemaphore(value: 0)
-            stateSubscriber = downloadState.sink { state in
+        func waitUntilDone() async throws -> URL {
+            for try await state in downloadState.toAsyncStream().eraseToAnyAsyncSequence() {
                 switch state {
-                case .completed: 
-                    semaphore.signal()
-                case .failed:    
-                    semaphore.signal()
-                default:         
-                    break
+                    case .completed, .failed:
+                        break
+                    default:
+                        continue
                 }
             }
-            semaphore.wait()
             
             switch downloadState.value {
-            case .completed(let url): 
-                return url
-            case .failed(let error):  
-                throw error
-            default:                  
-                throw DownloadError.unexpectedError
+                case .completed(let url):
+                    return url
+                case .failed(let error):
+                    throw error
+                default:
+                    throw DownloadError.unexpectedError
             }
         }
         
@@ -141,10 +136,6 @@ extension HuggingFace.Downloader: URLSessionDownloadDelegate {
     ) {
         if let error = error {
             downloadState.value = .failed(error)
-//        } else if let response = task.response as? HTTPURLResponse {
-//            print("HTTP response status code: \(response.statusCode)")
-//            let headers = response.allHeaderFields
-//            print("HTTP response headers: \(headers)")
         }
     }
 }

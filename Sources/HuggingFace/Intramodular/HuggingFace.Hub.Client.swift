@@ -2,6 +2,7 @@
 // Copyright (c) Preternatural AI, Inc.
 //
 
+import Combine
 import CoreMI
 import CorePersistence
 import FoundationX
@@ -18,13 +19,11 @@ extension HuggingFace.Hub {
         public var downloadBase: URL
         public var hfToken: String?
         public var endpoint: String
-        public var useBackgroundSession: Bool
         
         public init(
             downloadBase: URL? = nil,
             hfToken: String? = nil,
-            endpoint: String = "https://huggingface.co",
-            useBackgroundSession: Bool = false
+            endpoint: String = "https://huggingface.co"
         ) {
             self.hfToken = hfToken
             
@@ -37,7 +36,6 @@ extension HuggingFace.Hub {
             }
             
             self.endpoint = endpoint
-            self.useBackgroundSession = useBackgroundSession
         }
         
         public convenience init(
@@ -178,12 +176,11 @@ extension HuggingFace.Hub.Client {
     }
     
     public struct HubFileDownloader {
-        public  let repo: Repo
-        public  let repoDestination: URL
+        public let repo: Repo
+        public let repoDestination: URL
         public let relativeFilename: String
-        public  let hfToken: String?
+        public let hfToken: String?
         public let endpoint: String?
-        public  let backgroundSession: Bool
         
         public var source: URL {
             // https://huggingface.co/coreml-projects/Llama-2-7b-chat-coreml/resolve/main/tokenizer.json?download=true
@@ -215,18 +212,28 @@ extension HuggingFace.Hub.Client {
         // (See for example PipelineLoader in swift-coreml-diffusers)
         @discardableResult
         func download(outputHandler: @escaping (Double) -> Void) async throws -> URL {
-            guard !downloaded else { return destination }
+            guard !downloaded else {
+                return destination
+            }
             
             try prepareDestination()
-            let downloader = HuggingFace.Downloader(from: source, to: destination, using: hfToken, inBackground: backgroundSession)
-            let downloadSubscriber = downloader.downloadState.sink { state in
+            let downloader = HuggingFace.Downloader(from: source, to: destination, using: hfToken)
+            
+            let progressSubscription: AnyCancellable = downloader.downloadState.throttle(
+                for: .milliseconds(50),
+                scheduler: .mainThread,
+                latest: true
+            )
+            .sink { state in
                 if case .downloading(let progress) = state {
                     outputHandler(progress)
                 }
             }
-            _ = try withExtendedLifetime(downloadSubscriber) {
-                try downloader.waitUntilDone()
+
+            try await _asyncWithExtendedLifetime(progressSubscription) {
+                try await downloader.waitUntilDone()
             }
+
             return destination
         }
     }
@@ -273,8 +280,7 @@ extension HuggingFace.Hub.Client {
                 repoDestination: repoDestination,
                 relativeFilename: filename,
                 hfToken: hfToken,
-                endpoint: endpoint,
-                backgroundSession: useBackgroundSession
+                endpoint: endpoint
             )
             try await downloader.download { fractionDownloaded in
                 fileProgress.completedUnitCount = Int64(100 * fractionDownloaded)

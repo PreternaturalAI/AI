@@ -370,6 +370,9 @@ let package = Package(
                 "Swallow"
             ],
             path: "Sources/HuggingFace",
+            resources: [
+                .process("Resources")
+            ],
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]
