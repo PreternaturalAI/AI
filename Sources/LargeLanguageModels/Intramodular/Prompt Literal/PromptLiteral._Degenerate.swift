@@ -26,7 +26,7 @@ extension PromptLiteral {
         var components: [_Degenerate.Component] = []
         
         func append(_ component: _Degenerate.Component) throws {
-            if let last = components.last, component.payload.type == last.payload.type {
+            if let last = components.last, component.payload.type == last.payload.type, component.payload.type._isConcatenatable {
                 let merged = try last.appending(contentsOf: component)
                 
                 components.mutableLast = merged
@@ -132,6 +132,19 @@ extension PromptLiteral._Degenerate.Component {
         case image
         case functionCall
         case functionInvocation
+        
+        var _isConcatenatable: Bool {
+            switch self {
+                case .string:
+                    return true
+                case .image:
+                    return false
+                case .functionCall:
+                    return false
+                case .functionInvocation:
+                    return false
+            }
+        }
     }
     
     public enum Payload {
