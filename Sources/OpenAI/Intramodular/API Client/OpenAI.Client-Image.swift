@@ -3,6 +3,7 @@
 //
 
 import CorePersistence
+import SwiftUIX
 import Swallow
 
 extension OpenAI.Client {
@@ -37,6 +38,20 @@ extension OpenAI.Client {
         )
         
         let response = try await run(\.createImage, with: requestBody)
+        
+        return response
+    }
+    
+    public func createImageEdit(
+        image: Data,
+        prompt: String
+    ) async throws -> OpenAI.List<OpenAI.Image> {
+        let requestBody = OpenAI.APISpecification.RequestBodies.CreateImageEdit(
+            image: image,
+            prompt: prompt
+        )
+        
+        let response = try await run(\.createImageEdit, with: requestBody)
         
         return response
     }

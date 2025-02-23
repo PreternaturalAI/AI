@@ -496,8 +496,6 @@ extension HumeAI.APISpecification {
             from response: HTTPResponse,
             context: DecodeOutputContext
         ) throws -> Output {
-            
-            print(response)
             do {
                 try response.validate()
             } catch {

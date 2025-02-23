@@ -405,6 +405,7 @@ extension OpenAI.Model {
         }
         
         case dalle3 = "dall-e-3"
+        case dalle2 = "dall-e-2"
         
         public var contextSize: Int? {
             4000
@@ -414,6 +415,8 @@ extension OpenAI.Model {
             switch self {
                 case .dalle3:
                     "dall-e-3"
+                case .dalle2:
+                    "dall-e-2"
             }
         }
     }
