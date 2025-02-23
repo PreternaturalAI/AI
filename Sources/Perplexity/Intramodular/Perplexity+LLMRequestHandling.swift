@@ -70,7 +70,6 @@ extension Perplexity.Client: LLMRequestHandling {
                 topP: parameters.temperatureOrTopP?.topProbabilityMass,
                 topK: nil,
                 maxTokens: parameters.tokenLimit?.fixedValue,
-                returnCitations: nil,
                 returnImages: nil,
                 stream: false,
                 presencePenalty: nil,

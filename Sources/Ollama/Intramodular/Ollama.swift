@@ -86,7 +86,7 @@ extension Ollama: CoreMI._ServiceClientProtocol {
     
 }
 
-extension CoreMI._ServiceClientProtocol where Self == Ollama {
+extension PersistentlyRepresentableType where Self == Ollama {
     public init(
         account: (any CoreMI._ServiceAccountProtocol)?
     ) async throws {
