@@ -4,6 +4,7 @@
 
 import Foundation
 import Swift
+import LargeLanguageModels
 
 extension ElevenLabs {
     public struct Voice: Hashable, Identifiable, Sendable {
@@ -40,5 +41,26 @@ extension ElevenLabs.Voice: Codable {
         case name
         case description
         case isOwner
+    }
+}
+
+extension ElevenLabs.Voice: AbstractVoiceConvertible {
+    public func __conversion() throws -> AbstractVoice {
+        return AbstractVoice(
+            voiceID: self.voiceID,
+            name: self.name,
+            description: self.description
+        )
+    }
+}
+
+extension ElevenLabs.Voice: AbstractVoiceInitiable {
+    public init(voice: AbstractVoice) throws {
+        self.init(
+            voiceID: voice.voiceID,
+            name: voice.name,
+            description: voice.description,
+            isOwner: nil
+        )
     }
 }
