@@ -52,18 +52,17 @@ extension URL {
         
         // Create a tuple of values we need to check after export
         try await withCheckedThrowingContinuation { continuation in
-            let mainQueue = DispatchQueue.main
             exportSession.exportAsynchronously {
-                mainQueue.async {
+                Task { @MainActor in
                     switch exportSession.status {
-                    case .completed:
-                        continuation.resume()
-                    case .failed:
-                        continuation.resume(throwing: exportSession.error ?? NSError(domain: "AudioConversion", code: -1, userInfo: [NSLocalizedDescriptionKey: "Export failed"]))
-                    case .cancelled:
-                        continuation.resume(throwing: NSError(domain: "AudioConversion", code: -1, userInfo: [NSLocalizedDescriptionKey: "Export cancelled"]))
-                    default:
-                        continuation.resume(throwing: NSError(domain: "AudioConversion", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown export error"]))
+                        case .completed:
+                            continuation.resume()
+                        case .failed:
+                            continuation.resume(throwing: exportSession.error ?? NSError(domain: "AudioConversion", code: -1, userInfo: [NSLocalizedDescriptionKey: "Export failed"]))
+                        case .cancelled:
+                            continuation.resume(throwing: NSError(domain: "AudioConversion", code: -1, userInfo: [NSLocalizedDescriptionKey: "Export cancelled"]))
+                        default:
+                            continuation.resume(throwing: NSError(domain: "AudioConversion", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown export error"]))
                     }
                 }
             }
