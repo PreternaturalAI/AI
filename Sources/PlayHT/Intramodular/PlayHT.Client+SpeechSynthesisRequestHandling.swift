@@ -18,7 +18,12 @@ extension PlayHT.Client: SpeechSynthesisRequestHandling {
         return voices
     }
     
-    public func speech(for text: String, voiceID: String, voiceSettings: AbstractVoiceSettings, model: String) async throws -> Data {
+    public func speech(
+        for text: String,
+        voiceID: String,
+        voiceSettings: AbstractVoiceSettings,
+        model: String
+    ) async throws -> Data {
         let data: Data = try await streamTextToSpeech(
             text: text,
             voice: voiceID,
@@ -29,11 +34,20 @@ extension PlayHT.Client: SpeechSynthesisRequestHandling {
         return data
     }
     
-    public func speechToSpeech(inputAudioURL: URL, voiceID: String, voiceSettings: LargeLanguageModels.AbstractVoiceSettings, model: String) async throws -> Data {
+    public func speechToSpeech(
+        inputAudioURL: URL,
+        voiceID: String,
+        voiceSettings: LargeLanguageModels.AbstractVoiceSettings,
+        model: String
+    ) async throws -> Data {
         throw PlayHT.APIError.unknown(message: "Speech to speech not supported")
     }
     
-    public func upload(voiceWithName name: String, description: String, fileURL: URL) async throws -> AbstractVoice.ID {
+    public func upload(
+        voiceWithName name: String,
+        description: String,
+        fileURL: URL
+    ) async throws -> AbstractVoice.ID {
         let mp4URL = try await fileURL.convertAudioToMP4()
         let fileURLString = mp4URL.absoluteString
         let voiceID = try await instantCloneVoice(
@@ -46,7 +60,12 @@ extension PlayHT.Client: SpeechSynthesisRequestHandling {
         return .init(rawValue: voiceID.rawValue)
     }
     
-    public func edit(voice: LargeLanguageModels.AbstractVoice.ID, name: String, description: String, fileURL: URL?) async throws -> Bool {
+    public func edit(
+        voice: LargeLanguageModels.AbstractVoice.ID,
+        name: String,
+        description: String,
+        fileURL: URL?
+    ) async throws -> Bool {
         throw PlayHT.APIError.unknown(message: "Voice editing not supported")
     }
     

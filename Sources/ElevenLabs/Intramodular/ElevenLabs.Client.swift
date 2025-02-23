@@ -66,11 +66,13 @@ extension ElevenLabs.Client {
     public func speech(
         for text: String,
         voiceID: String,
+        languageCode: String?,
         voiceSettings: ElevenLabs.VoiceSettings,
         model: ElevenLabs.Model
     ) async throws -> Data {
         let requestBody = ElevenLabs.APISpecification.RequestBodies.SpeechRequest(
             text: text,
+            languageCode: languageCode,
             voiceSettings: voiceSettings,
             model: model
         )
@@ -80,12 +82,14 @@ extension ElevenLabs.Client {
     public func speechToSpeech(
         inputAudioURL: URL,
         voiceID: String,
+        languageCode: String?,
         voiceSettings: ElevenLabs.VoiceSettings,
         model: ElevenLabs.Model
     ) async throws -> Data {
         let input = ElevenLabs.APISpecification.RequestBodies.SpeechToSpeechInput(
             voiceId: voiceID,
             audioURL: inputAudioURL,
+            languageCode: languageCode,
             model: model,
             voiceSettings: voiceSettings
         )
@@ -138,25 +142,41 @@ extension ElevenLabs.Client: SpeechSynthesisRequestHandling {
         return try await self.availableVoices().map({try $0.__conversion()})
     }
     
-    public func speech(for text: String, voiceID: String, voiceSettings: AbstractVoiceSettings, model: String) async throws -> Data {
+    public func speech(
+        for text: String,
+        voiceID: String,
+        voiceSettings: AbstractVoiceSettings,
+        model: String
+    ) async throws -> Data {
         try await self.speech(
             for: text,
             voiceID: voiceID,
+            languageCode: nil,
             voiceSettings: .init(settings: voiceSettings),
-            model: .init(rawValue: model) ?? .MultilingualV1
+            model: ElevenLabs.Model(rawValue: model).unwrap()
         )
     }
     
-    public func speechToSpeech(inputAudioURL: URL, voiceID: String, voiceSettings: AbstractVoiceSettings, model: String) async throws -> Data {
+    public func speechToSpeech(
+        inputAudioURL: URL,
+        voiceID: String,
+        voiceSettings: AbstractVoiceSettings,
+        model: String
+    ) async throws -> Data {
         try await self.speechToSpeech(
             inputAudioURL: inputAudioURL,
             voiceID: voiceID,
+            languageCode: nil,
             voiceSettings: .init(settings: voiceSettings),
-            model: .init(rawValue: model) ?? .MultilingualV1
+            model: ElevenLabs.Model(rawValue: model).unwrap()
         )
     }
     
-    public func upload(voiceWithName name: String, description: String, fileURL: URL) async throws -> AbstractVoice.ID {
+    public func upload(
+        voiceWithName name: String,
+        description: String,
+        fileURL: URL
+    ) async throws -> AbstractVoice.ID {
         let voice: ElevenLabs.Voice.ID = try await self.upload(
             voiceWithName: name,
             description: description,
@@ -166,7 +186,12 @@ extension ElevenLabs.Client: SpeechSynthesisRequestHandling {
         return .init(rawValue: voice.rawValue)
     }
     
-    public func edit(voice: AbstractVoice.ID, name: String, description: String, fileURL: URL?) async throws -> Bool {
+    public func edit(
+        voice: AbstractVoice.ID,
+        name: String,
+        description: String,
+        fileURL: URL?
+    ) async throws -> Bool {
         try await self.edit(
             voice: ElevenLabs.Voice.ID(rawValue: voice.rawValue),
             name: name,
@@ -175,7 +200,9 @@ extension ElevenLabs.Client: SpeechSynthesisRequestHandling {
         )
     }
     
-    public func delete(voice: AbstractVoice.ID) async throws {
+    public func delete(
+        voice: AbstractVoice.ID
+    ) async throws {
         try await self.delete(
             voice: ElevenLabs.Voice.ID(
                 rawValue: voice.rawValue

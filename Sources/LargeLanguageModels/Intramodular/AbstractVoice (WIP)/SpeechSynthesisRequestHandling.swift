@@ -57,7 +57,10 @@ private struct AbstractClientKey: EnvironmentKey {
 
 extension EnvironmentValues {
     public var speechSynthesizer: (any SpeechSynthesisRequestHandling)? {
-        get { self[AbstractClientKey.self] }
-        set { self[AbstractClientKey.self] = newValue }
+        get {
+            self[AbstractClientKey.self]
+        } set {
+            self[AbstractClientKey.self] = newValue
+        }
     }
 }

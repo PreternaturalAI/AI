@@ -42,6 +42,12 @@ let package = Package(
             ]
         ),
         .library(
+            name: "ElevenLabs",
+            targets: [
+                "ElevenLabs"
+            ]
+        ),
+        .library(
             name: "HumeAI",
             targets: [
                 "HumeAI"

@@ -71,7 +71,7 @@ extension PlayHT {
         @POST
         @Path("/tts/stream")
         @Body(json: \.input, keyEncodingStrategy: .convertToSnakeCase)
-        var streamTextToSpeech = Endpoint<RequestBodies.TextToSpeechInput, ResponseBodies.TextToSpeechResponse, Void>()
+        var streamTextToSpeech = Endpoint<RequestBodies.TextToSpeechInput, Data, Void>()
         
         @GET
         @Path("/cloned-voices")
@@ -107,10 +107,10 @@ extension PlayHT.APISpecification {
                 from: input,
                 context: context
             )
-            
+                        
             request = request
                 .header("X-USER-ID", context.root.configuration.userId)
-                .header("accept", "application/json")
+                .header(.accept(.mpeg))
                 .header("AUTHORIZATION", context.root.configuration.apiKey)
                 .header(.contentType(.json))
             
@@ -122,6 +122,7 @@ extension PlayHT.APISpecification {
             context: DecodeOutputContext
         ) throws -> Output {
             do {
+                dump(response)
                 try response.validate()
             } catch {
                 let apiError: Error

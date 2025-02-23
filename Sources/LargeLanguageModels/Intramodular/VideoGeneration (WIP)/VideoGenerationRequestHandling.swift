@@ -3,10 +3,11 @@
 //
 
 import AVFoundation
+import CoreMI
 import Foundation
 import SwiftUI
 
-public protocol VideoGenerationRequestHandling {
+public protocol VideoGenerationRequestHandling: CoreMI.RequestHandling {
     func availableModels() async throws -> [VideoModel]
     
     func textToVideo(

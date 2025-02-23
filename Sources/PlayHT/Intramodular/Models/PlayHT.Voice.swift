@@ -65,6 +65,27 @@ extension PlayHT {
             case id, name, language, languageCode, voiceEngine, isCloned
             case gender, accent, age, style, sample, texture, loudness, tempo
         }
+        
+        public init(
+            id: String,
+            name: String,
+            language: String
+        ) {
+            self.id = .init(rawValue: id)
+            self.name = name
+            self.language = language
+            self.languageCode = nil
+            self.voiceEngine = ""
+            self.isCloned = nil
+            self.gender = nil
+            self.accent = nil
+            self.age = nil
+            self.style = nil
+            self.sample = nil
+            self.texture = nil
+            self.loudness = nil
+            self.tempo = nil
+        }
 
         // Add custom decoding if needed to handle any special cases
         public init(from decoder: Decoder) throws {
