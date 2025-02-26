@@ -31,70 +31,6 @@ extension ModelIdentifier {
         case _xAI
         
         case unknown(String)
-        
-        public static var apple: Self {
-            Self._Apple
-        }
-        
-        public static var fal: Self {
-            self._Fal
-        }
-        
-        public static var openAI: Self {
-            Self._OpenAI
-        }
-        
-        public static var anthropic: Self {
-            Self._Anthropic
-        }
-        
-        public static var groq: Self {
-            Self._Groq
-        }
-        
-        public static var gemini: Self {
-            Self._Gemini
-        }
-        
-        public static var perplexity: Self {
-            Self._Perplexity
-        }
-        
-        public static var jina: Self {
-            Self._Jina
-        }
-        
-        public static var voyageAI: Self {
-            Self._VoyageAI
-        }
-        
-        public static var cohere: Self {
-            Self._Cohere
-        }
-        
-        public static var elevenLabs: Self {
-            Self._ElevenLabs
-        }
-        
-        public static var togetherAI: Self {
-            Self._TogetherAI
-        }
-        
-        public static var playHT: Self {
-            Self._PlayHT
-        }
-        
-        public static var rime: Self {
-            Self._Rime
-        }
-        
-        public static var humeAI: Self {
-            self._HumeAI
-        }
-        
-        public static var neetsAI: Self {
-            self._NeetsAI
-        }
     }
 }
 
@@ -154,6 +90,8 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 return "anthropic"
             case ._Apple:
                 return "apple"
+            case ._Cohere:
+                return "cohere"
             case ._Fal:
                 return "fal"
             case ._Mistral:
@@ -172,8 +110,6 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 return "jina"
             case ._VoyageAI:
                 return "voyageAI"
-            case ._Cohere:
-                return "cohere"
             case ._ElevenLabs:
                 return "elevenlabs"
             case ._TogetherAI:
@@ -199,36 +135,38 @@ extension ModelIdentifier.Provider: RawRepresentable {
                 self = ._Anthropic
             case Self._Apple.rawValue:
                 self = ._Apple
+            case Self._Cohere.rawValue:
+                self = ._Cohere
             case Self._Fal.rawValue:
                 self = ._Fal
-            case Self._Mistral.rawValue:
-                self = ._Mistral
+            case Self._ElevenLabs.rawValue:
+                self = ._ElevenLabs
             case Self._Groq.rawValue:
                 self = ._Groq
             case Self._OpenAI.rawValue:
                 self = ._OpenAI
             case Self._Gemini.rawValue:
                 self = ._Gemini
-            case Self._Perplexity.rawValue:
-                self = ._Perplexity
+            case Self._HumeAI.rawValue:
+                self = ._HumeAI
             case Self._Jina.rawValue:
                 self = ._Jina
-            case Self._VoyageAI.rawValue:
-                self = ._VoyageAI
-            case Self._Cohere.rawValue:
-                self = ._Cohere
-            case Self._ElevenLabs.rawValue:
-                self = ._ElevenLabs
-            case Self._TogetherAI.rawValue:
-                self = ._TogetherAI
+            case Self._Mistral.rawValue:
+                self = ._Mistral
+            case Self._NeetsAI.rawValue:
+                self = ._NeetsAI
+            case Self._Perplexity.rawValue:
+                self = ._Perplexity
             case Self._PlayHT.rawValue:
                 self = ._PlayHT
             case Self._Rime.rawValue:
                 self = ._Rime
-            case Self._HumeAI.rawValue:
-                self = ._HumeAI
-            case Self._NeetsAI.rawValue:
-                self = ._NeetsAI
+            case Self._TogetherAI.rawValue:
+                self = ._TogetherAI
+            case Self._VoyageAI.rawValue:
+                self = ._VoyageAI
+            case Self._xAI.rawValue:
+                self = ._xAI
             default:
                 self = .unknown(rawValue)
         }
@@ -242,5 +180,73 @@ extension ModelIdentifier.Provider: Codable {
     
     public func encode(to encoder: Encoder) throws {
         try rawValue.encode(to: encoder)
+    }
+}
+
+// MARK: - Supplementary
+
+extension ModelIdentifier.Provider {
+    public static var apple: Self {
+        Self._Apple
+    }
+    
+    public static var fal: Self {
+        self._Fal
+    }
+    
+    public static var openAI: Self {
+        Self._OpenAI
+    }
+    
+    public static var anthropic: Self {
+        Self._Anthropic
+    }
+    
+    public static var groq: Self {
+        Self._Groq
+    }
+    
+    public static var gemini: Self {
+        Self._Gemini
+    }
+    
+    public static var perplexity: Self {
+        Self._Perplexity
+    }
+    
+    public static var jina: Self {
+        Self._Jina
+    }
+    
+    public static var voyageAI: Self {
+        Self._VoyageAI
+    }
+    
+    public static var cohere: Self {
+        Self._Cohere
+    }
+    
+    public static var elevenLabs: Self {
+        Self._ElevenLabs
+    }
+    
+    public static var togetherAI: Self {
+        Self._TogetherAI
+    }
+    
+    public static var playHT: Self {
+        Self._PlayHT
+    }
+    
+    public static var rime: Self {
+        Self._Rime
+    }
+    
+    public static var humeAI: Self {
+        self._HumeAI
+    }
+    
+    public static var neetsAI: Self {
+        self._NeetsAI
     }
 }
