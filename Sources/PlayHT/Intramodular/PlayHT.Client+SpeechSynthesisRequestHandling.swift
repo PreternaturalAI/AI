@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import AI
-import ElevenLabs
 import SwiftUI
 import AVFoundation
 import LargeLanguageModels

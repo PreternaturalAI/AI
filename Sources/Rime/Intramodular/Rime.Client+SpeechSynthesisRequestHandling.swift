@@ -5,9 +5,8 @@
 //  Created by Jared Davidson on 11/21/24.
 //
 
+import LargeLanguageModels
 import Foundation
-import AI
-import ElevenLabs
 import SwiftUI
 import AVFoundation
 
@@ -40,16 +39,4 @@ extension Rime.Client: SpeechSynthesisRequestHandling {
     public func delete(voice: AbstractVoice.ID) async throws {
         throw Rime.APIError.unknown(message: "Voice creation is not supported")
     }
-    
-    public func availableVoices() async throws -> [ElevenLabs.Voice] {
-        return try await getAllAvailableVoiceDetails().map { voice in
-            ElevenLabs.Voice(
-                voiceID: voice.name,
-                name: voice.name,
-                description: voice.demographic,
-                isOwner: false
-            )
-        }
-    }
-
 }
