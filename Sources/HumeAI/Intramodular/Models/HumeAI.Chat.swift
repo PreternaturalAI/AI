@@ -5,6 +5,8 @@
 //  Created by Jared Davidson on 11/25/24.
 //
 
+import Foundation
+
 extension HumeAI {
     public struct Chat: Codable {
         public let id: String
