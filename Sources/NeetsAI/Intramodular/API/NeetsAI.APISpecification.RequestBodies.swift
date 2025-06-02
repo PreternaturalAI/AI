@@ -5,6 +5,8 @@
 //  Created by Jared Davidson on 11/22/24.
 //
 
+import Foundation
+
 extension NeetsAI.APISpecification {
     enum RequestBodies {
         struct TTSInput: Codable {

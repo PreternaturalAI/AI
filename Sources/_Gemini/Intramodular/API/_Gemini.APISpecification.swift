@@ -70,22 +70,43 @@ extension _Gemini {
             "/v1beta/models/\(context.input.model):generateContent"
         })
         @Body(json: \.requestBody)
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var generateContent = Endpoint<RequestBodies.GenerateContentInput, ResponseBodies.GenerateContent, Void>()
         
         // Initial Upload Request endpoint
         @POST
         @Path("/upload/v1beta/files")
-        @Header([
-            "X-Goog-Upload-Command": "start, upload, finalize"
-        ])
-        @Body(multipart: .input)
-        var uploadFile = Endpoint<RequestBodies.FileUploadInput, ResponseBodies.FileUpload, Void>()
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
+        @Header({ context in
+            [
+                HTTPHeaderField(key: "X-Goog-Upload-Protocol", value: "resumable"),
+                HTTPHeaderField(key: "X-Goog-Upload-Command", value: "start"),
+                HTTPHeaderField(key: "X-Goog-Upload-Header-Content-Length", value: "\(context.input.fileData.count)"),
+                HTTPHeaderField(key: "X-Goog-Upload-Header-Content-Type", value: context.input.mimeType),
+                HTTPHeaderField.contentType(.json)
+            ]
+        })
+        @Body(json: \RequestBodies.StartFileUploadInput.metadata)
+        var startFileUpload = Endpoint<RequestBodies.StartFileUploadInput, String, Self.Options>()
+        
+        @POST
+        @AbsolutePath({ $0.input.uploadUrl })
+        @Header({ context in
+            [
+                HTTPHeaderField(key: "Content-Length", value: "\(context.input.fileSize)"),
+                HTTPHeaderField(key: "X-Goog-Upload-Offset", value: "0"),
+                HTTPHeaderField(key: "X-Goog-Upload-Command", value: "upload, finalize")
+            ]
+        })
+        @Body(data: \RequestBodies.FinalizeFileUploadInput.data)
+        var finalizeFileUpload = Endpoint<RequestBodies.FinalizeFileUploadInput, ResponseBodies.FileUpload, Void>()
         
         // File Status endpoint
         @GET
         @Path({ context -> String in
             "/v1beta/\(context.input.name.rawValue)"
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var getFile = Endpoint<RequestBodies.FileStatusInput, _Gemini.File, Void>()
         
         @GET
@@ -101,8 +122,13 @@ extension _Gemini {
                 parameters["pageToken"] = pageToken
             }
             
+            if let apiKey = context.root.configuration.apiKey {
+                parameters["key"] = apiKey
+            }
+            
             return parameters
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var listFiles = Endpoint<RequestBodies.FileListInput, _Gemini.FileList, Void>()
         
         // Delete File endpoint
@@ -110,24 +136,28 @@ extension _Gemini {
         @Path({ context -> String in
             "/\(context.input.fileURL.path)"
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var deleteFile = Endpoint<RequestBodies.DeleteFileInput, Void, Void>()
         
-        //Fine Tuning
+        // Fine Tuning
         @POST
         @Path("/v1beta/tunedModels")
         @Body(json: \.requestBody)
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var createTunedModel = Endpoint<RequestBodies.CreateTunedModel, _Gemini.TuningOperation, Void>()
         
         @GET
         @Path({ context -> String in
             "/v1/\(context.input.operationName)"
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var getTuningOperation = Endpoint<RequestBodies.GetOperation, _Gemini.TuningOperation, Void>()
         
         @GET
         @Path({ context -> String in
             "/v1beta/\(context.input.modelName)"
         })
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var getTunedModel = Endpoint<RequestBodies.GetTunedModel, _Gemini.TunedModel, Void>()
         
         @POST
@@ -135,6 +165,7 @@ extension _Gemini {
             "/v1beta/\(context.input.model):generateContent"  // Use the model name directly
         })
         @Body(json: \.requestBody)
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var generateTunedContent = Endpoint<RequestBodies.GenerateContentInput, ResponseBodies.GenerateContent, Void>()
         
         @POST
@@ -142,6 +173,7 @@ extension _Gemini {
             "/v1beta/models/\(context.input.model):embedContent"
         })
         @Body(json: \.input)
+        @Query({ $0.root.configuration.apiKey.map { ["key": $0] } ?? [:] })
         var generateEmbedding = Endpoint<RequestBodies.EmbeddingInput, ResponseBodies.EmbeddingResponse, Void>()
     }
 }
@@ -152,14 +184,10 @@ extension _Gemini.APISpecification {
             from input: Input,
             context: BuildRequestContext
         ) throws -> Request {
-            var request = try super.buildRequestBase(
+            let request = try super.buildRequestBase(
                 from: input,
                 context: context
             )
-            
-            if let apiKey = context.root.configuration.apiKey {
-                request = request.query([.init(name: "key", value: apiKey)])
-            }
             
             return request
         }
@@ -168,15 +196,33 @@ extension _Gemini.APISpecification {
             from response: Request.Response,
             context: DecodeOutputContext
         ) throws -> Output {
-            
-            print(response)
-            
             try response.validate()
+            
+            if let options: _Gemini.APISpecification.Options = context.options as? _Gemini.APISpecification.Options, let headerKey = options.outputHeaderKey {
+                let stringValue: String? = response.headerFields.first (where: { $0.key == headerKey })?.value
+                
+                switch Output.self {
+                    case String.self:
+                        return (try stringValue.unwrap()) as! Output
+                    case Optional<String>.self:
+                        return stringValue as! Output
+                    default:
+                        throw _Gemini.APIError.invalidContentType
+                }
+            }
             
             return try response.decode(
                 Output.self,
                 keyDecodingStrategy: .convertFromSnakeCase
             )
+        }
+    }
+    
+    public class Options {
+        var outputHeaderKey: HTTPHeaderField.Key?
+        
+        init(outputHeaderKey: HTTPHeaderField.Key? = nil) {
+            self.outputHeaderKey = outputHeaderKey
         }
     }
 }

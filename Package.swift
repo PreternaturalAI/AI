@@ -42,6 +42,12 @@ let package = Package(
             ]
         ),
         .library(
+            name: "ElevenLabs",
+            targets: [
+                "ElevenLabs"
+            ]
+        ),
+        .library(
             name: "HumeAI",
             targets: [
                 "HumeAI"
@@ -92,6 +98,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/vmanot/CorePersistence.git", branch: "main"),
+        .package(url: "https://github.com/vmanot/Media", branch: "main"),
         .package(url: "https://github.com/vmanot/Merge.git", branch: "master"),
         .package(url: "https://github.com/vmanot/NetworkKit.git", branch: "master"),
         .package(url: "https://github.com/vmanot/Swallow.git", branch: "master"),
@@ -115,7 +122,7 @@ let package = Package(
                 "Merge",
                 "NetworkKit",
                 "Swallow",
-                "SwiftUIX",
+                "SwiftUIX"
             ],
             path: "Sources/LargeLanguageModels",
             resources: [
@@ -191,7 +198,8 @@ let package = Package(
                 "LargeLanguageModels",
                 "Merge",
                 "NetworkKit",
-                "Swallow"
+                "Swallow",
+                "Media"
             ],
             path: "Sources/_Gemini",
             swiftSettings: [
@@ -392,6 +400,7 @@ let package = Package(
                 "Ollama",
                 "OpenAI",
                 "Swallow",
+                "NeetsAI",
             ],
             path: "Sources/AI",
             swiftSettings: [
@@ -560,6 +569,17 @@ let package = Package(
                 "Swallow"
             ],
             path: "Tests/HumeAI",
+            swiftSettings: [
+                .enableExperimentalFeature("AccessLevelOnImport")
+            ]
+        ),
+        .testTarget(
+            name: "TogetherAITests",
+            dependencies: [
+                "AI",
+                "Swallow"
+            ],
+            path: "Tests/TogetherAI",
             swiftSettings: [
                 .enableExperimentalFeature("AccessLevelOnImport")
             ]

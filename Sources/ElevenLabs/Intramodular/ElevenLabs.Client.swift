@@ -10,10 +10,15 @@ import SwiftAPI
 import Merge
 import FoundationX
 import Swallow
+import LargeLanguageModels
 
 extension ElevenLabs {
     @RuntimeDiscoverable
     public final class Client: SwiftAPI.Client, ObservableObject {
+        public static var persistentTypeRepresentation: some IdentityRepresentation {
+            CoreMI._ServiceVendorIdentifier._ElevenLabs
+        }
+        
         public typealias API = ElevenLabs.APISpecification
         public typealias Session = HTTPSession
         
@@ -33,6 +38,25 @@ extension ElevenLabs {
     }
 }
 
+extension ElevenLabs.Client: CoreMI._ServiceClientProtocol {
+    public convenience init(
+        account: (any CoreMI._ServiceAccountProtocol)?
+    ) async throws {
+        let account: any CoreMI._ServiceAccountProtocol = try account.unwrap()
+        let serviceVendorIdentifier: CoreMI._ServiceVendorIdentifier = try account.serviceVendorIdentifier.unwrap()
+        
+        guard serviceVendorIdentifier == CoreMI._ServiceVendorIdentifier._ElevenLabs else {
+            throw CoreMI._ServiceClientError.incompatibleVendor(serviceVendorIdentifier)
+        }
+        
+        guard let credential = try account.credential as? CoreMI._ServiceCredentialTypes.APIKeyCredential else {
+            throw CoreMI._ServiceClientError.invalidCredential(try account.credential)
+        }
+        
+        self.init(apiKey: credential.apiKey)
+    }
+}
+
 extension ElevenLabs.Client {
     public func availableVoices() async throws -> [ElevenLabs.Voice] {
         try await run(\.listVoices).voices
@@ -42,27 +66,30 @@ extension ElevenLabs.Client {
     public func speech(
         for text: String,
         voiceID: String,
+        languageCode: String?,
         voiceSettings: ElevenLabs.VoiceSettings,
         model: ElevenLabs.Model
     ) async throws -> Data {
         let requestBody = ElevenLabs.APISpecification.RequestBodies.SpeechRequest(
             text: text,
+            languageCode: languageCode,
             voiceSettings: voiceSettings,
             model: model
         )
-        
         return try await run(\.textToSpeech, with: .init(voiceId: voiceID, requestBody: requestBody))
     }
     
     public func speechToSpeech(
         inputAudioURL: URL,
         voiceID: String,
+        languageCode: String?,
         voiceSettings: ElevenLabs.VoiceSettings,
         model: ElevenLabs.Model
     ) async throws -> Data {
         let input = ElevenLabs.APISpecification.RequestBodies.SpeechToSpeechInput(
             voiceId: voiceID,
             audioURL: inputAudioURL,
+            languageCode: languageCode,
             model: model,
             voiceSettings: voiceSettings
         )
@@ -105,5 +132,81 @@ extension ElevenLabs.Client {
         voice: ElevenLabs.Voice.ID
     ) async throws {
         try await run(\.deleteVoice, with: voice.rawValue)
+    }
+}
+
+// MARK: - Conformances
+
+extension ElevenLabs.Client: SpeechSynthesisRequestHandling {
+    public func availableVoices() async throws -> [AbstractVoice] {
+        return try await self.availableVoices().map({try $0.__conversion()})
+    }
+    
+    public func speech(
+        for text: String,
+        voiceID: String,
+        voiceSettings: AbstractVoiceSettings,
+        model: String
+    ) async throws -> Data {
+        try await self.speech(
+            for: text,
+            voiceID: voiceID,
+            languageCode: nil,
+            voiceSettings: .init(settings: voiceSettings),
+            model: ElevenLabs.Model(rawValue: model).unwrap()
+        )
+    }
+    
+    public func speechToSpeech(
+        inputAudioURL: URL,
+        voiceID: String,
+        voiceSettings: AbstractVoiceSettings,
+        model: String
+    ) async throws -> Data {
+        try await self.speechToSpeech(
+            inputAudioURL: inputAudioURL,
+            voiceID: voiceID,
+            languageCode: nil,
+            voiceSettings: .init(settings: voiceSettings),
+            model: ElevenLabs.Model(rawValue: model).unwrap()
+        )
+    }
+    
+    public func upload(
+        voiceWithName name: String,
+        description: String,
+        fileURL: URL
+    ) async throws -> AbstractVoice.ID {
+        let voice: ElevenLabs.Voice.ID = try await self.upload(
+            voiceWithName: name,
+            description: description,
+            fileURL: fileURL
+        )
+        
+        return .init(rawValue: voice.rawValue)
+    }
+    
+    public func edit(
+        voice: AbstractVoice.ID,
+        name: String,
+        description: String,
+        fileURL: URL?
+    ) async throws -> Bool {
+        try await self.edit(
+            voice: ElevenLabs.Voice.ID(rawValue: voice.rawValue),
+            name: name,
+            description: description,
+            fileURL: fileURL
+        )
+    }
+    
+    public func delete(
+        voice: AbstractVoice.ID
+    ) async throws {
+        try await self.delete(
+            voice: ElevenLabs.Voice.ID(
+                rawValue: voice.rawValue
+            )
+        )
     }
 }

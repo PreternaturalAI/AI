@@ -23,6 +23,7 @@ extension _Gemini {
             self.rawValue = rawValue
         }
         
+        public static let gemini_2_0_flash = Model(rawValue: "gemini-2.0-flash")
         public static let gemini_2_0_flash_exp = Model(rawValue: "gemini-2.0-flash-exp")
         public static let gemini_1_5_pro = Model(rawValue: "gemini-1.5-pro")
         public static let gemini_1_5_pro_latest = Model(rawValue: "gemini-1.5-pro-latest")

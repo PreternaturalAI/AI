@@ -36,6 +36,7 @@ extension Perplexity.APISpecification.ResponseBodies {
         public var object: String
         public var created: Date
         public var model: Perplexity.Model
+        public var citations: [String]
         public var choices: [Choice]
         public let usage: Usage
     }
