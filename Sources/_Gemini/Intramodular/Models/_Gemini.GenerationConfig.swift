@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CorePersistence
 
 extension _Gemini {
     public struct GenerationConfiguration: Codable {
@@ -111,6 +112,28 @@ extension _Gemini.SchemaObject: Codable {
                 self = .number
             case .boolean:
                 self = .boolean
+        }
+    }
+}
+
+// MARK: - Conversion
+
+extension _Gemini.SchemaObject {
+    public init(from jsonSchema: JSONSchema) {
+        switch jsonSchema.type {
+            case .object:
+                let mappedProperties = jsonSchema.properties?.mapValues { _Gemini.SchemaObject(from: $0) } ?? [:]
+                self = .object(properties: mappedProperties)
+            case .array:
+                self = .array(items: _Gemini.SchemaObject(from: jsonSchema.items ?? JSONSchema(type: .string)))
+            case .string:
+                self = .string
+            case .number, .integer:
+                self = .number
+            case .boolean:
+                self = .boolean
+            case nil:
+                self = .object(properties: [:])
         }
     }
 }

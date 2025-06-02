@@ -26,6 +26,7 @@ extension _Gemini.Client {
     public func generateContent(
         messages: [_Gemini.Message] = [],
         file: _Gemini.File? = nil,
+        tools: [_Gemini.Tool] = [],
         mimeType: HTTPMediaType? = nil,
         model: _Gemini.Model,
         configuration: _Gemini.GenerationConfiguration = configDefault
@@ -58,6 +59,7 @@ extension _Gemini.Client {
         return try await generateContent(
             contents: contents,
             systemInstruction: systemInstruction,
+            tools: tools,
             model: model,
             configuration: configuration
         )
@@ -66,6 +68,7 @@ extension _Gemini.Client {
     public func generateContent(
         messages: [_Gemini.Message] = [],
         files: [_Gemini.File],
+        tools: [_Gemini.Tool] = [],
         model: _Gemini.Model,
         configuration: _Gemini.GenerationConfiguration = configDefault
     ) async throws -> _Gemini.Content {
@@ -96,6 +99,7 @@ extension _Gemini.Client {
         return try await generateContent(
             contents: contents,
             systemInstruction: systemInstruction,
+            tools: tools,
             model: model,
             configuration: configuration
         )
@@ -104,6 +108,7 @@ extension _Gemini.Client {
     internal func generateContent(
         contents: [_Gemini.APISpecification.RequestBodies.Content],
         systemInstruction: _Gemini.APISpecification.RequestBodies.Content?,
+        tools: [_Gemini.Tool] = [],
         model: _Gemini.Model,
         configuration: _Gemini.GenerationConfiguration
     ) async throws -> _Gemini.Content {
@@ -112,6 +117,7 @@ extension _Gemini.Client {
             requestBody: .init(
                 contents: contents,
                 generationConfig: configuration,
+                tools: tools,
                 systemInstruction: systemInstruction
             )
         )
