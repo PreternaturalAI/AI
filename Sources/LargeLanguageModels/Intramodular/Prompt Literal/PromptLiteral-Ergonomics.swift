@@ -2,7 +2,27 @@
 // Copyright (c) Vatsal Manot
 //
 
+import Diagnostics
 import Swallow
+import SwallowMacrosClient
+
+extension PromptLiteral {
+    public func contains(_ string: some StringProtocol) -> Bool {
+        self.stringInterpolation.components.contains(where: { component -> Bool  in
+            if component._isKnownString {
+                guard let string: String = (#try(.optimistic) {
+                    try component._stripToText()
+                }) else {
+                    return false
+                }
+                
+                return string.contains(string)
+            } else {
+                return false
+            }
+        })
+    }
+}
 
 extension AbstractLLM.ChatOrTextCompletion {
     public func _stripToText() throws -> String {

@@ -5,6 +5,7 @@
 //  Created by Jared Davidson on 1/14/25.
 //
 
+import Diagnostics
 import AVFoundation
 import AudioToolbox
 

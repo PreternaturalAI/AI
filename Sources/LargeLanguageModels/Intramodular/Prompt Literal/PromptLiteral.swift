@@ -168,6 +168,13 @@ extension PromptLiteral {
     }
     
     public static func concatenate(
+        @_SpecializedArrayBuilder<PromptLiteral> _ literals: () throws -> [PromptLiteral]
+    ) rethrows -> Self {
+        concatenate(separator: nil, prefix: nil, try literals())
+    }
+    
+    @_disfavoredOverload
+    public static func concatenate(
         separator: String?,
         prefix: String? = nil,
         @_SpecializedArrayBuilder<any PromptLiteralConvertible> _ literals: () throws -> [any PromptLiteralConvertible]
@@ -212,20 +219,21 @@ extension PromptLiteral {
         return result
     }
     
+    @_disfavoredOverload
     public static func concatenate(
-        separator: Character,
+        separator: Character?,
         prefix: String? = nil,
         @_SpecializedArrayBuilder<any PromptLiteralConvertible> _ literals: () throws -> [any PromptLiteralConvertible]
     ) rethrows -> Self {
-        try concatenate(separator: separator.stringValue, prefix: prefix, literals)
+        try concatenate(separator: separator?.stringValue, prefix: prefix, literals)
     }
     
     public static func concatenate(
-        separator: Character,
+        separator: Character?,
         prefix: String? = nil,
         @_SpecializedArrayBuilder<PromptLiteral> _ literals: () throws -> [PromptLiteral]
     ) rethrows -> Self {
-        try concatenate(separator: separator.stringValue, prefix: prefix, literals)
+        try concatenate(separator: separator?.stringValue, prefix: prefix, literals)
     }
     
     public static func concatenate(
@@ -298,5 +306,13 @@ extension PromptLiteral {
         let delimiter = PromptLiteral(stringLiteral: String(character))
         
         return delimiter + self + delimiter
+    }
+}
+
+// MARK: - Supplementary
+
+extension Array where Element == PromptLiteral {
+    public func joined(separator: String? = nil) -> PromptLiteral {
+        PromptLiteral.concatenate(separator: separator, { self })
     }
 }

@@ -53,7 +53,7 @@ extension AbstractLLM.ChatPrompt {
             // FIXME: !!!
             // This currently discards role and possibly other metadata
             
-            return PromptLiteral.concatenate(separator: nil) {
+            return PromptLiteral.concatenate {
                 messages.map({ $0.content })
             }
         }
