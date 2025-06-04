@@ -98,7 +98,6 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/vmanot/CorePersistence.git", branch: "main"),
-        .package(url: "https://github.com/vmanot/Media", branch: "main"),
         .package(url: "https://github.com/vmanot/Merge.git", branch: "master"),
         .package(url: "https://github.com/vmanot/NetworkKit.git", branch: "master"),
         .package(url: "https://github.com/vmanot/Swallow.git", branch: "master"),
@@ -199,7 +198,6 @@ let package = Package(
                 "Merge",
                 "NetworkKit",
                 "Swallow",
-                "Media"
             ],
             path: "Sources/_Gemini",
             swiftSettings: [

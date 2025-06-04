@@ -1,5 +1,5 @@
 {
-  "originHash" : "24eb1da3856f86e40bb6b87db2d4707a7cf68fd47d732dcbb9ec4d0aa614626d",
+  "originHash" : "bf14e24dc087f3ca0587309527a684a76d2fdab6ba59b514869fb6b3aa9bd02a",
   "pins" : [
     {
       "identity" : "corepersistence",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/vmanot/CorePersistence.git",
       "state" : {
         "branch" : "main",
-        "revision" : "3fc10b8e55c3be60ca4695200cecfc046c0ba29a"
+        "revision" : "3aaf5414642c50050fed52242e03f773b045571d"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/vmanot/Merge.git",
       "state" : {
         "branch" : "master",
-        "revision" : "cfa56e9a6af4206ec9055bdb29d59def5ee16297"
+        "revision" : "07c99bb39ad80e50b3d263eea95b8cd0c8610231"
       }
     },
     {
@@ -25,7 +25,7 @@
       "location" : "https://github.com/vmanot/NetworkKit.git",
       "state" : {
         "branch" : "master",
-        "revision" : "8daa1ba22e5d18e1b8e469d5a0dd0c58b675eb87"
+        "revision" : "470af0276c2aa6e61acff22acc14c7ca30b99cbc"
       }
     },
     {
@@ -34,7 +34,16 @@
       "location" : "https://github.com/vmanot/Swallow.git",
       "state" : {
         "branch" : "master",
-        "revision" : "2ac7c7f06110bc3b397677e82d3a232980c20617"
+        "revision" : "f918f5c033d65ef41abd50021c2096bdd1fa09c9"
+      }
+    },
+    {
+      "identity" : "swift-atomics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-atomics.git",
+      "state" : {
+        "revision" : "cd142fd2f64be2100422d658e7411e39489da985",
+        "version" : "1.2.0"
       }
     },
     {
@@ -42,17 +51,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections",
       "state" : {
-        "revision" : "671108c96644956dddcd89dd59c203dcdb36cec7",
-        "version" : "1.1.4"
+        "revision" : "c1805596154bb3a265fd91b8ac0c4433b4348fb0",
+        "version" : "1.2.0"
       }
     },
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-syntax.git",
+      "location" : "https://github.com/swift-precompiled/swift-syntax",
       "state" : {
-        "revision" : "0687f71944021d616d34d922343dcef086855920",
-        "version" : "600.0.1"
+        "branch" : "release/6.1",
+        "revision" : "fc197a24fb2e77609fbe3d94624e36f84d758099"
       }
     },
     {
@@ -61,7 +70,7 @@
       "location" : "https://github.com/vmanot/SwiftAPI.git",
       "state" : {
         "branch" : "master",
-        "revision" : "3e47cc5f9b0cefe9ed1d0971aff22583bd9ac7b0"
+        "revision" : "688241059ff874e5a9e9ea6a324bb3b7cc63dac4"
       }
     },
     {
@@ -70,7 +79,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX.git",
       "state" : {
         "branch" : "master",
-        "revision" : "2313c0890dd6a01c7a82618b9e505b1b00e5cdf7"
+        "revision" : "56175334751a03f80d3a650c497b8525237d4e43"
       }
     }
   ],
