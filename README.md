@@ -1,11 +1,6 @@
 > [!IMPORTANT]
 > This package is presently in its alpha stage of development (2026-03-04).
 
-<div align="center">
-<img src="https://github.com/PreternaturalAI/AI/assets/8635253/6ee85468-8fdf-4c32-92a3-44b8f2fe1eb5" width="400">
-
-[Website](https://www.preternatural.ai) | [Documentation](https://preternatural.github.com)
-
 ---
 
 </div>
