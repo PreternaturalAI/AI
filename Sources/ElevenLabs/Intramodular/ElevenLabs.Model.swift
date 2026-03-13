@@ -20,6 +20,8 @@ extension ElevenLabs {
         case MultilingualV1 = "eleven_multilingual_v1"
         
         case EnglishSTSV2 = "eleven_english_sts_v2"
+        
+        case FlashV2_5 = "eleven_flash_v2_5"
     }
 }
 
@@ -33,7 +35,7 @@ extension ElevenLabs.Model: CustomStringConvertible {
 
 extension ElevenLabs.Model: ModelIdentifierRepresentable {
     public init(from identifier: ModelIdentifier) throws {
-        guard identifier.provider == ._Groq, identifier.revision == nil else {
+        guard identifier.provider == ._ElevenLabs, identifier.revision == nil else {
             throw Never.Reason.illegal
         }
         
@@ -46,7 +48,7 @@ extension ElevenLabs.Model: ModelIdentifierRepresentable {
     
     public func __conversion() -> ModelIdentifier {
         ModelIdentifier(
-            provider: ._Groq,
+            provider: ._ElevenLabs,
             name: rawValue,
             revision: nil
         )

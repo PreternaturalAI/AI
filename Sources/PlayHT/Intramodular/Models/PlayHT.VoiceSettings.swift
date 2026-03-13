@@ -5,6 +5,8 @@
 //  Created by Jared Davidson on 11/20/24.
 //
 
+import Foundation
+
 extension PlayHT {
     public struct VoiceSettings: Codable, Hashable {
         public var speed: Double

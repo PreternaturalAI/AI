@@ -5,6 +5,8 @@
 //  Created by Jared Davidson on 11/25/24.
 //
 
+import Foundation
+
 extension HumeAI {
     public struct ChatMessage {
         public let role: String

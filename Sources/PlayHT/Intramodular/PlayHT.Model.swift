@@ -18,6 +18,10 @@ extension PlayHT {
         case playHT1 = "PlayHT1.0"
         
         case playHT2Turbo = "PlayHT2.0-turbo"
+        
+        case play3_0Mini = "Play3.0-mini"
+        
+        case playDialog = "PlayDialog"
     }
 }
 

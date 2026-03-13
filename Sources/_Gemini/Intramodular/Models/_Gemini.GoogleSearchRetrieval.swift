@@ -15,7 +15,7 @@ extension _Gemini {
         
         public let dynamicRetrievalConfiguration: DynamicRetrievalConfiguration
         
-        public init(dynamicRetrievalConfiguration: DynamicRetrievalConfiguration) {
+        public init(dynamicRetrievalConfiguration: DynamicRetrievalConfiguration = .init(dynamicThreshold: 0.3)) {
             self.dynamicRetrievalConfiguration = dynamicRetrievalConfiguration
         }
     }

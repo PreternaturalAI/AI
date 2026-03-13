@@ -15,7 +15,7 @@ extension PlayHT.APISpecification {
             public let text: String
             public let voice: String
             public let voiceEngine: PlayHT.Model
-            public let quality: String
+//            public let quality: String
             public let outputFormat: String
             
             //            public let speed: Double?
@@ -26,10 +26,11 @@ extension PlayHT.APISpecification {
             //            public let voiceGuidance: Double?
             //            public let styleGuidance: Double?
             //            public let textGuidance: Double?
-            //            public let language: String?
+            public let language: String?
             //
             private enum CodingKeys: String, CodingKey {
-                case text, voice, quality
+                case text, voice
+//                case quality
                 case voiceEngine = "voice_engine"
                 case outputFormat = "output_format"
                 //                case speed
@@ -38,15 +39,15 @@ extension PlayHT.APISpecification {
                 //                case voiceGuidance = "voice_guidance"
                 //                case styleGuidance = "style_guidance"
                 //                case textGuidance = "text_guidance"
-                //                case language
+                case language
             }
             
             public init(
                 text: String,
                 voice: String,
                 voiceEngine: PlayHT.Model = .playHT2,
-                quality: String = "medium",
-                outputFormat: String = "mp3"
+//                quality: String = "medium",
+                outputFormat: String = "mp3",
                 //                speed: Double? = nil,
                 //                sampleRate: Int? = 48000,
                 //                seed: Int? = nil,
@@ -55,12 +56,12 @@ extension PlayHT.APISpecification {
                 //                voiceGuidance: Double? = nil,
                 //                styleGuidance: Double? = nil,
                 //                textGuidance: Double? = nil,
-                //                language: String? = nil
+                language: String? = nil
             ) {
                 self.text = text
                 self.voice = voice
                 self.voiceEngine = voiceEngine
-                self.quality = quality
+//                self.quality = quality
                 self.outputFormat = outputFormat
                 //                self.speed = speed
                 //                self.sampleRate = sampleRate
@@ -70,7 +71,7 @@ extension PlayHT.APISpecification {
                 //                self.voiceGuidance = voiceGuidance
                 //                self.styleGuidance = styleGuidance
                 //                self.textGuidance = textGuidance
-                //                self.language = language
+                self.language = language
             }
         }
         

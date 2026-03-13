@@ -142,10 +142,31 @@ extension _Gemini.APISpecification {
             }
         }
         
-        public struct FileUploadInput: Codable, HTTPRequest.Multipart.ContentConvertible {
+        public struct FinalizeFileUploadInput {
+            public let data: Data
+            public let uploadUrl: String
+            public let fileSize: Int
+            
+            public init(data: Data, uploadUrl: String, fileSize: Int) {
+                self.data = data
+                self.uploadUrl = uploadUrl
+                self.fileSize = fileSize
+            }
+        }
+        
+        public struct StartFileUploadInput: Codable {
+            public struct UploadMetadata: Codable {
+                let file: FileMetadata
+                
+                struct FileMetadata: Codable {
+                    let display_name: String
+                }
+            }
+            
             public let fileData: Data
             public let mimeType: String
             public let displayName: String
+            public let metadata: UploadMetadata
             
             public init(
                 fileData: Data,
@@ -155,11 +176,12 @@ extension _Gemini.APISpecification {
                 self.fileData = fileData
                 self.mimeType = mimeType
                 self.displayName = displayName
+                self.metadata = .init(file: .init(display_name: displayName))
             }
-            
+            /*
             public func __conversion() throws -> HTTPRequest.Multipart.Content {
                 var result = HTTPRequest.Multipart.Content()
-                                
+                
                 // TODO: - Add this to `HTTPMediaType` @jared @vmanot
                 let fileExtension: String = {
                     guard let subtype = mimeType.split(separator: "/").last else {
@@ -188,17 +210,11 @@ extension _Gemini.APISpecification {
                     }
                 }()
                 
-                result.append(
-                    .file(
-                        named: "file",
-                        data: fileData,
-                        filename: "\(displayName).\(fileExtension)",
-                        contentType: .init(rawValue: mimeType)
-                    )
-                )
+                result.ap
                 
                 return result
             }
+            */
         }
         
         public struct DeleteFileInput: Codable {

@@ -57,16 +57,16 @@ extension PlayHT.Client: CoreMI._ServiceClientProtocol {
 }
 
 extension PlayHT.Client {
-    
     public func getAllAvailableVoices() async throws -> [PlayHT.Voice] {
-        async let htVoices = availableVoices()
-        async let clonedVoices = clonedVoices()
+        async let htVoices = self.getAvailableVoices()
+        async let clonedVoices = self.clonedVoices()
         
-        let (available, cloned) = try await (htVoices, clonedVoices)
-        return available + cloned
+        let (_, cloned) = try await (htVoices, clonedVoices)
+      
+        return cloned
     }
     
-    public func availableVoices() async throws -> [PlayHT.Voice] {
+    public func getAvailableVoices() async throws -> [PlayHT.Voice] {
         try await run(\.listVoices).voices
     }
     
@@ -86,33 +86,13 @@ extension PlayHT.Client {
             text: text,
             voice: voice,
             voiceEngine: model,
-            quality: outputSettings.quality.rawValue,
+//            quality: outputSettings.quality.rawValue,
             outputFormat: outputSettings.format.rawValue
         )
         
         let responseData = try await run(\.streamTextToSpeech, with: input)
-        
-        guard let url = URL(string: responseData.href) else {
-            throw PlayHTError.invalidURL
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue(interface.configuration.userId ?? "", forHTTPHeaderField: "X-USER-ID")
-        request.addValue(interface.configuration.apiKey ?? "", forHTTPHeaderField: "AUTHORIZATION")
-        
-        let (audioData, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw PlayHTError.audioFetchFailed
-        }
-        
-        guard !audioData.isEmpty else {
-            throw PlayHTError.audioFetchFailed
-        }
-        
-        return audioData
+       
+        return responseData
     }
     
     

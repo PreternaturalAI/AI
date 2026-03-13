@@ -6,8 +6,20 @@ import CoreMI
 import Dispatch
 import FoundationX
 import Merge
+import Media
 import NetworkKit
 import Swallow
+
+fileprivate enum TempError: CustomStringError, Error {
+    case fetchedResponse
+    
+    public var description: String {
+        switch self {
+            case .fetchedResponse:
+                return "Got response url from header"
+        }
+    }
+}
 
 extension _Gemini.Client {
     public func uploadFile(
@@ -20,25 +32,27 @@ extension _Gemini.Client {
             throw FileProcessingError.invalidFileName
         }
         
-        do {
-            var mimeType: String? = mimeType?.rawValue ?? _MediaAssetFileType(data)?.mimeType
-            
-            if mimeType == nil, let swiftType {
-                mimeType = HTTPMediaType(_swiftType: swiftType)?.rawValue
-            }
-            
-            let input = _Gemini.APISpecification.RequestBodies.FileUploadInput(
-                fileData: data,
-                mimeType: try mimeType.unwrap(),
-                displayName: displayName
-            )
-            
-            let response = try await run(\.uploadFile, with: input)
-            
-            return response.file
-        } catch {
-            throw _Gemini.APIError.unknown(message: "File upload failed: \(error.localizedDescription)")
+        var mimeType: String? = mimeType?.rawValue ?? _MediaAssetFileType(data)?.mimeType
+        
+        if mimeType == nil, let swiftType {
+            mimeType = HTTPMediaType(_swiftType: swiftType)?.rawValue
         }
+        
+        let input = _Gemini.APISpecification.RequestBodies.StartFileUploadInput(
+            fileData: data,
+            mimeType: try mimeType.unwrap(),
+            displayName: displayName
+        )
+        
+        let uploadURLString: String = try await run(\.startFileUpload, with: input, options: _Gemini.APISpecification.Options(outputHeaderKey: .custom("x-goog-upload-url"))).value
+        
+        let result: _Gemini.APISpecification.ResponseBodies.FileUpload = try await run(\.finalizeFileUpload, with: _Gemini.APISpecification.RequestBodies.FinalizeFileUploadInput(data: data, uploadUrl: uploadURLString, fileSize: data.count))
+        
+        return result.file
+    }
+    
+    public func upload(file: any MediaFile) async throws {
+        try await self.uploadFile(from: file.url, mimeType: HTTPMediaType(fileURL: file.url), displayName: file.name)
     }
     
     public func uploadFile(

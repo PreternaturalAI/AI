@@ -94,6 +94,24 @@ extension ElevenLabs {
             "/v1/voices/\(context.input)"
         })
         var deleteVoice = Endpoint<String, Void, Void>()
+        
+        // Dubbing
+        @POST
+        @Path("/v1/dubbing")
+        @Body(multipart: .input)
+        var initiateDubbing = Endpoint<RequestBodies.DubbingRequest, ResponseBodies.DubbingResponse, Void>()
+        
+        @GET
+        @Path({ context -> String in
+            "/v1/dubbing/\(context.input)/status"
+        })
+        var getDubbingStatus = Endpoint<String, ResponseBodies.DubbingStatus, Void>()
+        
+        @GET
+        @Path({ context -> String in
+            "/v1/dubbing/\(context.input)"
+        })
+        var getDubbingResult = Endpoint<String, Data, Void>()
     }
 }
 
@@ -128,9 +146,6 @@ extension ElevenLabs.APISpecification {
             context: DecodeOutputContext
         ) throws -> Output {
             do {
-                if Input.self == RequestBodies.EditVoiceInput.self {
-                    print("TEsts")
-                }
                 try response.validate()
             } catch {
                 let apiError: Error
